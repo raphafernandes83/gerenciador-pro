@@ -1,0 +1,155 @@
+/* ============================================================================
+   PAINEL MINIMIZÁVEL - ESTILOS CSS
+   ============================================================================ */
+
+/* Header do painel com botão de minimizar */
+.panel-header {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: var(--bg-secondary, #2a2a2a);
+    border-bottom: 1px solid var(--border-color, #444);
+    border-radius: 8px 8px 0 0;
+}
+
+.panel-header h2 {
+    margin: 0;
+    font-size: 1.2em;
+    font-weight: 600;
+    color: var(--text-primary, #fff);
+}
+
+/* Botão de minimizar */
+.panel-minimize-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary, #aaa);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 30px;
+}
+
+.panel-minimize-btn:hover {
+    background: var(--bg-hover, rgba(255, 255, 255, 0.1));
+    color: var(--text-primary, #fff);
+    transform: scale(1.1);
+}
+
+.panel-minimize-btn:active {
+    transform: scale(0.95);
+}
+
+/* Ícone do botão (➖/➕) */
+.minimize-icon {
+    font-size: 14px;
+    line-height: 1;
+    transition: transform 0.3s ease;
+}
+
+/* Conteúdo do painel */
+.panel-content {
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 1;
+    max-height: 1000px; /* Altura máxima para animação suave */
+}
+
+/* Estado minimizado */
+.panel.minimized .panel-content {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.panel.minimized .panel-header {
+    border-radius: 8px;
+    border-bottom: none;
+}
+
+.panel.minimized .minimize-icon {
+    transform: rotate(90deg);
+}
+
+/* Animações suaves */
+@keyframes expandPanel {
+    from {
+        max-height: 0;
+        opacity: 0;
+    }
+    to {
+        max-height: 1000px;
+        opacity: 1;
+    }
+}
+
+@keyframes collapsePanel {
+    from {
+        max-height: 1000px;
+        opacity: 1;
+    }
+    to {
+        max-height: 0;
+        opacity: 0;
+    }
+}
+
+/* Classe para painel expandindo */
+.panel.expanding .panel-content {
+    animation: expandPanel 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Classe para painel colapsando */
+.panel.collapsing .panel-content {
+    animation: collapsePanel 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .panel-header {
+        padding: 12px 15px;
+    }
+    
+    .panel-header h2 {
+        font-size: 1.1em;
+    }
+    
+    .panel-minimize-btn {
+        min-width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+}
+
+/* Estados de foco para acessibilidade */
+.panel-minimize-btn:focus {
+    outline: 2px solid var(--accent-color, #007bff);
+    outline-offset: 2px;
+}
+
+/* Tema escuro específico */
+@media (prefers-color-scheme: dark) {
+    .panel-header {
+        background: #1a1a1a;
+        border-bottom-color: #333;
+    }
+    
+    .panel-minimize-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+    }
+}
+
+
+
+

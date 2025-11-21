@@ -1,0 +1,368 @@
+/**
+ * 🎨 Progress Card Styles - Sistema CSS Organizado
+ * 
+ * Estilos centralizados para o card de progresso, organizados por
+ * especificidade e prioridade para evitar conflitos e sobrescritas.
+ * 
+ * @author Sistema de Gerenciamento PRO
+ * @version 1.0.0
+ */
+
+/* ============================================================================
+   VARIÁVEIS CSS CUSTOMIZADAS
+   ============================================================================ */
+
+:root {
+  /* Cores principais */
+  --progress-card-neutral: #6b7280;
+  --progress-card-success: #059669;
+  --progress-card-danger: #dc2626;
+  --progress-card-warning: #d97706;
+  
+  /* Variações de cores */
+  --progress-card-success-light: #10b981;
+  --progress-card-success-lighter: #34d399;
+  --progress-card-danger-light: #ef4444;
+  --progress-card-danger-lighter: #f87171;
+  --progress-card-warning-light: #f59e0b;
+  --progress-card-warning-lighter: #fbbf24;
+  
+  /* Cores secundárias */
+  --progress-card-secondary-neutral: #9ca3af;
+  --progress-card-accent-neutral: #d1d5db;
+  
+  /* Pesos de fonte */
+  --progress-card-font-normal: 500;
+  --progress-card-font-bold: 600;
+  --progress-card-font-light: 400;
+  
+  /* Transições */
+  --progress-card-transition-fast: 0.2s ease-in-out;
+  --progress-card-transition-normal: 0.3s ease-in-out;
+  --progress-card-transition-slow: 0.5s ease-in-out;
+  
+  /* Sombras */
+  --progress-card-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --progress-card-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --progress-card-shadow-glow: 0 0 8px rgba(0, 0, 0, 0.25);
+}
+
+/* ============================================================================
+   CONTAINER PRINCIPAL
+   ============================================================================ */
+
+.progress-card {
+  position: relative;
+  background: var(--card-bg, #ffffff);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: var(--progress-card-shadow-md);
+  transition: var(--progress-card-transition-normal);
+}
+
+/* Temas dinâmicos */
+.progress-card.theme-neutral {
+  --primary-color: var(--progress-card-neutral);
+  --secondary-color: var(--progress-card-secondary-neutral);
+  --accent-color: var(--progress-card-accent-neutral);
+}
+
+.progress-card.theme-success {
+  --primary-color: var(--progress-card-success);
+  --secondary-color: var(--progress-card-success-light);
+  --accent-color: var(--progress-card-success-lighter);
+}
+
+.progress-card.theme-danger {
+  --primary-color: var(--progress-card-danger);
+  --secondary-color: var(--progress-card-danger-light);
+  --accent-color: var(--progress-card-danger-lighter);
+}
+
+.progress-card.theme-warning {
+  --primary-color: var(--progress-card-warning);
+  --secondary-color: var(--progress-card-warning-light);
+  --accent-color: var(--progress-card-warning-lighter);
+}
+
+/* ============================================================================
+   VALORES DE MÉTRICAS
+   ============================================================================ */
+
+.metric-value {
+  font-size: 14px;
+  font-weight: var(--progress-card-font-normal);
+  transition: var(--progress-card-transition-fast);
+  line-height: 1.4;
+}
+
+/* Estados das métricas */
+.metric-value.text-neutral {
+  color: var(--progress-card-neutral);
+  font-weight: var(--progress-card-font-normal);
+}
+
+.metric-value.text-positive {
+  color: var(--progress-card-success);
+  font-weight: var(--progress-card-font-bold);
+}
+
+.metric-value.text-negative {
+  color: var(--progress-card-danger);
+  font-weight: var(--progress-card-font-bold);
+}
+
+/* Magnitudes visuais */
+.metric-value[data-magnitude="large"] {
+  font-weight: 700;
+  text-shadow: var(--progress-card-shadow-glow);
+  transform: scale(1.05);
+}
+
+.metric-value[data-magnitude="medium"] {
+  font-weight: var(--progress-card-font-bold);
+  transform: scale(1.02);
+}
+
+.metric-value[data-magnitude="small"] {
+  font-weight: var(--progress-card-font-normal);
+}
+
+/* Trends */
+.metric-value[data-trend="positive"] {
+  color: var(--progress-card-success);
+}
+
+.metric-value[data-trend="negative"] {
+  color: var(--progress-card-danger);
+}
+
+/* ============================================================================
+   BADGES E INDICADORES
+   ============================================================================ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: var(--progress-card-font-bold);
+  line-height: 1.2;
+  transition: var(--progress-card-transition-fast);
+  opacity: 0;
+  transform: translateY(-2px);
+}
+
+.badge.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.badge.badge-positive {
+  color: var(--progress-card-success);
+  background-color: rgba(5, 150, 105, 0.1);
+  border: 1px solid rgba(5, 150, 105, 0.2);
+}
+
+.badge.badge-negative {
+  color: var(--progress-card-danger);
+  background-color: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+/* Animações de badges */
+.badge.pulse {
+  animation: progress-card-pulse 0.5s ease-in-out;
+}
+
+@keyframes progress-card-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* ============================================================================
+   INFORMAÇÕES DE SESSÃO
+   ============================================================================ */
+
+.session-active {
+  color: var(--progress-card-success);
+  font-weight: var(--progress-card-font-bold);
+}
+
+.session-inactive {
+  color: var(--progress-card-neutral);
+  font-weight: var(--progress-card-font-normal);
+}
+
+/* ============================================================================
+   BARRAS DE PROGRESSO
+   ============================================================================ */
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  border-radius: inherit;
+  transition: width var(--progress-card-transition-slow) cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: progress-card-shimmer 2s infinite;
+}
+
+@keyframes progress-card-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ============================================================================
+   PREVIEW METRICS
+   ============================================================================ */
+
+.preview-metrics .metric-value {
+  font-size: 12px;
+  text-align: right;
+}
+
+.preview-metrics .metric-label {
+  font-size: 12px;
+  color: var(--text-muted, var(--progress-card-neutral));
+}
+
+.preview-metrics .metric-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+
+/* ============================================================================
+   ANIMAÇÕES MONETÁRIAS
+   ============================================================================ */
+
+@keyframes monetary-pulse {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+.monetary-animated {
+  animation: monetary-pulse 0.6s ease-in-out;
+}
+
+/* ============================================================================
+   RESPONSIVIDADE
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .progress-card {
+    padding: 16px;
+  }
+  
+  .metric-value {
+    font-size: 13px;
+  }
+  
+  .badge {
+    font-size: 9px;
+    padding: 1px 4px;
+  }
+}
+
+/* ============================================================================
+   ESTADOS DE HOVER E FOCUS
+   ============================================================================ */
+
+.metric-value:hover {
+  transform: scale(1.02);
+  transition: transform var(--progress-card-transition-fast);
+}
+
+.badge:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+/* ============================================================================
+   UTILITÁRIOS DE DISPLAY
+   ============================================================================ */
+
+.progress-card-hidden {
+  display: none !important;
+}
+
+.progress-card-visible {
+  display: block;
+}
+
+.progress-card-flex {
+  display: flex;
+}
+
+/* ============================================================================
+   OVERRIDE PARA CONFLITOS EXISTENTES
+   ============================================================================ */
+
+/* Remove estilos inline conflitantes */
+.progress-card .metric-value[style*="color"] {
+  color: var(--metric-color, currentColor) !important;
+}
+
+.progress-card .metric-value[style*="font-weight"] {
+  font-weight: var(--metric-weight, var(--progress-card-font-normal)) !important;
+}
+
+/* Garante que badges sigam o sistema */
+.progress-card .badge[style*="display"] {
+  display: var(--badge-display, none) !important;
+}
+
+/* ============================================================================
+   DARK MODE SUPPORT
+   ============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --progress-card-neutral: #9ca3af;
+    --progress-card-secondary-neutral: #6b7280;
+    --progress-card-accent-neutral: #4b5563;
+  }
+}
+
+/* ============================================================================
+   PRINT STYLES
+   ============================================================================ */
+
+@media print {
+  .progress-card {
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+  }
+  
+  .badge {
+    background: transparent !important;
+    border: 1px solid currentColor !important;
+  }
+  
+  .progress-fill::after {
+    display: none;
+  }
+}
+
+
+
+

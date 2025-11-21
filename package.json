@@ -1,0 +1,65 @@
+{
+  "name": "19-59",
+  "version": "1.0.0",
+  "description": "> **Sistema completo de gestão de trading com estratégias avançadas, análise estatística e interface moderna**",
+  "main": "main.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "lint": "eslint . --fix",
+    "lint:check": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "echo 'Format checking disabled for legacy project - use npm run format to fix'",
+    "type-check": "echo 'Type checking disabled for legacy JavaScript project'",
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "dev:live": "live-server --port=3000 --no-browser",
+    "dev:open": "live-server --port=3000",
+    "start:test": "http-server -p 3000 -c-1",
+    "stylelint": "stylelint \"**/*.{css,scss}\"",
+    "prepare": "husky install",
+    "ci": "npm run lint:check && npm run stylelint && npm run format:check && npm run type-check && npm run test",
+    "ci:fix": "npm run lint && npm run format && npm run test",
+    "audit:security": "npm audit --audit-level=high",
+    "audit:fix": "npm audit fix",
+    "update:check": "ncu",
+    "update:deps": "ncu -u && npm install",
+    "validate": "npm run ci && echo '✅ Projeto validado com sucesso!'",
+    "clean": "npm run lint && npm run format && npm run audit:fix"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.54.2",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.33.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.5",
+    "live-server": "^1.2.2",
+    "nodemon": "^3.1.11",
+    "npm-check-updates": "^19.1.2",
+    "playwright": "^1.54.2",
+    "prettier": "^3.6.2",
+    "stylelint": "^16.23.1",
+    "stylelint-config-standard": "^39.0.0",
+    "typescript": "^5.9.2"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx,jsx}": [
+      "eslint --fix"
+    ],
+    "*.{css,scss}": [
+      "stylelint --fix"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}

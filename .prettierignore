@@ -1,0 +1,30 @@
+# Dependências
+node_modules/
+
+# Arquivos de build e cache
+dist/
+build/
+coverage/
+.nyc_output/
+
+# Resultados de testes
+test-results/
+playwright-report/
+
+# Arquivos minificados
+*.min.js
+*.min.css
+
+# Logs
+*.log
+npm-debug.log*
+
+# Arquivos temporários
+.tmp/
+temp/
+
+# Arquivos específicos que não devem ser formatados
+package-lock.json
+*.min.*
+debug-operacao.js
+universal_webapp_stack_com_guia/**

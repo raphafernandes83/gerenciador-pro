@@ -1,0 +1,25 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "ignoreFiles": [
+    "style.css",
+    "sidebar.css",
+    "inline-styles.css",
+    "componentes-visuais-extras.css",
+    "style-melhorias-seguras.css"
+  ],
+  "rules": {
+    "keyframes-name-pattern": null,
+    "color-function-notation": null,
+    "color-function-alias-notation": null,
+    "alpha-value-notation": null,
+    "property-no-vendor-prefix": null,
+    "selector-pseudo-element-colon-notation": null,
+    "no-duplicate-selectors": null,
+    "declaration-block-single-line-max-declarations": null,
+    "rule-empty-line-before": null,
+    "comment-empty-line-before": null,
+    "declaration-block-no-redundant-longhand-properties": null,
+    "media-feature-range-notation": null,
+    "no-descending-specificity": null
+  }
+}

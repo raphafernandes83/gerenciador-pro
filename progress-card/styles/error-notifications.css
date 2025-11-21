@@ -1,0 +1,455 @@
+/**
+ * 🛡️ Error Notifications - Estilos para Notificações de Erro
+ * 
+ * Estilos para o sistema de notificações de erro do card de progresso,
+ * incluindo diferentes tipos de notificação e estados de degradação.
+ */
+
+/* ============================================================================ */
+/* NOTIFICAÇÕES DE ERRO */
+/* ============================================================================ */
+
+.error-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    min-width: 320px;
+    max-width: 480px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    border-left: 4px solid #dc2626;
+    animation: slideInRight 0.3s ease-out;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.error-notification.warning {
+    border-left-color: #f59e0b;
+}
+
+.error-notification.info {
+    border-left-color: #3b82f6;
+}
+
+.error-notification.error {
+    border-left-color: #dc2626;
+}
+
+.notification-content {
+    padding: 16px 20px;
+    position: relative;
+}
+
+.notification-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: #111827;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.notification-message {
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.4;
+    margin-bottom: 0;
+}
+
+.notification-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.notification-close:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+/* ============================================================================ */
+/* ANIMAÇÕES */
+/* ============================================================================ */
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.error-notification.removing {
+    animation: slideOutRight 0.3s ease-in forwards;
+}
+
+/* ============================================================================ */
+/* UI DE FALLBACK */
+/* ============================================================================ */
+
+.error-fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    background: #f9fafb;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    margin: 20px;
+}
+
+.error-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.7;
+}
+
+.error-message h3 {
+    margin: 0 0 8px 0;
+    color: #374151;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.error-message p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ============================================================================ */
+/* GRÁFICO SIMPLES (FALLBACK) */
+/* ============================================================================ */
+
+.simple-chart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.chart-placeholder {
+    text-align: center;
+    color: #9ca3af;
+}
+
+.chart-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+    opacity: 0.6;
+}
+
+.chart-text {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* ============================================================================ */
+/* MODO SIMPLIFICADO */
+/* ============================================================================ */
+
+.simplified-mode .progress-card {
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb;
+    background: white;
+}
+
+.simplified-mode .progress-card.simplified {
+    padding: 16px;
+}
+
+.simplified-mode .progress-card .chart-container {
+    display: none;
+}
+
+.simplified-mode .progress-card .advanced-features {
+    display: none;
+}
+
+.simplified-mode .progress-card .animations {
+    animation: none !important;
+    transition: none !important;
+}
+
+/* ============================================================================ */
+/* MODO MÍNIMO */
+/* ============================================================================ */
+
+.minimal-mode * {
+    animation: none !important;
+    transition: none !important;
+}
+
+.minimal-mode .progress-card.minimal-ui {
+    background: white;
+    border: 1px solid #d1d5db;
+    box-shadow: none;
+    border-radius: 4px;
+}
+
+.minimal-mode .progress-card.minimal-ui .fancy-effects {
+    display: none;
+}
+
+.minimal-mode .progress-card.minimal-ui .gradients {
+    background: none !important;
+}
+
+.minimal-mode .progress-card.minimal-ui .shadows {
+    box-shadow: none !important;
+    text-shadow: none !important;
+}
+
+/* ============================================================================ */
+/* SEM ANIMAÇÕES */
+/* ============================================================================ */
+
+.no-animations * {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+}
+
+.no-animations .progress-card {
+    transform: none !important;
+}
+
+.no-animations .chart-container canvas {
+    animation: none !important;
+}
+
+/* ============================================================================ */
+/* ESTADOS DE ERRO ESPECÍFICOS */
+/* ============================================================================ */
+
+.progress-card.error-state {
+    border: 2px solid #fecaca;
+    background: #fef2f2;
+}
+
+.progress-card.warning-state {
+    border: 2px solid #fed7aa;
+    background: #fffbeb;
+}
+
+.progress-card.degraded-state {
+    border: 2px solid #bfdbfe;
+    background: #eff6ff;
+}
+
+/* ============================================================================ */
+/* INDICADORES DE STATUS */
+/* ============================================================================ */
+
+.error-status-indicator {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #dc2626;
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.warning-status-indicator {
+    background: #f59e0b;
+}
+
+.info-status-indicator {
+    background: #3b82f6;
+}
+
+.success-status-indicator {
+    background: #10b981;
+}
+
+/* ============================================================================ */
+/* OVERLAY DE CARREGAMENTO/RECUPERAÇÃO */
+/* ============================================================================ */
+
+.recovery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    border-radius: inherit;
+}
+
+.recovery-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #e5e7eb;
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 12px;
+}
+
+.recovery-text {
+    font-size: 14px;
+    color: #6b7280;
+    text-align: center;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ============================================================================ */
+/* RESPONSIVIDADE */
+/* ============================================================================ */
+
+@media (max-width: 480px) {
+    .error-notification {
+        left: 10px;
+        right: 10px;
+        top: 10px;
+        min-width: auto;
+        max-width: none;
+    }
+    
+    .error-fallback {
+        margin: 10px;
+        padding: 20px 15px;
+    }
+    
+    .error-icon {
+        font-size: 36px;
+    }
+}
+
+/* ============================================================================ */
+/* MODO ESCURO */
+/* ============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+    .error-notification {
+        background: #1f2937;
+        color: white;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .notification-title {
+        color: #f9fafb;
+    }
+    
+    .notification-message {
+        color: #d1d5db;
+    }
+    
+    .notification-close {
+        color: #9ca3af;
+    }
+    
+    .notification-close:hover {
+        background: #374151;
+        color: #f3f4f6;
+    }
+    
+    .error-fallback {
+        background: #111827;
+        border-color: #374151;
+        color: #d1d5db;
+    }
+    
+    .error-message h3 {
+        color: #f9fafb;
+    }
+    
+    .simple-chart {
+        background: #111827;
+        border-color: #374151;
+    }
+    
+    .chart-placeholder {
+        color: #6b7280;
+    }
+}
+
+/* ============================================================================ */
+/* ACESSIBILIDADE */
+/* ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    .error-notification {
+        animation: none;
+    }
+    
+    .recovery-spinner {
+        animation: none;
+        border-top-color: transparent;
+    }
+    
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Melhor contraste para leitores de tela */
+@media (prefers-contrast: high) {
+    .error-notification {
+        border-width: 2px;
+        border-style: solid;
+    }
+    
+    .error-notification.warning {
+        border-color: #d97706;
+    }
+    
+    .error-notification.info {
+        border-color: #2563eb;
+    }
+    
+    .error-notification.error {
+        border-color: #b91c1c;
+    }
+}
+
+
+
+

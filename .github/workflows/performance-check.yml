@@ -1,0 +1,48 @@
+name: 🚀 Performance Check
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Roda todo domingo às 02:00 UTC
+    - cron: '0 2 * * 0'
+
+jobs:
+  performance-audit:
+    name: 📊 Auditoria de Performance
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout do código
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: 🔧 Instalar dependências
+        run: npm ci --prefer-offline --no-audit
+
+      - name: 🎭 Instalar browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: 🚀 Iniciar servidor para teste
+        run: |
+          npm start &
+          sleep 5
+
+      - name: 📊 Lighthouse CI
+        run: |
+          npm install -g @lhci/cli
+          lhci autorun --collect.url=http://localhost:3000 --collect.numberOfRuns=3
+        continue-on-error: true
+
+      - name: 📈 Análise de bundle
+        run: |
+          echo "## 📊 Análise de Performance" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Tamanho dos arquivos principais:" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          find . -name "*.js" -not -path "./node_modules/*" -exec du -h {} \; | sort -hr | head -10 >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

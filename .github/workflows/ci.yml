@@ -1,0 +1,185 @@
+name: 🚀 CI/CD Pipeline - Gerenciador PRO
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+# Configurações globais para otimização
+env:
+  NODE_VERSION: '18'
+  CACHE_VERSION: 'v1'
+
+jobs:
+  # Job 1: Verificação de Qualidade de Código
+  code-quality:
+    name: 🔍 Qualidade do Código
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout do código
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Cache de dependências
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ env.CACHE_VERSION }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ env.CACHE_VERSION }}-
+
+      - name: 🔧 Instalar dependências
+        run: npm ci --prefer-offline --no-audit
+
+      - name: 🔍 ESLint - Verificação de erros
+        run: |
+          echo "::group::🔍 Executando ESLint"
+          npx eslint . --format=github --max-warnings=10
+          echo "::endgroup::"
+        continue-on-error: false
+
+      - name: 💅 Prettier - Verificação de formatação
+        run: |
+          echo "::group::💅 Verificando formatação"
+          npx prettier --check . --log-level=warn
+          echo "::endgroup::"
+        continue-on-error: true
+
+      - name: 📝 TypeScript - Verificação de tipos (JSDoc)
+        run: |
+          echo "::group::📝 Verificando tipos via JSDoc"
+          npx tsc --noEmit --allowJs --checkJs --skipLibCheck
+          echo "::endgroup::"
+        continue-on-error: true
+
+  # Job 2: Testes End-to-End
+  e2e-tests:
+    name: 🎭 Testes E2E
+    runs-on: ubuntu-latest
+    needs: code-quality
+
+    steps:
+      - name: 📥 Checkout do código
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Cache de dependências
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ env.CACHE_VERSION }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ env.CACHE_VERSION }}-
+
+      - name: 🔧 Instalar dependências
+        run: npm ci --prefer-offline --no-audit
+
+      - name: 🎭 Instalar browsers do Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: 🧪 Executar testes E2E
+        run: |
+          echo "::group::🧪 Executando testes Playwright"
+          npx playwright test --reporter=github
+          echo "::endgroup::"
+        env:
+          CI: true
+
+      - name: 📊 Upload dos resultados dos testes
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+      - name: 📸 Upload de screenshots (se falhar)
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: playwright-screenshots
+          path: test-results/
+          retention-days: 7
+
+  # Job 3: Análise de Segurança e Performance
+  security-analysis:
+    name: 🛡️ Análise de Segurança
+    runs-on: ubuntu-latest
+    needs: code-quality
+
+    steps:
+      - name: 📥 Checkout do código
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 🔧 Instalar dependências
+        run: npm ci --prefer-offline --no-audit
+
+      - name: 🛡️ Auditoria de segurança
+        run: |
+          echo "::group::🛡️ Verificando vulnerabilidades"
+          npm audit --audit-level=high
+          echo "::endgroup::"
+        continue-on-error: true
+
+      - name: 📊 Análise de bundle size
+        run: |
+          echo "::group::📊 Analisando tamanho dos arquivos"
+          find . -name "*.js" -not -path "./node_modules/*" -not -path "./test-results/*" | xargs wc -c | sort -n
+          echo "::endgroup::"
+
+  # Job 4: Relatório Final e Deploy (se tudo passar)
+  final-report:
+    name: 📋 Relatório Final
+    runs-on: ubuntu-latest
+    needs: [code-quality, e2e-tests, security-analysis]
+    if: always()
+
+    steps:
+      - name: 📥 Checkout do código
+        uses: actions/checkout@v4
+
+      - name: 📋 Gerar relatório de status
+        run: |
+          echo "## 🎉 Relatório de CI/CD - Gerenciador PRO" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Status dos Jobs:" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔍 Qualidade do Código: ${{ needs.code-quality.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- 🎭 Testes E2E: ${{ needs.e2e-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- 🛡️ Análise de Segurança: ${{ needs.security-analysis.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "${{ needs.code-quality.result }}" == "success" && "${{ needs.e2e-tests.result }}" == "success" ]]; then
+            echo "### ✅ **PIPELINE PASSOU!**" >> $GITHUB_STEP_SUMMARY
+            echo "🚀 Seu aplicativo está pronto para uso!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ❌ **PIPELINE FALHOU**" >> $GITHUB_STEP_SUMMARY
+            echo "🔧 Verifique os logs acima para detalhes dos erros." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: 🎯 Status final
+        run: |
+          if [[ "${{ needs.code-quality.result }}" == "success" && "${{ needs.e2e-tests.result }}" == "success" ]]; then
+            echo "✅ CI/CD Pipeline executado com sucesso!"
+            exit 0
+          else
+            echo "❌ CI/CD Pipeline falhou. Verifique os erros acima."
+            exit 1
+          fi
