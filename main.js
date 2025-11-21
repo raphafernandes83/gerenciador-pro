@@ -609,6 +609,7 @@ class App {
             await this._initializeMonitoringSystems();
             await this._initializeAdvancedStrategies();
             await this._initializeLegacyModules();
+            await this._initializeStateManager(); // 🆕 CHECKPOINT 1.1
             await this._initializeRefactoredSystems();
             await this._initializeSidebar();
 
@@ -832,6 +833,36 @@ class App {
         } catch (error) {
             console.error('❌ Erro ao inicializar módulos legados:', error.message);
             throw new Error(`Falha crítica na inicialização de módulos legados: ${error.message}`);
+        }
+    }
+
+    /**
+     * 🆕 CHECKPOINT 1.1: Inicialização do StateManager
+     * @private
+     */
+    async _initializeStateManager() {
+        try {
+            console.log('🔄 CHECKPOINT 1.1: Inicializando StateManager...');
+
+            // Importar StateManager
+            const { stateManager, createBidirectionalSync } = await import('./state-manager.js');
+
+            // Sincronizar estado inicial do window.state para o StateManager
+            stateManager.setState(window.state, 'initial-sync-from-legacy');
+
+            // Criar sincronização bidirecional (temporária)
+            // Quando StateManager muda → atualiza window.state
+            createBidirectionalSync(stateManager, window.state);
+
+            console.log('✅ StateManager inicializado e sincronizado com estado legado');
+            console.log('📊 Estado inicial:', stateManager.getState());
+            console.log('📈 Stats:', stateManager.getStats());
+
+            this.initializationSteps.push('state_manager_initialized');
+        } catch (error) {
+            console.error('❌ Erro ao inicializar StateManager:', error.message);
+            console.warn('⚠️ Continuando com estado legado apenas');
+            this.initializationSteps.push('state_manager_failed');
         }
     }
 
