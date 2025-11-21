@@ -457,7 +457,12 @@ export const logic = {
     },
 
     reprocessarHistorico() {
-        state.capitalAtual = state.capitalInicioSessao;
+        // 🆕 CHECKPOINT 1.2: Usando StateManager
+        if (window.stateManager) {
+            window.stateManager.setState({ capitalAtual: state.capitalInicioSessao }, 'logic.reprocessarHistorico:init');
+        } else {
+            state.capitalAtual = state.capitalInicioSessao;
+        }
         state.capitalDeCalculo = state.capitalInicioSessao;
         state.proximaEtapaIndex = 0;
         state.proximoAporte = 1;
@@ -470,7 +475,16 @@ export const logic = {
         });
         const historicoProcessado = [...state.historicoCombinado];
         for (const operacao of historicoProcessado) {
-            state.capitalAtual += operacao.valor;
+            // 🆕 CHECKPOINT 1.2: Usando StateManager
+            if (window.stateManager) {
+                const estadoAtual = window.stateManager.getState();
+                window.stateManager.setState(
+                    { capitalAtual: estadoAtual.capitalAtual + operacao.valor },
+                    'logic.reprocessarHistorico:loop'
+                );
+            } else {
+                state.capitalAtual += operacao.valor;
+            }
             const etapa = state.planoDeOperacoes[state.proximaEtapaIndex];
             const aporte = state.proximoAporte;
             if (config.estrategiaAtiva === CONSTANTS.STRATEGY.CYCLES) {
@@ -890,7 +904,12 @@ async function testLogicFunctions() {
             const originalCapital = state.capitalAtual;
 
             // Testa atualização de capital
-            state.capitalAtual = 1500;
+            // 🆕 CHECKPOINT 1.2: Usando StateManager se disponível
+            if (window.stateManager) {
+                window.stateManager.setState({ capitalAtual: 1500 }, 'logic.test');
+            } else {
+                state.capitalAtual = 1500;
+            }
             logic.atualizarCapitalDisplay();
 
             if (state.capitalAtual === 1500) {
@@ -899,7 +918,11 @@ async function testLogicFunctions() {
             }
 
             // Restaura capital
-            state.capitalAtual = originalCapital;
+            if (window.stateManager) {
+                window.stateManager.setState({ capitalAtual: originalCapital }, 'logic.test:restore');
+            } else {
+                state.capitalAtual = originalCapital;
+            }
         } catch (error) {
             logger.warn('⚠️ Gerenciamento de estado', { error: error.message });
         }
