@@ -610,6 +610,7 @@ class App {
             await this._initializeAdvancedStrategies();
             await this._initializeLegacyModules();
             await this._initializeStateManager(); // 🆕 CHECKPOINT 1.1
+            await this._initializeDOMManager(); // 🆕 CHECKPOINT 2.1
             await this._initializeRefactoredSystems();
             await this._initializeSidebar();
 
@@ -863,6 +864,28 @@ class App {
             console.error('❌ Erro ao inicializar StateManager:', error.message);
             console.warn('⚠️ Continuando com estado legado apenas');
             this.initializationSteps.push('state_manager_failed');
+        }
+    }
+
+    /**
+     * 🆕 CHECKPOINT 2.1: Inicialização do DOMManager
+     * @private
+     */
+    async _initializeDOMManager() {
+        try {
+            console.log('🔄 CHECKPOINT 2.1: Inicializando DOMManager...');
+
+            // Importar DOMManager
+            const { domManager } = await import('./dom-manager.js');
+
+            console.log('✅ DOMManager inicializado');
+            console.log('📊 Stats:', domManager.getStats());
+
+            this.initializationSteps.push('dom_manager_initialized');
+        } catch (error) {
+            console.error('❌ Erro ao inicializar DOMManager:', error.message);
+            console.warn('⚠️ Continuando com DOM legado apenas');
+            this.initializationSteps.push('dom_manager_failed');
         }
     }
 
