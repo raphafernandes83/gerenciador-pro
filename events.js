@@ -23,6 +23,34 @@ import {
     clearAllManagedTimers,
 } from './src/utils/TimerManager.js';
 
+// ============================================================================
+// 🆕 CHECKPOINT 2.2b: Helper de transição para DOMManager
+// ============================================================================
+const domHelper = {
+    addClass(element, ...classes) {
+        if (window.domManager) return window.domManager.addClass(element, ...classes);
+        if (typeof element === 'string') element = document.querySelector(element);
+        element?.classList.add(...classes);
+        return !!element;
+    },
+    removeClass(element, ...classes) {
+        if (window.domManager) return window.domManager.removeClass(element, ...classes);
+        if (typeof element === 'string') element = document.querySelector(element);
+        element?.classList.remove(...classes);
+        return !!element;
+    },
+    toggleClass(element, className, force) {
+        if (window.domManager) return window.domManager.toggleClass(element, className, force);
+        if (typeof element === 'string') element = document.querySelector(element);
+        return element ? element.classList.toggle(className, force) : false;
+    },
+    hasClass(element, className) {
+        if (window.domManager) return window.domManager.hasClass(element, className);
+        if (typeof element === 'string') element = document.querySelector(element);
+        return element ? element.classList.contains(className) : false;
+    }
+};
+
 // Cache leve para dados agregados do Dashboard, invalidado em mudanças de sessões
 const dashboardAggregateCache = new Map();
 const DASHBOARD_CACHE_LIMIT = 6; // pequeno para evitar crescimento
@@ -135,7 +163,8 @@ export const events = {
         // Cabeçalho
         dom.settingsBtn?.addEventListener('click', () => {
             ui.updateSettingsModalVisibility();
-            dom.settingsModal?.classList.add('show');
+            // 🆕 CHECKPOINT 2.2b: Usando domHelper
+            dom.settingsModal && domHelper.addClass(dom.settingsModal, 'show');
         });
         dom.compactModeBtn?.addEventListener('click', () => ui.toggleCompactMode());
         dom.zenModeBtn?.addEventListener('click', () => ui.toggleZenMode());
@@ -187,7 +216,8 @@ export const events = {
         dom.diarioFilterButtons?.addEventListener('click', (e) => this.handleDiarioFilter(e));
         dom.tabelaHistoricoBody?.addEventListener('click', (e) => this.handleDiarioTableActions(e));
         dom.closeReplayBtn?.addEventListener('click', () =>
-            dom.replayModal?.classList.remove('show')
+            // 🆕 CHECKPOINT 2.2b: Usando domHelper
+            dom.replayModal && domHelper.removeClass(dom.replayModal, 'show')
         );
 
         // 🔄 Reagir a edições de sessão (ex.: alteração de W/L no replay)
@@ -213,7 +243,8 @@ export const events = {
         // Laboratório de Risco e PDF
         dom.openLabBtn?.addEventListener('click', () => this.handleOpenLab());
         dom.closeLabBtn?.addEventListener('click', () =>
-            dom.riskLabModal?.classList.remove('show')
+            // 🆕 CHECKPOINT 2.2b: Usando domHelper
+            dom.riskLabModal && domHelper.removeClass(dom.riskLabModal, 'show')
         );
         dom.runSimulationBtn?.addEventListener('click', () => this.handleRunSimulation());
         dom.generatePdfBtn?.addEventListener('click', () => ui.gerarPDF());
@@ -310,7 +341,8 @@ export const events = {
             );
         dom.closeSettingsBtn?.addEventListener('click', () => {
             logic.saveActiveSession(); // Salva o estado ativo ao fechar
-            dom.settingsModal?.classList.remove('show');
+            // 🆕 CHECKPOINT 2.2b: Usando domHelper
+            dom.settingsModal && domHelper.removeClass(dom.settingsModal, 'show');
             ui.mostrarInsightPopup('Configurações guardadas com sucesso!', '⚙️');
         });
 
@@ -369,7 +401,8 @@ export const events = {
     },
 
     startNewSession(mode) {
-        if (dom.sessionModeModal) dom.sessionModeModal.classList.remove('show');
+        // 🆕 CHECKPOINT 2.2b: Usando domHelper
+        if (dom.sessionModeModal) domHelper.removeClass(dom.sessionModeModal, 'show');
         if (dom.container) dom.container.style.filter = 'none';
         // Guarda: impedir nova sessão enquanto há sessão ativa (a menos que force)
         if (
@@ -435,12 +468,14 @@ export const events = {
 
     // Função de feedback visual
     showAutoApplyFeedback(element) {
-        element.classList.add('auto-applied');
+        // 🆕 CHECKPOINT 2.2b: Usando domHelper
+        domHelper.addClass(element, 'auto-applied');
         // Usa timer gerenciado para evitar vazamentos
         createManagedTimer(
             () => {
                 if (element && element.classList) {
-                    element.classList.remove('auto-applied');
+                    // 🆕 CHECKPOINT 2.2b: Usando domHelper
+                    domHelper.removeClass(element, 'auto-applied');
                 }
             },
             800,
@@ -475,9 +510,11 @@ export const events = {
             if (dom.payoutButtonsContainer) {
                 dom.payoutButtonsContainer
                     .querySelector('.active-payout')
+                    // 🆕 CHECKPOINT 2.2b: Usando domHelper
                     ?.classList.remove('active-payout');
             }
-            e.target.classList.add('active-payout');
+            // 🆕 CHECKPOINT 2.2b: Usando domHelper
+            domHelper.addClass(e.target, 'active-payout');
 
             // Feedback visual de aplicação automática
             this.showAutoApplyFeedback(e.target);
@@ -488,20 +525,23 @@ export const events = {
         const button = e.target.closest('button');
         if (!button || button.closest('.linha-desabilitada')) return;
 
-        if (button.classList.contains('wl-btn')) {
+        // 🆕 CHECKPOINT 2.2b: Usando domHelper
+        if (domHelper.hasClass(button, 'wl-btn')) {
             const dataIndex =
                 config.estrategiaAtiva === CONSTANTS.STRATEGY.FIXED
                     ? 0
                     : parseInt(button.dataset.index);
             const dataAporte = parseInt(button.dataset.aporte);
             logic.iniciarRegistroOperacao({
-                isWin: button.classList.contains('win-btn-linha'),
+                // 🆕 CHECKPOINT 2.2b: Usando domHelper
+                isWin: domHelper.hasClass(button, 'win-btn-linha'),
                 index: dataIndex,
                 aporte: dataAporte,
             });
         }
 
-        if (button.classList.contains('copy-btn')) {
+        // 🆕 CHECKPOINT 2.2b: Usando domHelper
+        if (domHelper.hasClass(button, 'copy-btn')) {
             const etapa = state.planoDeOperacoes[button.dataset.index];
             if (!etapa) return;
             const valor =
@@ -614,7 +654,8 @@ export const events = {
             return;
         }
         // Fluxo padrão: exibir modal para escolha do modo
-        if (dom.sessionModeModal) dom.sessionModeModal.classList.add('show');
+        // 🆕 CHECKPOINT 2.2b: Usando domHelper
+        if (dom.sessionModeModal) domHelper.addClass(dom.sessionModeModal, 'show');
     },
 
     /**
@@ -698,8 +739,9 @@ export const events = {
         const button = e.target.closest('button');
         if (!button || !dom.timelineFilters) return;
         const activeButton = dom.timelineFilters.querySelector('.active');
-        if (activeButton) activeButton.classList.remove('active');
-        button.classList.add('active');
+        // 🆕 CHECKPOINT 2.2b: Usando domHelper
+        if (activeButton) domHelper.removeClass(activeButton, 'active');
+        domHelper.addClass(button, 'active');
         state.filtroTimeline = button.dataset.filter;
         // 🛡️ CORREÇÃO CRÍTICA: Usar histórico atual em vez de renderização vazia
         ui.renderizarTimelineCompleta(state.historicoCombinado, dom.timelineContainer);
@@ -759,8 +801,9 @@ export const events = {
     handleDiarioFilter(e) {
         if (e.target.tagName === 'BUTTON' && dom.diarioFilterButtons) {
             const activeButton = dom.diarioFilterButtons.querySelector('.active');
-            if (activeButton) activeButton.classList.remove('active');
-            e.target.classList.add('active');
+            // 🆕 CHECKPOINT 2.2b: Usando domHelper
+            if (activeButton) domHelper.removeClass(activeButton, 'active');
+            domHelper.addClass(e.target, 'active');
             ui.renderDiario(e.target.dataset.filter);
         }
     },
@@ -786,8 +829,9 @@ export const events = {
             payouts.length > 0 ? payouts.reduce((a, b) => a + b, 0) / payouts.length : 0;
         if (dom.simWinrate) dom.simWinrate.value = `${toPercentage(winRate).toFixed(2)}%`;
         if (dom.simPayout) dom.simPayout.value = `${payoutMedio.toFixed(0)}%`;
-        if (dom.simulationResults) dom.simulationResults.classList.add('hidden');
-        if (dom.riskLabModal) dom.riskLabModal.classList.add('show');
+        // 🆕 CHECKPOINT 2.2b: Usando domHelper
+        if (dom.simulationResults) domHelper.addClass(dom.simulationResults, 'hidden');
+        if (dom.riskLabModal) domHelper.addClass(dom.riskLabModal, 'show');
     },
 
     handleRunSimulation() {
@@ -796,7 +840,8 @@ export const events = {
         btn.disabled = true;
         btn.textContent = 'A simular...';
         if (dom.simulationProgressContainer)
-            dom.simulationProgressContainer.classList.remove('hidden');
+            // 🆕 CHECKPOINT 2.2b: Usando domHelper
+            domHelper.removeClass(dom.simulationProgressContainer, 'hidden');
         if (dom.simulationProgressBar) dom.simulationProgressBar.style.width = '0%';
 
         createManagedTimer(
@@ -838,9 +883,10 @@ export const events = {
                     if (dom.simMaxDrawdown)
                         dom.simMaxDrawdown.textContent = ui.formatarMoeda(results.maxDrawdown);
                     if (dom.simulationInsight) dom.simulationInsight.textContent = results.insight;
-                    if (dom.simulationResults) dom.simulationResults.classList.remove('hidden');
+                    // 🆕 CHECKPOINT 2.2b: Usando domHelper
+                    if (dom.simulationResults) domHelper.removeClass(dom.simulationResults, 'hidden');
                     if (dom.simulationProgressContainer)
-                        dom.simulationProgressContainer.classList.add('hidden');
+                        domHelper.addClass(dom.simulationProgressContainer, 'hidden');
                 } catch (error) {
                     logger.error('Erro na simulação', { error: String(error) });
                     ui.showModal({
@@ -942,7 +988,8 @@ export const events = {
         state.lastAggregatedData = aggregatedData;
         await this.renderGlobalDashboard(aggregatedData);
         const analiseContent = document.getElementById('analise-content');
-        if (analiseContent && analiseContent.classList.contains('active')) {
+        // 🆕 CHECKPOINT 2.2b: Usando domHelper
+        if (analiseContent && domHelper.hasClass(analiseContent, 'active')) {
             this.handleAnalysisDimensionChange();
         }
     },
