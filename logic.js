@@ -210,11 +210,19 @@ export const logic = {
         });
 
         // Carrega filtros específicos do estado que persistem entre sessões
-        state.dashboardFilterPeriod = this.safeJSONParse(
-            'gerenciadorProDashboardFilterPeriod',
-            'all'
-        );
-        state.dashboardFilterMode = this.safeJSONParse('gerenciadorProDashboardFilterMode', 'all');
+        // 🆕 CHECKPOINT 1.3b: Usando StateManager
+        const filterPeriod = this.safeJSONParse('gerenciadorProDashboardFilterPeriod', 'all');
+        const filterMode = this.safeJSONParse('gerenciadorProDashboardFilterMode', 'all');
+
+        if (window.stateManager) {
+            window.stateManager.setState({
+                dashboardFilterPeriod: filterPeriod,
+                dashboardFilterMode: filterMode
+            }, 'logic.loadStateFromStorage:filters');
+        } else {
+            state.dashboardFilterPeriod = filterPeriod;
+            state.dashboardFilterMode = filterMode;
+        }
 
         // Garante que os valores calculados estão corretos após carregar
         this.updateCalculatedValues();

@@ -864,8 +864,15 @@ export const events = {
             if (!button) return;
             const value = button.dataset[filterType];
             const stateKey = `dashboardFilter${filterType.charAt(0).toUpperCase() + filterType.slice(1)}`;
-            state[stateKey] = value;
-            localStorage.setItem(`gerenciadorPro${stateKey}`, JSON.stringify(value));
+
+            // 🆕 CHECKPOINT 1.3b: Usando StateManager
+            if (window.stateManager) {
+                window.stateManager.setState({ [stateKey]: value }, `events.handleGlobalFilterChange:${filterType}`);
+            } else {
+                state[stateKey] = value;
+            }
+
+            localStorage.setItem(`gerenciadorPro${stateKey.charAt(0).toUpperCase() + stateKey.slice(1)}`, JSON.stringify(value));
             ui.syncUIFromState();
         }
 
