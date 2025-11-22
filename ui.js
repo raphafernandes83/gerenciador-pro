@@ -1266,7 +1266,8 @@ const ui = {
             const etapa = state.planoDeOperacoes[0];
             if (!etapa) return;
             const tr = document.createElement('tr');
-            tr.classList.add('fade-in-row');
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            domHelper.addClass(tr, 'fade-in-row');
             tr.dataset.index = 0;
             tr.innerHTML = `
                 <td><b>Mão Fixa</b></td>
@@ -1298,7 +1299,8 @@ const ui = {
 
                         const criarLinha = (aporteNum, valorEntrada, valorRetorno) => {
                             const tr = document.createElement('tr');
-                            tr.classList.add('fade-in-row');
+                            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                            domHelper.addClass(tr, 'fade-in-row');
                             tr.dataset.index = index;
                             if (aporteNum) tr.dataset.aporte = aporteNum;
 
@@ -1356,7 +1358,8 @@ const ui = {
         if (!state.isSessionActive || !dom.tabelaBody) return;
         const isBlocked = state.metaAtingida;
         if (dom.tabelaResultados)
-            dom.tabelaResultados.classList.toggle('operacoes-bloqueadas', isBlocked);
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            domHelper.toggleClass(dom.tabelaResultados, 'operacoes-bloqueadas', isBlocked);
 
         const todasAsLinhas = dom.tabelaBody.querySelectorAll('tr');
         todasAsLinhas.forEach((tr) => {
@@ -1381,7 +1384,8 @@ const ui = {
             }
 
             if (concluida) {
-                tr.classList.add('linha-concluida');
+                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                domHelper.addClass(tr, 'linha-concluida');
             }
 
             if (config.modoGuiado) {
@@ -1395,10 +1399,12 @@ const ui = {
                 }
 
                 if (!isRowHabilitada && !concluida) {
-                    tr.classList.add('linha-desfocada', 'linha-desabilitada');
+                    // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                    domHelper.addClass(tr, 'linha-desfocada', 'linha-desabilitada');
                 }
                 if (isRowHabilitada && !isBlocked) {
-                    tr.classList.add('proxima-etapa');
+                    // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                    domHelper.addClass(tr, 'proxima-etapa');
                 }
             }
         });
@@ -1488,8 +1494,9 @@ const ui = {
             if (!preservarValor) {
                 lucroPrejuizoFormatado = isZen ? '---' : this.formatarMoeda(lucroPrejuizo);
                 dom.lucroPrejuizo.textContent = lucroPrejuizoFormatado;
-                dom.lucroPrejuizo.classList.toggle('positive', lucroPrejuizo > 0);
-                dom.lucroPrejuizo.classList.toggle('negative', lucroPrejuizo < 0);
+                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                domHelper.toggleClass(dom.lucroPrejuizo, 'positive', lucroPrejuizo > 0);
+                domHelper.toggleClass(dom.lucroPrejuizo, 'negative', lucroPrejuizo < 0);
                 // 🎯 FORÇA REPAINT
                 dom.lucroPrejuizo.style.display = 'none';
                 dom.lucroPrejuizo.offsetHeight; // Trigger reflow
@@ -2431,7 +2438,8 @@ const ui = {
             const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
             doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
             doc.save(`Relatorio-Trading-${new Date().toISOString().split('T')[0]}.pdf`);
-            if (dom.confirmationModal) dom.confirmationModal.classList.remove('show');
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            if (dom.confirmationModal) domHelper.removeClass(dom.confirmationModal, 'show');
         } catch (error) {
             console.error('Erro ao gerar PDF:', error);
             this.showModal({
@@ -2453,9 +2461,11 @@ const ui = {
         // 🛠️ CORREÇÃO ROBUSTA: Força estado correto dos botões
         if (dom.newSessionBtn) {
             // Remove todas as classes primeiro para garantir estado limpo
-            dom.newSessionBtn.classList.remove('hidden');
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            if (dom.newSessionBtn) domHelper.removeClass(dom.newSessionBtn, 'hidden');
             if (sessionActive) {
-                dom.newSessionBtn.classList.add('hidden');
+                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                domHelper.addClass(dom.newSessionBtn, 'hidden');
             }
             // Força atualização visual
             dom.newSessionBtn.style.display = sessionActive ? 'none' : '';
@@ -2463,9 +2473,11 @@ const ui = {
 
         if (dom.finishSessionBtn) {
             // Remove todas as classes primeiro para garantir estado limpo
-            dom.finishSessionBtn.classList.remove('hidden');
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            if (dom.finishSessionBtn) domHelper.removeClass(dom.finishSessionBtn, 'hidden');
             if (!sessionActive) {
-                dom.finishSessionBtn.classList.add('hidden');
+                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                domHelper.addClass(dom.finishSessionBtn, 'hidden');
             }
             // Força atualização visual
             dom.finishSessionBtn.style.display = sessionActive ? '' : 'none';
