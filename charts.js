@@ -39,6 +39,13 @@ function isValidChartInstance(chartInstance, functionName = 'charts') {
     return true;
 }
 
+
+// 🆕 CHECKPOINT 2.2c: Helper para DOMManager
+const domHelper = {
+    add(el, ...c) { if(window.domManager) return window.domManager.addClass(el,...c); if(typeof el==='string')el=document.querySelector(el); el?.classList.add(...c); return!!el; },
+    remove(el, ...c) { if(window.domManager) return window.domManager.removeClass(el,...c); if(typeof el==='string')el=document.querySelector(el); el?.classList.remove(...c); return!!el; }
+};
+
 export const charts = {
     dashboardAssertividadeChart: null,
     dashboardPatrimonioChart: null,
@@ -331,8 +338,8 @@ export const charts = {
                         : 'Limite de perda atingido';
 
                 badge.textContent = `${icon} ${msg}`;
-                badge.classList.remove('hidden');
-                badge.classList.add('show');
+                domHelper.remove(badge, 'hidden'); // 🆕
+                domHelper.add(badge, 'show'); // 🆕
                 badge.style.display = 'inline-flex';
                 badge.style.visibility = 'visible';
                 badge.style.opacity = '1';
@@ -829,8 +836,8 @@ export const charts = {
                     const subNode = el.querySelector('.status-subtext');
                     if (subNode && typeof subtext === 'string') subNode.textContent = subtext;
                     // Reset classes visuais
-                    el.classList.remove('excellent', 'good', 'warning', 'neutral');
-                    el.classList.add(level);
+                    domHelper.remove(el, 'excellent', 'good', 'warning', 'neutral'); // 🆕
+                    domHelper.add(el, level); // 🆕
                 } catch { }
             };
 
@@ -1015,8 +1022,8 @@ export const charts = {
                 if (metaTargetAmountEl) metaTargetAmountEl.textContent = stopWinAmountBRL;
                 if (metaAchievedAmountEl) {
                     metaAchievedAmountEl.textContent = achievedBRL;
-                    metaAchievedAmountEl.classList.remove('text-positive', 'text-negative');
-                    if (achieved > 0) metaAchievedAmountEl.classList.add('text-positive');
+                    domHelper.remove(metaAchievedAmountEl, 'text-positive', 'text-negative'); // 🆕
+                    if (achieved > 0) domHelper.add(metaAchievedAmountEl, 'text-positive'); // 🆕
                 }
 
                 // Loss (R$)
@@ -1034,17 +1041,17 @@ export const charts = {
                 if (lossLimitAmountEl) lossLimitAmountEl.textContent = stopLossAmountBRL;
                 if (lossSessionResultEl) {
                     lossSessionResultEl.textContent = sessionPLBRL;
-                    lossSessionResultEl.classList.remove('text-positive', 'text-negative');
-                    if ((g.lucroAcumulado || 0) > 0) lossSessionResultEl.classList.add('text-positive');
-                    if ((g.lucroAcumulado || 0) < 0) lossSessionResultEl.classList.add('text-negative');
+                    domHelper.remove(lossSessionResultEl, 'text-positive', 'text-negative'); // 🆕
+                    if ((g.lucroAcumulado || 0) > 0) domHelper.add(lossSessionResultEl, 'text-positive'); // 🆕
+                    if ((g.lucroAcumulado || 0) < 0) domHelper.add(lossSessionResultEl, 'text-negative'); // 🆕
                 }
 
                 // Status (lado esquerdo da prÃ©via)
                 if (statusTargetAmountEl) statusTargetAmountEl.textContent = stopWinAmountBRL;
                 if (statusAchievedEl) {
                     statusAchievedEl.textContent = achievedBRL;
-                    statusAchievedEl.classList.remove('text-positive', 'text-negative');
-                    if (achieved > 0) statusAchievedEl.classList.add('text-positive');
+                    domHelper.remove(statusAchievedEl, 'text-positive', 'text-negative'); // 🆕
+                    if (achieved > 0) domHelper.add(statusAchievedEl, 'text-positive'); // 🆕
                 }
                 if (statusExceedEl) {
                     const excedente = Math.max(0, (g.lucroAcumulado || 0) - (g.stopWinAmount || 0));
@@ -1059,8 +1066,8 @@ export const charts = {
                     const denom = Number(g.stopLossAmount) || 0;
                     const riscoUsado = denom > 0 && (g.lucroAcumulado || 0) < 0 ? (Math.abs(g.lucroAcumulado || 0) / denom) * 100 : 0;
                     statusRiskUsedEl.textContent = `${riscoUsado.toFixed(1)}%`;
-                    statusRiskUsedEl.classList.remove('text-positive', 'text-negative');
-                    if (riscoUsado > 0) statusRiskUsedEl.classList.add('text-negative');
+                    domHelper.remove(statusRiskUsedEl, 'text-positive', 'text-negative'); // 🆕
+                    if (riscoUsado > 0) domHelper.add(statusRiskUsedEl, 'text-negative'); // 🆕
                 }
             }
         } catch (error) {
@@ -1105,18 +1112,18 @@ export const charts = {
                         `R$ ${Number(g.lucroAcumulado || 0).toFixed(2)}`;
                     dom.lossSessionResult.textContent = txt;
                     // cor por sinal (apenas classe; CSS jÃ¡ governa as cores globais)
-                    dom.lossSessionResult.classList.remove('positive', 'negative');
-                    if (g.lucroAcumulado > 0) dom.lossSessionResult.classList.add('positive');
-                    if (g.lucroAcumulado < 0) dom.lossSessionResult.classList.add('negative');
+                    domHelper.remove(dom.lossSessionResult, 'positive', 'negative'); // 🆕
+                    if (g.lucroAcumulado > 0) domHelper.add(dom.lossSessionResult, 'positive'); // 🆕
+                    if (g.lucroAcumulado < 0) domHelper.add(dom.lossSessionResult, 'negative'); // 🆕
                 }
                 // Cor para "Meta Restante": se houver atingido > 0 e ainda restar pouco, manter neutro; 
                 // regra simples: se restante == 0 e lucro > 0, destacar positivo no P/L jÃ¡ cobre o caso.
                 if (dom.winRemainingAmount) {
-                    dom.winRemainingAmount.classList.remove('positive', 'negative');
+                    domHelper.remove(dom.winRemainingAmount, 'positive', 'negative'); // 🆕
                     const restante = Number(faltaRec || 0);
                     // NÃ£o colorimos restante positivo como negativo para nÃ£o confundir; mantemos neutro.
                     if (restante === 0 && g.lucroAcumulado > 0) {
-                        dom.winRemainingAmount.classList.add('positive');
+                        domHelper.add(dom.winRemainingAmount, 'positive'); // 🆕
                     }
                 }
                 // Mini barras
@@ -1129,8 +1136,8 @@ export const charts = {
                 if (metaFill) metaFill.style.width = `${metaPercent}%`;
                 if (metaDisp) {
                     metaDisp.textContent = `${metaPercent.toFixed(1)}%`;
-                    metaDisp.classList.remove('positive', 'negative');
-                    if (metaPercent > 0) metaDisp.classList.add('positive');
+                    domHelper.remove(metaDisp, 'positive', 'negative'); // 🆕
+                    if (metaPercent > 0) domHelper.add(metaDisp, 'positive'); // 🆕
                 }
 
                 const riscoPercent =
@@ -1142,8 +1149,8 @@ export const charts = {
                 if (riscoFill) riscoFill.style.width = `${riscoPercent}%`;
                 if (riscoDisp) {
                     riscoDisp.textContent = `${riscoPercent.toFixed(1)}%`;
-                    riscoDisp.classList.remove('positive', 'negative');
-                    if (riscoPercent > 0) riscoDisp.classList.add('negative');
+                    domHelper.remove(riscoDisp, 'positive', 'negative'); // 🆕
+                    if (riscoPercent > 0) domHelper.add(riscoDisp, 'negative'); // 🆕
                 }
             }
         } catch { }
