@@ -1902,7 +1902,8 @@ const ui = {
                 .map((tag) => `<button>${tag}</button>`)
                 .join('');
         if (dom.opNote) dom.opNote.value = '';
-        if (dom.tagsModal) dom.tagsModal.classList.add('show');
+        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        if (dom.tagsModal) domHelper.addClass(dom.tagsModal, 'show');
     },
 
     iniciarBloqueio(fimTimestamp, tipoMeta) {
@@ -1912,8 +1913,9 @@ const ui = {
         if (h2) h2.textContent = `Sessão Finalizada!`;
         if (p)
             p.textContent = `Meta de ${tipoMeta === 'win' ? 'ganhos' : 'perdas'} atingida. O bloqueio automático foi ativado para proteger seu capital.`;
-        if (dom.container) dom.container.classList.add('hidden');
-        dom.lockdownOverlay.classList.remove('hidden');
+        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        if (dom.container) domHelper.addClass(dom.container, 'hidden');
+        domHelper.removeClass(dom.lockdownOverlay, 'hidden');
         const safeInterval = window.safeProtection?.safeSetInterval || setInterval;
         state.countdownInterval = safeInterval(() => {
             const restante = fimTimestamp - Date.now();
@@ -1921,8 +1923,9 @@ const ui = {
                 clearInterval(state.countdownInterval);
                 localStorage.removeItem('gerenciadorProLockdownEnd');
                 localStorage.removeItem('gerenciadorProLockdownType'); // Limpar o tipo também
-                if (dom.lockdownOverlay) dom.lockdownOverlay.classList.add('hidden');
-                if (dom.container) dom.container.classList.remove('hidden');
+                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                if (dom.lockdownOverlay) domHelper.addClass(dom.lockdownOverlay, 'hidden');
+                if (dom.container) domHelper.removeClass(dom.container, 'hidden');
                 return;
             }
             const horas = Math.floor((restante / 3600000) % 24)
@@ -1943,10 +1946,12 @@ const ui = {
         if (!config.notificacoesAtivas || !dom.insightPopup) return;
         clearTimeout(state.insightPopupTimer);
         if (dom.insightPopupText) dom.insightPopupText.textContent = `${icone} ${texto}`;
-        dom.insightPopup.classList.add('show');
+        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        domHelper.addClass(dom.insightPopup, 'show');
         const safeTimeout = window.safeProtection?.safeSetTimeout || setTimeout;
         state.insightPopupTimer = safeTimeout(() => {
-            if (dom.insightPopup) dom.insightPopup.classList.remove('show');
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            if (dom.insightPopup) domHelper.removeClass(dom.insightPopup, 'show');
         }, 4000);
     },
 
@@ -1972,8 +1977,9 @@ const ui = {
             const badge = document.getElementById('progress-soft-lock-badge');
             if (badge) {
                 badge.textContent = `${icon} ${msg}`;
-                badge.classList.remove('hidden');
-                badge.classList.add('show');
+                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                domHelper.removeClass(badge, 'hidden');
+                domHelper.addClass(badge, 'show');
                 // Aplica display inline para sobrepor quaisquer regras herdadas
                 try {
                     badge.style.display = 'inline-flex';
@@ -1985,7 +1991,8 @@ const ui = {
                 const raf = window.requestAnimationFrame || ((cb) => setTimeout(cb, 16));
                 raf(() => {
                     try {
-                        badge.classList.add('show');
+                        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                        domHelper.addClass(badge, 'show');
                     } catch (_) { }
                 });
             }
@@ -2016,7 +2023,8 @@ const ui = {
         if (!panel) return;
 
         if (totalOps === 0) {
-            panel.classList.add('hidden');
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            domHelper.addClass(panel, 'hidden');
             return;
         }
 
@@ -2028,7 +2036,8 @@ const ui = {
                 if (dom.mentalNoteText)
                     dom.mentalNoteText.textContent =
                         'Sequência de 3 derrotas. Considere uma pausa para reavaliar sua estratégia e as condições do mercado.';
-                panel.classList.remove('hidden');
+                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                domHelper.removeClass(panel, 'hidden');
                 return;
             }
             if (ultimas3.every((op) => op.isWin)) {
@@ -2037,11 +2046,13 @@ const ui = {
                 if (dom.mentalNoteText)
                     dom.mentalNoteText.textContent =
                         'Sequência de 3 vitórias. Excelente consistência. Mantenha o foco e a disciplina.';
-                panel.classList.remove('hidden');
+                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                domHelper.removeClass(panel, 'hidden');
                 return;
             }
         }
-        panel.classList.add('hidden');
+        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        domHelper.addClass(panel, 'hidden');
     },
 
     atualizarStatusIndicadores() {
@@ -2059,9 +2070,11 @@ const ui = {
         }
 
         if (dom.guidedModeIndicator)
-            dom.guidedModeIndicator.classList.toggle('active', config.modoGuiado);
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            domHelper.toggleClass(dom.guidedModeIndicator, 'active', config.modoGuiado);
         if (dom.compoundingIndicator)
-            dom.compoundingIndicator.classList.toggle('active', config.incorporarLucros);
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            domHelper.toggleClass(dom.compoundingIndicator, 'active', config.incorporarLucros);
         const isCiclos = config.estrategiaAtiva === CONSTANTS.STRATEGY.CYCLES;
         if (dom.strategyIndicatorIcon)
             dom.strategyIndicatorIcon.textContent = isCiclos ? '🔄' : '➖';
@@ -2330,7 +2343,8 @@ const ui = {
                 <div class="stat-card"><h4>Drawdown Máx.</h4><p class="negative">${this._formatarMoedaInternal(drawdown)}</p></div>`;
             this.renderizarTimelineCompleta(sessao.historicoCombinado, dom.replayTimelineContainer);
             charts.updateReplayCharts(sessao);
-            if (dom.replayModal) dom.replayModal.classList.add('show');
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            if (dom.replayModal) domHelper.addClass(dom.replayModal, 'show');
             if (dom.replayModal) {
                 const content = dom.replayModal.querySelector('.modal-content');
                 if (content) content.dataset.sessionId = sessionId;
@@ -2348,11 +2362,13 @@ const ui = {
         if (!targetTabId) return;
         if (dom.mainTabButtons)
             dom.mainTabButtons.forEach((btn) =>
-                btn.classList.toggle('active', btn.dataset.tab === targetTabId)
+                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                domHelper.toggleClass(btn, 'active', btn.dataset.tab === targetTabId)
             );
         if (dom.mainTabContents)
             dom.mainTabContents.forEach((content) =>
-                content.classList.toggle('active', content.id === `${targetTabId}-content`)
+                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                domHelper.toggleClass(content, 'active', content.id === `${targetTabId}-content`)
             );
 
         localStorage.setItem(CONSTANTS.LAST_ACTIVE_TAB_KEY, JSON.stringify(targetTabId));
@@ -2360,24 +2376,29 @@ const ui = {
 
     switchSettingsTab(targetTabId) {
         if (dom.settingsTabButtons)
-            dom.settingsTabButtons.forEach((b) => b.classList.remove('active'));
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            dom.settingsTabButtons.forEach((b) => domHelper.removeClass(b, 'active'));
         if (dom.settingsTabContents)
-            dom.settingsTabContents.forEach((c) => c.classList.remove('active'));
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            dom.settingsTabContents.forEach((c) => domHelper.removeClass(c, 'active'));
         const targetTab = document.querySelector(`.settings-tab-button[data-tab="${targetTabId}"]`);
         const targetContent = document.getElementById(`${targetTabId}-content`);
-        if (targetTab) targetTab.classList.add('active');
-        if (targetContent) targetContent.classList.add('active');
+        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        if (targetTab) domHelper.addClass(targetTab, 'active');
+        if (targetContent) domHelper.addClass(targetContent, 'active');
     },
 
     toggleCompactMode() {
-        document.body.classList.toggle('compact-mode');
+        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        document.body && domHelper.toggleClass(document.body, 'compact-mode');
     },
 
     toggleZenMode() {
         config.zenMode = !config.zenMode;
         localStorage.setItem('gerenciadorProZenMode', JSON.stringify(config.zenMode));
         this.atualizarTudo();
-        dom.zenModeBtn.classList.toggle('active', config.zenMode);
+        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        dom.zenModeBtn && domHelper.toggleClass(dom.zenModeBtn, 'active', config.zenMode);
     },
 
 
