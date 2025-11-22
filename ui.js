@@ -1062,7 +1062,8 @@ const ui = {
      */
     _updateLockDurationVisibility() {
         if (dom.lockDurationContainer) {
-            dom.lockDurationContainer.classList.toggle(CSS_CLASSES.HIDDEN, !config.autoBloqueio);
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            domHelper.toggleClass(dom.lockDurationContainer, CSS_CLASSES.HIDDEN, !config.autoBloqueio);
         }
     },
 
@@ -1125,7 +1126,8 @@ const ui = {
             const readOperations = buttons.map((button) =>
                 batcher.read(() => ({
                     button,
-                    currentState: button.classList.contains(activeClass),
+                    // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                    currentState: domHelper.hasClass(button, activeClass),
                     shouldBeActive: button.dataset[dataAttribute] === activeValue,
                 }))
             );
@@ -1136,7 +1138,8 @@ const ui = {
             const writeOperations = buttonStates
                 .filter(({ currentState, shouldBeActive }) => currentState !== shouldBeActive)
                 .map(({ button, shouldBeActive }) =>
-                    batcher.write(() => button.classList.toggle(activeClass, shouldBeActive))
+                    // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                    batcher.write(() => domHelper.toggleClass(button, activeClass, shouldBeActive))
                 );
 
             await Promise.all(writeOperations);
@@ -1363,7 +1366,8 @@ const ui = {
 
         const todasAsLinhas = dom.tabelaBody.querySelectorAll('tr');
         todasAsLinhas.forEach((tr) => {
-            tr.classList.remove(
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            domHelper.removeClass(tr,
                 'proxima-etapa',
                 'linha-desfocada',
                 'linha-desabilitada',
@@ -1774,7 +1778,8 @@ const ui = {
         if (
             container &&
             container.lastChild &&
-            container.lastChild.classList.contains('timeline-item')
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            container.lastChild && domHelper.hasClass(container.lastChild, 'timeline-item')
         ) {
             container.removeChild(container.lastChild);
         }
@@ -1883,7 +1888,8 @@ const ui = {
         if (dom.confirmationModal)
             dom.confirmationModal.onclick = (e) => {
                 if (e.target === dom.confirmationModal)
-                    dom.confirmationModal.classList.remove('show');
+                    // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                    domHelper.removeClass(dom.confirmationModal, 'show');
             };
     },
 
@@ -2013,7 +2019,8 @@ const ui = {
         config.tema = tema;
         document
             .querySelectorAll('.theme-card')
-            .forEach((card) => card.classList.toggle('active', card.dataset.theme === tema));
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            .forEach((card) => domHelper.toggleClass(card, 'active', card.dataset.theme === tema));
         charts.updateColors();
     },
 
@@ -2064,7 +2071,8 @@ const ui = {
 
     atualizarStatusIndicadores() {
         if (dom.sessionModeIndicator) {
-            dom.sessionModeIndicator.classList.toggle(
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            domHelper.toggleClass(dom.sessionModeIndicator,
                 'active',
                 state.sessionMode === CONSTANTS.SESSION_MODE.OFFICIAL
             );
@@ -2104,7 +2112,8 @@ const ui = {
 
     updateSettingsModalVisibility() {
         if (dom.divisorRecuperacaoGroup)
-            dom.divisorRecuperacaoGroup.classList.toggle(
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            domHelper.toggleClass(dom.divisorRecuperacaoGroup,
                 'hidden',
                 config.estrategiaAtiva !== CONSTANTS.STRATEGY.CYCLES
             );
@@ -2503,11 +2512,13 @@ const ui = {
         console.log('✅ Botões de sessão atualizados:', {
             newSessionVisible: dom.newSessionBtn
                 ? dom.newSessionBtn.style.display !== 'none' &&
-                !dom.newSessionBtn.classList.contains('hidden')
+                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                !domHelper.hasClass(dom.newSessionBtn, 'hidden')
                 : 'N/A',
             finishSessionVisible: dom.finishSessionBtn
                 ? dom.finishSessionBtn.style.display !== 'none' &&
-                !dom.finishSessionBtn.classList.contains('hidden')
+                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                !domHelper.hasClass(dom.finishSessionBtn, 'hidden')
                 : 'N/A',
         });
 
@@ -2515,7 +2526,8 @@ const ui = {
         try {
             const sidebarBtn = document.getElementById('sidebar-new-session-btn');
             if (sidebarBtn) {
-                sidebarBtn.classList.toggle('hidden', sessionActive);
+                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                domHelper.toggleClass(sidebarBtn, 'hidden', sessionActive);
                 sidebarBtn.style.display = sessionActive ? 'none' : '';
             }
         } catch (_) { }
@@ -2540,7 +2552,8 @@ const ui = {
         body.innerHTML = '';
         if (processedData.data.length === 0) {
             body.innerHTML = `<tr><td colspan="5" style="text-align: center;">${processedData.insight}</td></tr>`;
-            insightPanel.classList.add('hidden');
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            domHelper.addClass(insightPanel, 'hidden');
             return;
         }
         processedData.data.forEach((item) => {
@@ -2559,12 +2572,14 @@ const ui = {
         });
         insightTitle.textContent = 'Diagnóstico Quantitativo';
         insightText.textContent = processedData.insight;
-        insightPanel.classList.remove('hidden');
+        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        domHelper.removeClass(insightPanel, 'hidden');
         const overallEV = calcularExpectativaMatematica(
             processedData.data.flatMap((d) => d.historico)
         ).ev;
-        insightPanel.classList.toggle('success', overallEV > 0);
-        insightPanel.classList.toggle('warning', overallEV < 0);
+        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        domHelper.toggleClass(insightPanel, 'success', overallEV > 0);
+        domHelper.toggleClass(insightPanel, 'warning', overallEV < 0);
     },
 
     renderGoalOptimizationResults(results) {
@@ -2587,7 +2602,8 @@ const ui = {
         if (dom.goalSimLosses) dom.goalSimLosses.textContent = lossSessions;
 
         if (dom.goalSimulationInsight) dom.goalSimulationInsight.textContent = insight;
-        if (dom.goalSimulationResults) dom.goalSimulationResults.classList.remove('hidden');
+        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        if (dom.goalSimulationResults) domHelper.removeClass(dom.goalSimulationResults, 'hidden');
     },
 
     /**
@@ -2739,7 +2755,8 @@ const ui = {
     mostrarConfiguracoes() {
         if (dom.settingsModal) {
             this.updateSettingsModalVisibility();
-            dom.settingsModal.classList.add('show');
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            domHelper.addClass(dom.settingsModal, 'show');
         }
     },
 
