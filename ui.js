@@ -33,6 +33,50 @@ import { globalErrorHandler, ERROR_CATEGORIES } from './src/error/ErrorHandlingS
 // Services Facade (substitui múltiplos imports)
 import { uiServicesFacade } from './src/ui/UIServicesFacade.js';
 
+// ============================================================================
+// 🆕 CHECKPOINT 2.2a: Helper de transição para DOMManager
+// ============================================================================
+// Este helper permite usar DOMManager quando disponível, com fallback para DOM direto
+const domHelper = {
+    addClass(element, ...classes) {
+        if (window.domManager) {
+            return window.domManager.addClass(element, ...classes);
+        }
+        // Fallback: DOM direto
+        if (typeof element === 'string') element = document.querySelector(element);
+        element?.classList.add(...classes);
+        return !!element;
+    },
+
+    removeClass(element, ...classes) {
+        if (window.domManager) {
+            return window.domManager.removeClass(element, ...classes);
+        }
+        // Fallback: DOM direto
+        if (typeof element === 'string') element = document.querySelector(element);
+        element?.classList.remove(...classes);
+        return !!element;
+    },
+
+    toggleClass(element, className, force) {
+        if (window.domManager) {
+            return window.domManager.toggleClass(element, className, force);
+        }
+        // Fallback: DOM direto
+        if (typeof element === 'string') element = document.querySelector(element);
+        return element ? element.classList.toggle(className, force) : false;
+    },
+
+    hasClass(element, className) {
+        if (window.domManager) {
+            return window.domManager.hasClass(element, className);
+        }
+        // Fallback: DOM direto
+        if (typeof element === 'string') element = document.querySelector(element);
+        return element ? element.classList.contains(className) : false;
+    }
+};
+
 const ui = {
     /**
      * Inicializa gerenciador de mapeamentos da UI
@@ -1809,21 +1853,25 @@ const ui = {
         if (dom.modalConfirmBtn) dom.modalConfirmBtn.textContent = confirmText;
 
         if (dom.modalCancelBtn) {
-            dom.modalCancelBtn.classList.toggle('hidden', !cancelText);
+            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            domHelper.toggleClass(dom.modalCancelBtn, 'hidden', !cancelText);
             if (cancelText) dom.modalCancelBtn.textContent = cancelText;
         }
 
-        if (dom.confirmationModal) dom.confirmationModal.classList.add('show');
+        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        if (dom.confirmationModal) domHelper.addClass(dom.confirmationModal, 'show');
 
         if (dom.modalConfirmBtn)
             dom.modalConfirmBtn.onclick = () => {
                 if (onConfirm) onConfirm();
-                if (dom.confirmationModal) dom.confirmationModal.classList.remove('show');
+                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                if (dom.confirmationModal) domHelper.removeClass(dom.confirmationModal, 'show');
             };
         if (dom.modalCancelBtn)
             dom.modalCancelBtn.onclick = () => {
                 if (onCancel) onCancel();
-                if (dom.confirmationModal) dom.confirmationModal.classList.remove('show');
+                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                if (dom.confirmationModal) domHelper.removeClass(dom.confirmationModal, 'show');
             };
         if (dom.confirmationModal)
             dom.confirmationModal.onclick = (e) => {
