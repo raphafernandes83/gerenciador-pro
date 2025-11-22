@@ -64,6 +64,121 @@
 
 ---
 
+## 📋 CHECKPOINT 2.1 - DOMManager Criado ✅
+**Data:** 21/11/2025 23:15  
+**Status:** ✅ COMPLETO  
+
+### Implementações:
+- ✅ Criado `dom-manager.js` (418 linhas)
+  - Seleção de elementos com cache
+  - Manipulação de classes (addClass, removeClass, toggleClass, hasClass)
+  - Gerenciamento de atributos
+  - Event listeners com cleanup automático
+  - Métodos null-safe
+- ✅ Integrado em `main.js` via `_initializeDOMManager()`
+- ✅ Exposto como `window.domManager`
+
+### Git:
+- Commit: "CHECKPOINT-2.1: DOMManager criado e integrado"
+- Tag: `checkpoint-2.1`
+
+---
+
+## 📋 CHECKPOINT 2.2a - Migração ui.js ✅
+**Data:** 21/11/2025 23:25  
+**Status:** ✅ COMPLETO
+
+### Implementações:
+- ✅ Criado `domHelper` transitório no ui.js
+- ✅ Migradas **50+ ocorrências** de `classList` para `domHelper`
+  - Modais (showModal, confirmação, tags, replay, settings)
+  - Tabs (main tabs, settings tabs)
+  - Tabelas (rows, estados)
+  - Painéis (insights, mental notes)
+  - Badges e indicadores
+  - Lockdown
+  - Botões de sessão
+  - Temas e toggles
+- ✅ Fallback automático para DOM direto
+
+### Git:
+- Commits: 4 commits incrementais
+- Tags: `checkpoint-2.2a`, `checkpoint-2.2a-complete`
+
+---
+
+## 📋 CHECKPOINT 2.2b - Migração events.js ✅
+**Data:** 21/11/2025 23:30  
+**Status:** ✅ COMPLETO
+
+### Implementações:
+- ✅ Criado `domHelper` no events.js
+- ✅ Migradas **19 ocorrências** de `classList`
+  - Modais (settings, replay, riskLab, sessionMode)
+  - Botões e filtros ativos
+  - Simulações e análises
+  - Feedback visual
+
+### Git:
+- Commit: "CHECKPOINT-2.2b: COMPLETO - 19 classList migradas"
+- Tag: `checkpoint-2.2b`
+
+---
+
+## 📋 CHECKPOINT 2.2-FINAL
+**Data:** 21/11/2025 23:45  
+**Status:** ✅ COMPLETO  
+
+### Resumo da Fase 2:
+- ✅ **~70 pontos** de `classList` migrados para abstração
+- ✅ DOMManager funcional e testável
+- ✅ Aplicação mantém compatibilidade total
+- ⚠️ charts.js: migração adiada (complexidade)
+
+### Git:
+- Tag final: `checkpoint-2.2-final`
+
+---
+
+## 🎯 PROGRESSO GERAL
+
+**Progresso Total:** 9/12 checkpoints (75%)
+
+### ✅ Fase 1 - Centralização de Estado (100%)
+- [x] CHECKPOINT 1.1: StateManager
+- [x] CHECKPOINT 1.2: capitalAtual
+- [x] CHECKPOINT 1.3a: Propriedades de Sessão
+- [x] CHECKPOINT 1.3b: Propriedades de Filtro  
+- [x] CHECKPOINT 1.3d: Validação
+
+### ✅ Fase 2 - Abstração de DOM (~85%)
+- [x] CHECKPOINT 2.1: DOMManager
+- [x] CHECKPOINT 2.2a: ui.js (50+ migrações)
+- [x] CHECKPOINT 2.2b: events.js (19 migrações)
+- [ ] CHECKPOINT 2.2c: charts.js (pendente)
+
+### ⏳ Fase 3 - Modularização Arquitetural (0%)
+- [ ] CHECKPOINT 3.x: Pending
+
+---
+
+## 📊 Estatísticas da Refatoração
+
+**Linhas de Código Criadas:**
+- `state-manager.js`: 354 linhas
+- `dom-manager.js`: 418 linhas
+- `domHelper` (3 arquivos): ~120 linhas
+
+**Pontos de Migração:**
+- StateManager: 7 propriedades migradas
+- DOMManager: ~70 classList migrados
+
+**Git Tags:** 13 tags de checkpoint criados
+
+**Backups:** 3 backups automáticos
+
+---
+
 ### CHECKPOINT 2.2: Migrar Manipulações de Classe
 
 #### 2.2a: ui.js
