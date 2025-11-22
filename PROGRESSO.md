@@ -179,6 +179,88 @@
 
 ---
 
+## 📋 CHECKPOINT 3.1 - Estrutura Modular ✅
+**Data:** 21/11/2025 23:40  
+**Status:** ✅ COMPLETO
+
+### Implementações:
+- ✅ Criada pasta `/src/modules/`
+- ✅ Criado `BaseModule.js` - Classe base para módulos
+- ✅ Criado `ModuleManager.js` - Gerenciador central
+- ✅ Sistema de registro e lifecycle de módulos
+- ✅ Exposto `window.moduleManager` para debug
+
+### Features:
+- Registro de dependências entre módulos
+- Inicialização ordenada
+- Cleanup automático
+- Informações e estatísticas
+
+### Git:
+- Commit: "CHECKPOINT-3.1: Estrutura modular criada"
+- Tag: `checkpoint-3.1`
+
+---
+
+## 🎯 PROGRESSO ATUALIZADO
+
+**Progresso Total:** 10/16 checkpoints (62.5%)
+
+### ✅ Fase 1 - Centralização de Estado (100%)
+- [x] 1.1: StateManager
+- [x] 1.2: capitalAtual
+- [x] 1.3a: Propriedades de Sessão
+- [x] 1.3b: Propriedades de Filtro  
+- [x] 1.3d: Validação
+
+### ✅ Fase 2 - Abstração de DOM (85%)
+- [x] 2.1: DOMManager
+- [x] 2.2a: ui.js (50+ migrações)
+- [x] 2.2b: events.js (19 migrações)
+- [~] 2.2c: charts.js (adiado - ver DECISAO_CHARTS_JS.md)
+
+### ⏳ Fase 3 - Modularização (25%)
+- [x] 3.1: Estrutura Modular
+- [ ] 3.2: SessionModule
+- [ ] 3.3: OperationModule
+- [ ] 3.4: CalculationModule
+
+---
+
+## 📊 Estatísticas Finais da Sessão
+
+**Duração:** ~2h (21:35 - 23:40)
+
+**Código Criado:**
+- `state-manager.js`: 354 linhas
+- `dom-manager.js`: 418 linhas
+- `BaseModule.js`: 72 linhas
+- `ModuleManager.js`: 115 linhas
+- `domHelper` (3 arquivos): ~120 linhas
+- **Total:** ~1080 linhas
+
+**Migrações:**
+- StateManager: 7 propriedades
+- DOMManager: ~70 classList
+
+**Git:**
+- 14 tags criados
+- ~20 commits
+- 4 backups automáticos
+
+**Arquivos Modificados:** 15+
+
+---
+
+## ⏭️ Próximos Passos
+
+1. **CHECKPOINT 3.2** - SessionModule (extrair lógica de sessão)
+2. **CHECKPOINT 3.3** - OperationModule (lógica de operações)
+3. **CHECKPOINT 3.4** - CalculationModule (cálculos puros)
+4. **Opcional:** Retomar charts.js quando conveniente
+
+---
+
 ### CHECKPOINT 2.2: Migrar Manipulações de Classe
 
 #### 2.2a: ui.js
