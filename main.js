@@ -611,6 +611,7 @@ class App {
             await this._initializeLegacyModules();
             await this._initializeStateManager(); // 🆕 CHECKPOINT 1.1
             await this._initializeDOMManager(); // 🆕 CHECKPOINT 2.1
+            await this._initializeModularSystem(); // 🆕 CHECKPOINT 3.x
             await this._initializeRefactoredSystems();
             await this._initializeSidebar();
 
@@ -886,6 +887,59 @@ class App {
             console.error('❌ Erro ao inicializar DOMManager:', error.message);
             console.warn('⚠️ Continuando com DOM legado apenas');
             this.initializationSteps.push('dom_manager_failed');
+        }
+    }
+
+    /**
+     * 🆕 CHECKPOINT 3.x: Inicialização do Sistema Modular
+     * @private
+     */
+    async _initializeModularSystem() {
+        try {
+            console.log('🏗️ CHECKPOINT 3.x: Inicializando Sistema Modular...');
+
+            // Importar módulos
+            const { moduleManager } = await import('./src/modules/ModuleManager.js');
+            const { default: SessionModule } = await import('./src/modules/SessionModule.js');
+            const { default: OperationModule } = await import('./src/modules/OperationModule.js');
+            const { default: CalculationModule } = await import('./src/modules/CalculationModule.js');
+
+            // Criar instâncias
+            const sessionModule = new SessionModule();
+            const operationModule = new OperationModule();
+            const calculationModule = new CalculationModule();
+
+            // Registrar dependências
+            if (window.stateManager) {
+                sessionModule.registerDependency('stateManager', window.stateManager);
+                console.log('✅ SessionModule conectado ao StateManager');
+            }
+
+            // Registrar módulos no gerenciador
+            moduleManager.register('session', sessionModule);
+            moduleManager.register('operation', operationModule);
+            moduleManager.register('calculation', calculationModule);
+
+            // Inicializar todos os módulos
+            await moduleManager.initAll();
+
+            // Expor globalmente para uso
+            window.modules = {
+                session: sessionModule,
+                operation: operationModule,
+                calculation: calculationModule,
+                manager: moduleManager
+            };
+
+            console.log('✅ Sistema Modular inicializado!');
+            console.log('📊 Módulos disponíveis:', Object.keys(window.modules));
+            console.log('📈 Stats:', moduleManager.getStats());
+
+            this.initializationSteps.push('modular_system_initialized');
+        } catch (error) {
+            console.error('❌ Erro ao inicializar Sistema Modular:', error.message);
+            console.warn('⚠️ Continuando sem sistema modular');
+            this.initializationSteps.push('modular_system_failed');
         }
     }
 
