@@ -96,7 +96,12 @@ export const sessionManager = {
         this.updateCalculatedValues();
 
         // 📊 Garante que sessão está INATIVA após reset
-        state.isSessionActive = false;
+        // 🆕 CHECKPOINT 1.3a: Usando StateManager
+        if (window.stateManager) {
+            window.stateManager.setState({ isSessionActive: false }, 'SessionManager.resetSessionState');
+        } else {
+            state.isSessionActive = false;
+        }
 
         // Se store estiver ativa, sincroniza também
         try {
@@ -128,8 +133,16 @@ export const sessionManager = {
      */
     async startNewSession(mode) {
         await this.resetSessionState();
-        state.isSessionActive = true;
-        state.sessionMode = mode;
+        // 🆕 CHECKPOINT 1.3a: Usando StateManager
+        if (window.stateManager) {
+            window.stateManager.setState({
+                isSessionActive: true,
+                sessionMode: mode
+            }, 'SessionManager.startNewSession');
+        } else {
+            state.isSessionActive = true;
+            state.sessionMode = mode;
+        }
 
         // Se store estiver ativa, marca sessão como ativa e espelha valores
         try {

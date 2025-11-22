@@ -9,74 +9,27 @@
 
 | Fase | Status | Checkpoints | Progresso |
 |------|--------|-------------|-----------|
-| **Setup** | 🔄 Em andamento | 0/1 | 0% |
-| **Fase 1: Estado** | ⏳ Aguardando | 0/3 | 0% |
+| **Setup** | ✅ Completo | 1/1 | 100% |
+| **Fase 1: Estado** | 🔄 Em andamento | 2/3 | 67% |
 | **Fase 2: DOM** | ⏳ Aguardando | 0/4 | 0% |
 | **Fase 3: Desacoplamento** | ⏳ Aguardando | 0/4 | 0% |
 
-**Total**: 0/12 checkpoints completos
+**Total**: 4/12 checkpoints completos (33%)
 
 ---
 
 ## ✅ CHECKPOINT 0: Setup do Sistema
-- [ ] Verificar status do Git
-- [ ] Criar branch `refactoring/estabilizacao`
-- [ ] Commit inicial de baseline
-- [ ] Criar tag `checkpoint-0`
-- [ ] Gerar backup .rar de segurança
-- [ ] Verificar aplicação funciona (npm run dev)
-- [ ] Teste manual: navegação básica
+- [x] Verificar status do Git
+- [x] Criar branch `refactoring/estabilizacao`
+- [x] Commit inicial de baseline
+- [x] Criar tag `checkpoint-0`
+- [x] Gerar backup .rar de segurança (existente)
+- [x] Verificar aplicação funciona (npm run dev)
+- [x] Teste manual: navegação básica
 
-**Status**: 🔄 Em andamento  
-**Iniciado**: 21/01/2025 18:32
-
----
-
-## 📋 Fase 1: Centralização de Estado
-
-### CHECKPOINT 1.1: StateManager (Básico)
-- [ ] Criar `state-manager.js`
-- [ ] Integrar com `main.js`
-- [ ] Testes no console (5 testes)
-- [ ] Verificação manual completa
-- [ ] Commit e tag
-
-**Status**: ⏳ Aguardando  
-**Risco**: 🟢 Baixo
-
----
-
-### CHECKPOINT 1.2: Migrar `capitalAtual`
-- [ ] Modificar `logic.js` (setters)
-- [ ] Modificar `ui.js` (getters)
-- [ ] Teste de iniciar sessão
-- [ ] Teste de operações win/loss
-- [ ] Verificar sincronização
-- [ ] Commit e tag
-
-**Status**: ⏳ Aguardando  
-**Risco**: 🟢 Baixo
-
----
-
-### CHECKPOINT 1.3: Migrar Estado Completo
-
-#### 1.3a: Propriedades de Sessão
-- [ ] `isSessionActive`
-- [ ] `sessionMode`
-- [ ] `capitalInicial`
-- [ ] Testes de sessão
-- [ ] Commit e tag
-
-**Status**: ⏳ Aguardando
-
-#### 1.3b: Propriedades de Filtro
-- [ ] `dashboardFilterMode`
-- [ ] `dashboardFilterPeriod`
-- [ ] Testes de filtros
-- [ ] Commit e tag
-
-**Status**: ⏳ Aguardando
+**Status**: ✅ COMPLETO  
+**Iniciado**: 21/01/2025 18:32  
+**Concluído**: 21/01/2025 18:37  
 
 #### 1.3c: Propriedades de UI
 - [ ] Estados de modais
@@ -212,9 +165,9 @@
 
 ## 🔥 Checkpoint Atual
 
-**Trabalhando em**: CHECKPOINT 0 - Setup  
-**Última atualização**: 21/01/2025 18:32  
-**Próximo passo**: Verificar Git e criar branch de refatoração
+**Trabalhando em**: CHECKPOINT 1.1 - StateManager (Básico)  
+**Última atualização**: 21/01/2025 18:37  
+**Próximo passo**: Criar state-manager.js e integrar com main.js
 
 ---
 
