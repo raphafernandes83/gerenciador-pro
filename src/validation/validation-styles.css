@@ -1,0 +1,285 @@
+/**
+ * Estilos para validação de formulários
+ * Fornece feedback visual para inputs válidos/inválidos
+ */
+
+/* ============================================
+   ESTADOS DE VALIDAÇÃO DE INPUTS
+   ============================================ */
+
+/* Input válido */
+.input-valid {
+    border-color: var(--success-color, #4caf50) !important;
+    box-shadow: 0 0 0 1px var(--success-color, #4caf50);
+}
+
+.input-valid:focus {
+    border-color: var(--success-color, #4caf50) !important;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+/* Input inválido */
+.input-invalid {
+    border-color: var(--secondary-color, #ff3d00) !important;
+    box-shadow: 0 0 0 1px var(--secondary-color, #ff3d00);
+    animation: shake 0.3s ease-in-out;
+}
+
+.input-invalid:focus {
+    border-color: var(--secondary-color, #ff3d00) !important;
+    box-shadow: 0 0 0 2px rgba(255, 61, 0, 0.2);
+}
+
+/* Animação de shake para erros */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+/* Mensagem de erro do campo */
+.field-error-message {
+    color: var(--secondary-color, #ff3d00);
+    font-size: 0.85em;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    animation: fadeInDown 0.3s ease-out;
+}
+
+.field-error-message::before {
+    content: "⚠️";
+    font-size: 1em;
+}
+
+/* Animação de entrada da mensagem */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Container de validação */
+.validation-container {
+    position: relative;
+}
+
+.validation-container .validation-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2em;
+    pointer-events: none;
+}
+
+.validation-container.valid .validation-icon::before {
+    content: "✓";
+    color: var(--success-color, #4caf50);
+}
+
+.validation-container.invalid .validation-icon::before {
+    content: "✗";
+    color: var(--secondary-color, #ff3d00);
+}
+
+/* ============================================
+   TOOLTIP DE VALIDAÇÃO
+   ============================================ */
+
+.validation-tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    white-space: nowrap;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.validation-tooltip.show {
+    opacity: 1;
+}
+
+.validation-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.9);
+}
+
+/* ============================================
+   BADGE DE VALIDAÇÃO
+   ============================================ */
+
+.validation-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.validation-badge.success {
+    background: rgba(76, 175, 80, 0.1);
+    color: var(--success-color, #4caf50);
+}
+
+.validation-badge.error {
+    background: rgba(255, 61, 0, 0.1);
+    color: var(--secondary-color, #ff3d00);
+}
+
+.validation-badge.warning {
+    background: rgba(255, 152, 0, 0.1);
+    color: var(--warning-color, #ff9800);
+}
+
+/* ============================================
+   GRUPO DE FORM COM VALIDAÇÃO
+   ============================================ */
+
+.form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.form-group .required::after {
+    content: " *";
+    color: var(--secondary-color, #ff3d00);
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color, #333);
+    border-radius: 4px;
+    background: var(--bg-secondary, #1e1e1e);
+    color: var(--text-color);
+    font-size: 1em;
+    transition: all 0.2s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary-color, #00bcd4);
+    box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.1);
+}
+
+/* ============================================
+   RESUMO DE VALIDAÇÃO
+   ============================================ */
+
+.validation-summary {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.validation-summary.error {
+    background: rgba(255, 61, 0, 0.1);
+    border-left: 4px solid var(--secondary-color, #ff3d00);
+}
+
+.validation-summary.success {
+    background: rgba(76, 175, 80, 0.1);
+    border-left: 4px solid var(--success-color, #4caf50);
+}
+
+.validation-summary .summary-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.validation-summary.error .summary-title {
+    color: var(--secondary-color, #ff3d00);
+}
+
+.validation-summary.success .summary-title {
+    color: var(--success-color, #4caf50);
+}
+
+.validation-summary ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.validation-summary li {
+    padding: 0.25rem 0;
+    font-size: 0.9em;
+}
+
+.validation-summary li::before {
+    content: "• ";
+    font-weight: bold;
+}
+
+/* ============================================
+   RESPONSIVIDADE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .validation-tooltip {
+        font-size: 0.8em;
+        padding: 6px 10px;
+    }
+    
+    .field-error-message {
+        font-size: 0.8em;
+    }
+}
+
+/* ============================================
+   DARK MODE ESPECÍFICO
+   ============================================ */
+
+[data-theme="dark"] .validation-tooltip {
+    background: rgba(255, 255, 255, 0.95);
+    color: #1a1a1a;
+}
+
+[data-theme="dark"] .validation-tooltip::after {
+    border-top-color: rgba(255, 255, 255, 0.95);
+}
+
+/* ============================================
+   ESTADOS DESABILITADOS
+   ============================================ */
+
+.form-group input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--bg-tertiary, #141414);
+}
+
+.form-group input:disabled.input-valid,
+.form-group input:disabled.input-invalid {
+    box-shadow: none;
+}
