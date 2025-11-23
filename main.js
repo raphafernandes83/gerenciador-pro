@@ -381,10 +381,10 @@ import {
 // Mapeia novos elementos para DOM helper se existir
 try {
     window.dom = window.dom || {};
-    dom.winTargetAmount = document.getElementById('win-target-amount');
-    dom.winRemainingAmount = document.getElementById('win-remaining-amount');
-    dom.lossLimitAmount = document.getElementById('loss-limit-amount');
-    dom.lossMarginAmount = document.getElementById('loss-margin-amount');
+    dom.winTargetAmount = dom.winTargetAmount;
+    dom.winRemainingAmount = dom.winRemainingAmount;
+    dom.lossLimitAmount = dom.lossLimitAmount;
+    dom.lossMarginAmount = dom.lossMarginAmount;
 } catch { }
 import { CONSTANTS, state, config } from './state.js';
 import { validation } from './validation.js';
@@ -811,7 +811,7 @@ class App {
             try {
                 // Exibição do card principal desligada por padrão; fonte única: sidebar
                 if (window.__SHOW_MAIN_PARAMETERS_CARD__ === true) {
-                    const inputPanel = document.getElementById('input-panel');
+                    const inputPanel = dom.inputPanel;
                     if (inputPanel) {
                         const initialValues = {
                             capitalInicial: config.capitalInicial,
@@ -827,7 +827,7 @@ class App {
                         } catch (_) { }
                     }
                 } else {
-                    const inputPanel = document.getElementById('input-panel');
+                    const inputPanel = dom.inputPanel;
                     if (inputPanel) inputPanel.innerHTML = '';
                 }
             } catch (e) {
@@ -1267,13 +1267,13 @@ window.testRealTimeSync = function () {
 
     // Teste 1: Capital Inicial
     logger.debug('📝 Teste 1: Mudança no capital inicial');
-    const capitalInput = document.getElementById('capital-inicial');
+    const capitalInput = dom.capitalInicial;
     if (capitalInput) {
         capitalInput.value = '15000';
         capitalInput.dispatchEvent(new Event('change', { bubbles: true }));
 
         setTimeout(() => {
-            const sidebarCapital = document.getElementById('sidebar-capital-inicial');
+            const sidebarCapital = dom.sidebarCapitalInicial;
             if (sidebarCapital) {
                 logger.debug(`✅ Capital sincronizado: ${sidebarCapital.value}`);
             } else {
@@ -1285,7 +1285,7 @@ window.testRealTimeSync = function () {
     // Teste 2: Entrada Inicial
     setTimeout(() => {
         logger.debug('📝 Teste 2: Mudança na entrada inicial');
-        const entradaInput = document.getElementById('percentual-entrada');
+        const entradaInput = dom.percentualEntrada;
         if (entradaInput) {
             entradaInput.value = '3.5';
             entradaInput.dispatchEvent(new Event('change', { bubbles: true }));
@@ -1308,7 +1308,7 @@ window.testRealTimeSync = function () {
     // Teste 4: Estratégia
     setTimeout(() => {
         logger.debug('📝 Teste 4: Mudança de estratégia');
-        const strategySelect = document.getElementById('estrategia-select');
+        const strategySelect = dom.estrategiaSelect;
         if (strategySelect) {
             strategySelect.value = 'fixa';
             strategySelect.dispatchEvent(new Event('change', { bubbles: true }));
@@ -1319,7 +1319,7 @@ window.testRealTimeSync = function () {
     // Teste 5: Stop Win
     setTimeout(() => {
         logger.debug('📝 Teste 5: Mudança no Stop Win');
-        const stopWinInput = document.getElementById('stop-win-perc');
+        const stopWinInput = dom.stopWinPerc;
         if (stopWinInput) {
             stopWinInput.value = '12';
             stopWinInput.dispatchEvent(new Event('change', { bubbles: true }));
@@ -1330,7 +1330,7 @@ window.testRealTimeSync = function () {
     // Teste 6: Stop Loss
     setTimeout(() => {
         logger.debug('📝 Teste 6: Mudança no Stop Loss');
-        const stopLossInput = document.getElementById('stop-loss-perc');
+        const stopLossInput = dom.stopLossPerc;
         if (stopLossInput) {
             stopLossInput.value = '18';
             stopLossInput.dispatchEvent(new Event('change', { bubbles: true }));
@@ -1375,7 +1375,7 @@ window.testPayoutAndFocus = function () {
         // Teste 2: Verificar sincronização no sidebar
         () => {
             logger.debug('📝 Teste 2: Verificando sincronização no sidebar');
-            const sidebarBtn = document.querySelector('#sidebar-payout-90');
+            const sidebarBtn = dom.sidebarPayout-90;
             if (sidebarBtn && sidebarBtn.classList.contains('active-payout')) {
                 logger.debug('✅ Sidebar sincronizado corretamente');
             } else if (!sidebarBtn) {
@@ -1388,7 +1388,7 @@ window.testPayoutAndFocus = function () {
         // Teste 3: Focus Effect (Verde Elegante)
         () => {
             logger.debug('📝 Teste 3: Efeito de focus verde elegante no capital inicial');
-            const capitalField = document.getElementById('capital-inicial');
+            const capitalField = dom.capitalInicial;
             if (capitalField) {
                 capitalField.focus();
                 setTimeout(() => {
@@ -1427,7 +1427,7 @@ window.testPayoutAndFocus = function () {
         // Teste 4: Typing Effect
         () => {
             logger.debug('📝 Teste 4: Efeito de digitação');
-            const capitalField = document.getElementById('capital-inicial');
+            const capitalField = dom.capitalInicial;
             if (capitalField) {
                 capitalField.value = '25000';
                 capitalField.dispatchEvent(new Event('input', { bubbles: true }));
@@ -1445,7 +1445,7 @@ window.testPayoutAndFocus = function () {
         // Teste 5: Payout Sidebar → Main (se sidebar estiver aberto)
         () => {
             logger.debug('📝 Teste 5: Payout 92% no sidebar');
-            const sidebarBtn = document.querySelector('#sidebar-payout-92');
+            const sidebarBtn = dom.sidebarPayout-92;
             if (sidebarBtn) {
                 sidebarBtn.click();
                 logger.debug('✅ Clique executado no sidebar');
@@ -1468,7 +1468,7 @@ window.testPayoutAndFocus = function () {
         // Teste 6: Focus no sidebar (se estiver aberto)
         () => {
             logger.debug('📝 Teste 6: Focus no sidebar');
-            const sidebarField = document.getElementById('sidebar-capital-inicial');
+            const sidebarField = dom.sidebarCapitalInicial;
             if (sidebarField) {
                 sidebarField.focus();
                 setTimeout(() => {
@@ -1517,7 +1517,7 @@ window.testGreenBorderChallenge = function () {
 
     // Teste 1: Verificação Visual Stop Win
     logger.debug('📝 Testando campo Stop Win (%) - o que estava com problema...');
-    const stopWinField = document.getElementById('stop-win-perc');
+    const stopWinField = dom.stopWinPerc;
     if (stopWinField) {
         stopWinField.focus();
 

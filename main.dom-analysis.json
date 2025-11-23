@@ -1,0 +1,350 @@
+{
+  "file": "main.js",
+  "timestamp": "2025-11-23T20:03:45.416Z",
+  "total": 21,
+  "byPriority": {
+    "high": [
+      {
+        "line": 384,
+        "type": "getElementById",
+        "selector": "win-target-amount",
+        "fullMatch": "document.getElementById('win-target-amount')",
+        "priority": "high",
+        "code": "dom.winTargetAmount = document.getElementById('win-target-amount');"
+      },
+      {
+        "line": 385,
+        "type": "getElementById",
+        "selector": "win-remaining-amount",
+        "fullMatch": "document.getElementById('win-remaining-amount')",
+        "priority": "high",
+        "code": "dom.winRemainingAmount = document.getElementById('win-remaining-amount');"
+      },
+      {
+        "line": 386,
+        "type": "getElementById",
+        "selector": "loss-limit-amount",
+        "fullMatch": "document.getElementById('loss-limit-amount')",
+        "priority": "high",
+        "code": "dom.lossLimitAmount = document.getElementById('loss-limit-amount');"
+      },
+      {
+        "line": 387,
+        "type": "getElementById",
+        "selector": "loss-margin-amount",
+        "fullMatch": "document.getElementById('loss-margin-amount')",
+        "priority": "high",
+        "code": "dom.lossMarginAmount = document.getElementById('loss-margin-amount');"
+      },
+      {
+        "line": 814,
+        "type": "getElementById",
+        "selector": "input-panel",
+        "fullMatch": "document.getElementById('input-panel')",
+        "priority": "high",
+        "code": "const inputPanel = document.getElementById('input-panel');"
+      },
+      {
+        "line": 830,
+        "type": "getElementById",
+        "selector": "input-panel",
+        "fullMatch": "document.getElementById('input-panel')",
+        "priority": "high",
+        "code": "const inputPanel = document.getElementById('input-panel');"
+      },
+      {
+        "line": 1270,
+        "type": "getElementById",
+        "selector": "capital-inicial",
+        "fullMatch": "document.getElementById('capital-inicial')",
+        "priority": "high",
+        "code": "const capitalInput = document.getElementById('capital-inicial');"
+      },
+      {
+        "line": 1276,
+        "type": "getElementById",
+        "selector": "sidebar-capital-inicial",
+        "fullMatch": "document.getElementById('sidebar-capital-inicial')",
+        "priority": "high",
+        "code": "const sidebarCapital = document.getElementById('sidebar-capital-inicial');"
+      },
+      {
+        "line": 1288,
+        "type": "getElementById",
+        "selector": "percentual-entrada",
+        "fullMatch": "document.getElementById('percentual-entrada')",
+        "priority": "high",
+        "code": "const entradaInput = document.getElementById('percentual-entrada');"
+      },
+      {
+        "line": 1311,
+        "type": "getElementById",
+        "selector": "estrategia-select",
+        "fullMatch": "document.getElementById('estrategia-select')",
+        "priority": "high",
+        "code": "const strategySelect = document.getElementById('estrategia-select');"
+      },
+      {
+        "line": 1322,
+        "type": "getElementById",
+        "selector": "stop-win-perc",
+        "fullMatch": "document.getElementById('stop-win-perc')",
+        "priority": "high",
+        "code": "const stopWinInput = document.getElementById('stop-win-perc');"
+      },
+      {
+        "line": 1333,
+        "type": "getElementById",
+        "selector": "stop-loss-perc",
+        "fullMatch": "document.getElementById('stop-loss-perc')",
+        "priority": "high",
+        "code": "const stopLossInput = document.getElementById('stop-loss-perc');"
+      },
+      {
+        "line": 1378,
+        "type": "querySelector by ID",
+        "selector": "#sidebar-payout-90",
+        "fullMatch": "document.querySelector('#sidebar-payout-90')",
+        "priority": "high",
+        "code": "const sidebarBtn = document.querySelector('#sidebar-payout-90');"
+      },
+      {
+        "line": 1391,
+        "type": "getElementById",
+        "selector": "capital-inicial",
+        "fullMatch": "document.getElementById('capital-inicial')",
+        "priority": "high",
+        "code": "const capitalField = document.getElementById('capital-inicial');"
+      },
+      {
+        "line": 1430,
+        "type": "getElementById",
+        "selector": "capital-inicial",
+        "fullMatch": "document.getElementById('capital-inicial')",
+        "priority": "high",
+        "code": "const capitalField = document.getElementById('capital-inicial');"
+      },
+      {
+        "line": 1448,
+        "type": "querySelector by ID",
+        "selector": "#sidebar-payout-92",
+        "fullMatch": "document.querySelector('#sidebar-payout-92')",
+        "priority": "high",
+        "code": "const sidebarBtn = document.querySelector('#sidebar-payout-92');"
+      },
+      {
+        "line": 1471,
+        "type": "getElementById",
+        "selector": "sidebar-capital-inicial",
+        "fullMatch": "document.getElementById('sidebar-capital-inicial')",
+        "priority": "high",
+        "code": "const sidebarField = document.getElementById('sidebar-capital-inicial');"
+      },
+      {
+        "line": 1520,
+        "type": "getElementById",
+        "selector": "stop-win-perc",
+        "fullMatch": "document.getElementById('stop-win-perc')",
+        "priority": "high",
+        "code": "const stopWinField = document.getElementById('stop-win-perc');"
+      }
+    ],
+    "medium": [],
+    "low": [
+      {
+        "line": 1299,
+        "type": "querySelectorAll",
+        "selector": ".payout-buttons button",
+        "fullMatch": "document.querySelectorAll('.payout-buttons button')",
+        "priority": "low",
+        "code": "const payoutBtn = Array.from(document.querySelectorAll('.payout-buttons button')).find("
+      },
+      {
+        "line": 1364,
+        "type": "querySelectorAll",
+        "selector": ".payout-buttons button",
+        "fullMatch": "document.querySelectorAll('.payout-buttons button')",
+        "priority": "low",
+        "code": "const btn = Array.from(document.querySelectorAll('.payout-buttons button')).find("
+      },
+      {
+        "line": 1455,
+        "type": "querySelectorAll",
+        "selector": ".payout-buttons button",
+        "fullMatch": "document.querySelectorAll('.payout-buttons button')",
+        "priority": "low",
+        "code": "document.querySelectorAll('.payout-buttons button')"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "line": 384,
+      "type": "getElementById",
+      "selector": "win-target-amount",
+      "fullMatch": "document.getElementById('win-target-amount')",
+      "priority": "high",
+      "code": "dom.winTargetAmount = document.getElementById('win-target-amount');"
+    },
+    {
+      "line": 385,
+      "type": "getElementById",
+      "selector": "win-remaining-amount",
+      "fullMatch": "document.getElementById('win-remaining-amount')",
+      "priority": "high",
+      "code": "dom.winRemainingAmount = document.getElementById('win-remaining-amount');"
+    },
+    {
+      "line": 386,
+      "type": "getElementById",
+      "selector": "loss-limit-amount",
+      "fullMatch": "document.getElementById('loss-limit-amount')",
+      "priority": "high",
+      "code": "dom.lossLimitAmount = document.getElementById('loss-limit-amount');"
+    },
+    {
+      "line": 387,
+      "type": "getElementById",
+      "selector": "loss-margin-amount",
+      "fullMatch": "document.getElementById('loss-margin-amount')",
+      "priority": "high",
+      "code": "dom.lossMarginAmount = document.getElementById('loss-margin-amount');"
+    },
+    {
+      "line": 814,
+      "type": "getElementById",
+      "selector": "input-panel",
+      "fullMatch": "document.getElementById('input-panel')",
+      "priority": "high",
+      "code": "const inputPanel = document.getElementById('input-panel');"
+    },
+    {
+      "line": 830,
+      "type": "getElementById",
+      "selector": "input-panel",
+      "fullMatch": "document.getElementById('input-panel')",
+      "priority": "high",
+      "code": "const inputPanel = document.getElementById('input-panel');"
+    },
+    {
+      "line": 1270,
+      "type": "getElementById",
+      "selector": "capital-inicial",
+      "fullMatch": "document.getElementById('capital-inicial')",
+      "priority": "high",
+      "code": "const capitalInput = document.getElementById('capital-inicial');"
+    },
+    {
+      "line": 1276,
+      "type": "getElementById",
+      "selector": "sidebar-capital-inicial",
+      "fullMatch": "document.getElementById('sidebar-capital-inicial')",
+      "priority": "high",
+      "code": "const sidebarCapital = document.getElementById('sidebar-capital-inicial');"
+    },
+    {
+      "line": 1288,
+      "type": "getElementById",
+      "selector": "percentual-entrada",
+      "fullMatch": "document.getElementById('percentual-entrada')",
+      "priority": "high",
+      "code": "const entradaInput = document.getElementById('percentual-entrada');"
+    },
+    {
+      "line": 1299,
+      "type": "querySelectorAll",
+      "selector": ".payout-buttons button",
+      "fullMatch": "document.querySelectorAll('.payout-buttons button')",
+      "priority": "low",
+      "code": "const payoutBtn = Array.from(document.querySelectorAll('.payout-buttons button')).find("
+    },
+    {
+      "line": 1311,
+      "type": "getElementById",
+      "selector": "estrategia-select",
+      "fullMatch": "document.getElementById('estrategia-select')",
+      "priority": "high",
+      "code": "const strategySelect = document.getElementById('estrategia-select');"
+    },
+    {
+      "line": 1322,
+      "type": "getElementById",
+      "selector": "stop-win-perc",
+      "fullMatch": "document.getElementById('stop-win-perc')",
+      "priority": "high",
+      "code": "const stopWinInput = document.getElementById('stop-win-perc');"
+    },
+    {
+      "line": 1333,
+      "type": "getElementById",
+      "selector": "stop-loss-perc",
+      "fullMatch": "document.getElementById('stop-loss-perc')",
+      "priority": "high",
+      "code": "const stopLossInput = document.getElementById('stop-loss-perc');"
+    },
+    {
+      "line": 1364,
+      "type": "querySelectorAll",
+      "selector": ".payout-buttons button",
+      "fullMatch": "document.querySelectorAll('.payout-buttons button')",
+      "priority": "low",
+      "code": "const btn = Array.from(document.querySelectorAll('.payout-buttons button')).find("
+    },
+    {
+      "line": 1378,
+      "type": "querySelector by ID",
+      "selector": "#sidebar-payout-90",
+      "fullMatch": "document.querySelector('#sidebar-payout-90')",
+      "priority": "high",
+      "code": "const sidebarBtn = document.querySelector('#sidebar-payout-90');"
+    },
+    {
+      "line": 1391,
+      "type": "getElementById",
+      "selector": "capital-inicial",
+      "fullMatch": "document.getElementById('capital-inicial')",
+      "priority": "high",
+      "code": "const capitalField = document.getElementById('capital-inicial');"
+    },
+    {
+      "line": 1430,
+      "type": "getElementById",
+      "selector": "capital-inicial",
+      "fullMatch": "document.getElementById('capital-inicial')",
+      "priority": "high",
+      "code": "const capitalField = document.getElementById('capital-inicial');"
+    },
+    {
+      "line": 1448,
+      "type": "querySelector by ID",
+      "selector": "#sidebar-payout-92",
+      "fullMatch": "document.querySelector('#sidebar-payout-92')",
+      "priority": "high",
+      "code": "const sidebarBtn = document.querySelector('#sidebar-payout-92');"
+    },
+    {
+      "line": 1455,
+      "type": "querySelectorAll",
+      "selector": ".payout-buttons button",
+      "fullMatch": "document.querySelectorAll('.payout-buttons button')",
+      "priority": "low",
+      "code": "document.querySelectorAll('.payout-buttons button')"
+    },
+    {
+      "line": 1471,
+      "type": "getElementById",
+      "selector": "sidebar-capital-inicial",
+      "fullMatch": "document.getElementById('sidebar-capital-inicial')",
+      "priority": "high",
+      "code": "const sidebarField = document.getElementById('sidebar-capital-inicial');"
+    },
+    {
+      "line": 1520,
+      "type": "getElementById",
+      "selector": "stop-win-perc",
+      "fullMatch": "document.getElementById('stop-win-perc')",
+      "priority": "high",
+      "code": "const stopWinField = document.getElementById('stop-win-perc');"
+    }
+  ]
+}

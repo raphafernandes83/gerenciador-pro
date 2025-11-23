@@ -55,6 +55,7 @@ export function mapDOM() {
     // Painel de Inputs
     dom.inputPanel = safeGetElement('input-panel');
     dom.capitalInicial = safeGetElement('capital-inicial');
+    dom.sidebarCapitalInicial = safeGetElement('sidebar-capital-inicial'); // 🆕 main.js
     dom.percentualEntrada = safeGetElement('percentual-entrada');
     dom.stopWinPerc = safeGetElement('stop-win-perc');
     dom.stopLossPerc = safeGetElement('stop-loss-perc');
@@ -110,6 +111,7 @@ export function mapDOM() {
     dom.winTargetAmount = safeGetElement('win-target-amount');
     dom.winRemainingAmount = safeGetElement('win-remaining-amount');
     dom.statusMargin = safeGetElement('status-margin');
+    dom.lossMarginAmount = safeGetElement('loss-margin-amount'); // 🆕 main.js
 
     // Loss Rate Progress Bar
     dom.lossRateDisplay = safeGetElement('loss-rate-display', false);
