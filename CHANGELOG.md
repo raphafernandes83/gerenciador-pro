@@ -1,8 +1,147 @@
 # 📝 CHANGELOG - Refatoração Completa
 
-**Versão:** 2.0-refactored  
-**Data:** 21-22 Novembro 2025  
-**Duração:** ~2h30min em 2 sessões
+**Versão Atual:** 2.1-improved  
+**Última Atualização:** 23 Novembro 2025
+
+---
+
+## [2.1-improved] - 2025-11-23
+
+### 🎯 Resumo Geral
+Sessão focada em **qualidade e manutenibilidade** do código refatorado. Eliminação de duplicação, profissionalização de logs e centralização de seletores DOM.
+
+**Duração:** ~3h  
+**Commits:** 5 (2c52f31, 148047d, 8e02565, 1f38549, f1eed55)  
+**Tarefas Concluídas:** 4/5 (80%)
+
+---
+
+### ✨ Melhorias de Qualidade
+
+#### 1. Consolidação de domHelper
+- ✅ **NOVO:** `src/dom-helper.js` (151 linhas) - Módulo centralizado
+- ✅ **ELIMINADO:** 71 linhas de código duplicado
+- ✅ **MIGRADO:** ui.js, events.js, charts.js agora importam domHelper
+- ✅ **DOCUMENTAÇÃO:** JSDoc completo
+
+**Benefícios:**
+- Manutenção em 1 lugar (antes: 3 lugares)
+- Zero duplicação de código
+- API consistente em todo projeto
+
+**Arquivos:**
+- `src/dom-helper.js` (novo - 151 linhas)
+- `ui.js` (modificado - removidas 40 linhas)
+- `events.js` (modificado - removidas 28 linhas)
+- `charts.js` (modificado - removidas 3 linhas)
+
+---
+
+#### 2. Sistema de Logging Profissional
+- ✅ **MIGRADO:** 342+ `console.*` → `logger.*`
+- ✅ **AUTOMAÇÃO:** Script `convert-console-to-logger.js` criado
+- ✅ **SEGURANÇA:** Redação automática de dados sensíveis
+- ✅ **PERFORMANCE:** Debug logs desabilitados em produção
+
+**Conversões realizadas:**
+- `ui.js`: 113 conversões (65 log, 34 warn, 13 error, 1 debug)
+- `main.js`: 203 conversões (139 log, 32 warn, 26 error, 6 info)
+- `logic.js`: 26 conversões (24 log, 2 warn)
+
+**Benefícios:**
+- Console limpo em produção
+- Logs estruturados com timestamps
+- RequestId para rastreabilidade
+- Tokens/senhas nunca expostos
+
+**Arquivos:**
+- `convert-console-to-logger.js` (novo - 89 linhas)
+- `ui.js` (modificado)
+- `main.js` (modificado)
+- `logic.js` (modificado)
+
+---
+
+#### 3. Centralização de Seletores DOM
+- ✅ **MIGRADO:** 42 seletores diretos → `dom.js`
+- ✅ **REDUÇÃO:** 79 → 37 seletores (-53%)
+- ✅ **AUTOMAÇÃO:** Scripts de análise e migração criados
+- ✅ **EXPANSÃO:** dom.js agora com 270+ elementos
+
+**Migrações por arquivo:**
+- `charts.js`: 19/19 seletores (100%)
+- `main.js`: 18/25 seletores (72%)
+- `events.js`: 1/1 seletores (100%)
+- `ui.js`: 4/13 seletores (31%)
+
+**Elementos adicionados ao dom.js (18):**
+
+charts.js (12):
+- Performance: metaProgressFill, metaProgressDisplay, metaTrendBadge
+- Risk: riskUsedFill, riskUsedDisplay, lossTrendBadge
+- Status: statusTargetAmount, statusAchieved, statusExceed, statusRiskUsed
+- Outros: payoutAtivo, progressSoftLockBadge
+
+main.js (2):
+- sidebarCapitalInicial, lossMarginAmount
+
+events.js (1):
+- analiseContent
+
+ui.js (2):
+- dashboardContent, sidebarNewSessionBtn
+
+**Benefícios:**
+- Mudanças de HTML em 1 lugar só
+- Cache centralizado de elementos
+- Código mais testável
+- Manutenção simplificada
+
+**Arquivos:**
+- `analyze-dom-selectors.js` (novo - 120 linhas)
+- `migrate-dom-selectors.js` (novo - 85 linhas)
+- `dom.js` (modificado - +18 elementos)
+- `charts.js`, `main.js`, `events.js`, `ui.js` (modificados)
+
+---
+
+### 📊 Estatísticas da Sessão
+
+**Código:**
+- Linhas removidas (duplicação): 71+
+- Linhas adicionadas (novo código): 800+
+- Arquivos modificados: 11
+- Arquivos criados: 10
+
+**Qualidade:**
+- Duplicação eliminada: 100%
+- Logs profissionalizados: 342+
+- Seletores centralizados: 42 (53%)
+- Documentação: JSDoc completo
+
+---
+
+### 📚 Documentação
+
+- ✅ **NOVO:** `SESSAO_23_11_2025.md` - Relatório detalhado
+- ✅ **NOVO:** `SESSAO_23_11_2025_FINAL.md` - Resumo executivo
+- ✅ **ATUALIZADO:** `CHANGELOG.md` (este arquivo)
+
+---
+
+### 🔄 Scripts Reutilizáveis
+
+Criados scripts para automação de tarefas futuras:
+
+1. `convert-console-to-logger.js` - Converte console.* para logger.*
+2. `analyze-dom-selectors.js` - Analisa seletores DOM em arquivos
+3. `migrate-dom-selectors.js` - Migra seletores para dom.js
+
+**Análises geradas:**
+- `charts.dom-analysis.json`
+- `main.dom-analysis.json`
+- `events.dom-analysis.json`
+- `ui.dom-analysis.json`
 
 ---
 
