@@ -27,12 +27,12 @@ import smartDebouncer from './src/performance/SmartDebouncer.js';
 // Helper function para validaÃ§Ã£o de chartInstance
 function isValidChartInstance(chartInstance, functionName = 'charts') {
     if (!chartInstance) {
-        logger.debug(`ðŸ” ${functionName}: chartInstance nÃ£o fornecida`);
+        logger.debug(`ï¿½ ${functionName}: chartInstance nÃ£o fornecida`);
         return false;
     }
 
     if (!chartInstance.data || !chartInstance.data.datasets || !chartInstance.data.datasets[0]) {
-        logger.debug(`ðŸ” ${functionName}: chartInstance mal configurada`);
+        logger.debug(`ï¿½ ${functionName}: chartInstance mal configurada`);
         return false;
     }
 
@@ -40,7 +40,7 @@ function isValidChartInstance(chartInstance, functionName = 'charts') {
 }
 
 
-// ?? CHECKPOINT 2.2c: Helper de transição para DOMManager (CONSOLIDADO)
+// ?? CHECKPOINT 2.2c: Helper de transiï¿½ï¿½o para DOMManager (CONSOLIDADO)
 // Importa domHelper centralizado (anteriormente duplicado em 3 arquivos)
 import { domHelper } from './src/dom-helper.js';
 
@@ -49,7 +49,7 @@ export const charts = {
     dashboardPatrimonioChart: null,
     replayAssertividadeChart: null,
     replayPatrimonioChart: null,
-    // ===== GRÃFICO DE PROGRESSO DE METAS (RECONSTRUÃDO) =====
+    // ===== GRï¿½FICO DE PROGRESSO DE METAS (RECONSTRUï¿½DO) =====
     progressMetasChart: null,
 
     _rafId: 0,
@@ -162,7 +162,7 @@ export const charts = {
     scheduleProgressUpdate(history) {
         const historyData = Array.isArray(history) ? history : [];
 
-        // Usar sistema otimizado se disponÃvel
+        // Usar sistema otimizado se disponï¿½vel
         if (this._performanceOptimized && window.smartDebouncer) {
             smartDebouncer.scheduleUpdate(
                 'progress_chart_update',
@@ -236,7 +236,7 @@ export const charts = {
             // ðŸ”§ CORREÃ‡ÃƒO: Usar state/config diretamente como no backup funcionando
             const stateRef = window.state || {};
             const configRef = window.config || {};
-            // Usando window.state/config para cálculos
+            // Usando window.state/config para cï¿½lculos
 
             const capitalAtual = Number(stateRef.capitalAtual) || Number(stateRef.capital) || 0;
             const capitalInicio =
@@ -257,10 +257,10 @@ export const charts = {
             const entryAmount = Number(stateRef.aporteAtual) || 0;
             const payoutPercent =
                 Number(stateRef.payoutAtual) ||
-                Number(document.getElementById('payout-ativo')?.value) ||
+                Number(dom.payoutAtivo?.value) ||
                 0;
 
-            // Usa funÃ§Ãµes puras se a flag estiver ativa e se existirem globalmente; senÃ£o, calcula inline mÃnimo
+            // Usa funÃ§Ãµes puras se a flag estiver ativa e se existirem globalmente; senÃ£o, calcula inline mï¿½nimo
             const goalsV2Enabled =
                 (window.Features && window.Features.FEATURE_goals_v2) || Features.FEATURE_goals_v2;
             const hasPure =
@@ -281,11 +281,11 @@ export const charts = {
                 const status = window.computeStopStatus(goals);
                 const hint = window.computeNextActionHint(goals, entryAmount, payoutPercent);
                 const lock = window.computeLockMode(goals);
-                // Lock ativado quando necessário
+                // Lock ativado quando necessï¿½rio
                 return { goals, status, hint, lock };
             }
 
-            // CÃ¡lculo mÃnimo inline
+            // CÃ¡lculo mï¿½nimo inline
             const swAmount = capitalInicio * (stopWinPerc / 100);
             const slAmount = capitalInicio * (stopLossPerc / 100);
             const lucro = capitalAtual - capitalInicio;
@@ -326,10 +326,10 @@ export const charts = {
                 return;
             }
 
-            // Fallback: aplicar diretamente no badge caso ui nÃ£o esteja disponÃvel
-            const badge = document.getElementById('progress-soft-lock-badge');
+            // Fallback: aplicar diretamente no badge caso ui nÃ£o esteja disponï¿½vel
+            const badge = dom.progressSoftLockBadge;
             if (badge) {
-                const icon = lock.type === 'STOP_WIN' ? 'ðŸŽ¯' : 'âšï¸';
+                const icon = lock.type === 'STOP_WIN' ? 'ðŸŽ¯' : 'ï¿½ï¿½';
                 const msg =
                     lock.type === 'STOP_WIN'
                         ? 'Meta de ganhos atingida'
@@ -342,7 +342,7 @@ export const charts = {
                 badge.style.visibility = 'visible';
                 badge.style.opacity = '1';
 
-                // Dispara popup se disponÃvel
+                // Dispara popup se disponï¿½vel
                 if (window.ui && typeof window.ui.showInsight === 'function') {
                     window.ui.showInsight(lock.reason, 'warning', 3000);
                 }
@@ -353,46 +353,46 @@ export const charts = {
     },
 
     /**
-     * ?? Inicializa o gráfico de pizza de progresso das metas
-     * ?? DESABILITADO: Este método não deve mais criar gráficos
-     * O gráfico é gerenciado exclusivamente pelo progress-card-module.js
+     * ?? Inicializa o grï¿½fico de pizza de progresso das metas
+     * ?? DESABILITADO: Este mï¿½todo nï¿½o deve mais criar grï¿½ficos
+     * O grï¿½fico ï¿½ gerenciado exclusivamente pelo progress-card-module.js
      */
     initProgressChart() {
-        logger.warn('?? initProgressChart() DESABILITADO - O gráfico é gerenciado pelo progress-card-module.js');
+        logger.warn('?? initProgressChart() DESABILITADO - O grï¿½fico ï¿½ gerenciado pelo progress-card-module.js');
 
-        // ??? PROTEÇÃO: Sempre retorna true para não quebrar código que depende deste método
-        // Mas NÃO cria nenhum gráfico
+        // ??? PROTEï¿½ï¿½O: Sempre retorna true para nï¿½o quebrar cï¿½digo que depende deste mï¿½todo
+        // Mas Nï¿½O cria nenhum grï¿½fico
         return true;
 
-        /* CÓDIGO DESABILITADO PARA EVITAR GRÁFICO DUPLICADO (verde escuro/vermelho escuro)
+        /* Cï¿½DIGO DESABILITADO PARA EVITAR GRï¿½FICO DUPLICADO (verde escuro/vermelho escuro)
         
-        logger.info('?? Inicializando gráfico de progresso de metas...');
+        logger.info('?? Inicializando grï¿½fico de progresso de metas...');
 
-        // ??? PROTEÇÃO: Evita reinicialização se gráfico já existe
+        // ??? PROTEï¿½ï¿½O: Evita reinicializaï¿½ï¿½o se grï¿½fico jï¿½ existe
         if (this.progressMetasChart) {
-            logger.warn('?? Gráfico já existe, pulando inicialização para evitar duplicação');
-            return true; // Retorna sucesso pois o gráfico já está pronto
+            logger.warn('?? Grï¿½fico jï¿½ existe, pulando inicializaï¿½ï¿½o para evitar duplicaï¿½ï¿½o');
+            return true; // Retorna sucesso pois o grï¿½fico jï¿½ estï¿½ pronto
         }
 
-        // ??? Validação robusta de DOM com diagnóstico
+        // ??? Validaï¿½ï¿½o robusta de DOM com diagnï¿½stico
         const canvasElement = dom.progressPieChart;
         if (!canvasElement) {
-            logger.error('? Canvas progressPieChart não encontrado no DOM');
-                    logger.debug('ðŸ”Ž DOM disponÃvel:', {
+            logger.error('? Canvas progressPieChart nï¿½o encontrado no DOM');
+                    logger.debug('ðŸ”Ž DOM disponï¿½vel:', {
                         keys: Object.keys(dom).filter((key) => key.includes('progress')),
                     });
                     return false;
                 }
         
-                // ðŸ›¡ï¸ ValidaÃ§Ã£o adicional de contexto Canvas
+                // ðŸ›¡ï¿½ ValidaÃ§Ã£o adicional de contexto Canvas
                 try {
                     const context = canvasElement.getContext('2d');
                     if (!context) {
-                        logger.error('âŒ Falha ao obter contexto 2D do canvas');
+                        logger.error('ï¿½ Falha ao obter contexto 2D do canvas');
                         return false;
                     }
                 } catch (contextError) {
-                    logger.error('âŒ Erro ao validar contexto canvas:', { error: String(contextError) });
+                    logger.error('ï¿½ Erro ao validar contexto canvas:', { error: String(contextError) });
                     return false;
                 }
         
@@ -439,7 +439,7 @@ export const charts = {
                                     display: false,
                                 },
                                 tooltip: {
-                                    enabled: false, // CORREÇÃO: Desabilitado para evitar sobreposição de gráfico fantasma
+                                    enabled: false, // CORREï¿½ï¿½O: Desabilitado para evitar sobreposiï¿½ï¿½o de grï¿½fico fantasma
                                 },
                             },
                             animation: {
@@ -460,15 +460,15 @@ export const charts = {
         
                     // Plugin: texto central com WR atual
                     // REMOVIDO: O plugin centerText causava conflitos de propriedade readonly.
-                    // A exibição de texto central deve ser feita via HTML/CSS sobreposto ou plugin seguro.
+                    // A exibiï¿½ï¿½o de texto central deve ser feita via HTML/CSS sobreposto ou plugin seguro.
         
         
-                    // ðŸ›¡ï¸ ValidaÃ§Ã£o pÃ³s-inicializaÃ§Ã£o mais rigorosa
+                    // ðŸ›¡ï¿½ ValidaÃ§Ã£o pÃ³s-inicializaÃ§Ã£o mais rigorosa
                     if (!this.progressMetasChart ||
                         typeof this.progressMetasChart.update !== 'function' ||
                         !this.progressMetasChart.data ||
                         !this.progressMetasChart.data.datasets) {
-                        logger.error('âŒ GrÃ¡fico criado mas com interface invÃ¡lida');
+                        logger.error('ï¿½ GrÃ¡fico criado mas com interface invÃ¡lida');
                         return false;
                     }
         
@@ -476,14 +476,14 @@ export const charts = {
                     try {
                         this.progressMetasChart.update('none');
                     } catch (updateError) {
-                        logger.warn('âšï¸ Erro na primeira renderizaÃ§Ã£o:', { error: updateError.message });
+                        logger.warn('ï¿½ï¿½ Erro na primeira renderizaÃ§Ã£o:', { error: updateError.message });
                     }
         
                     logger.info('âœ… GrÃ¡fico de progresso inicializado com sucesso');
                     return true;
                 } catch (error) {
-                    // ðŸ” DiagnÃ³stico detalhado do erro
-                    logger.error('âŒ Erro ao inicializar grÃ¡fico de progresso:', {
+                    // ï¿½ DiagnÃ³stico detalhado do erro
+                    logger.error('ï¿½ Erro ao inicializar grÃ¡fico de progresso:', {
                         message: error.message,
                         stack: error.stack?.substring(0, 200),
                         canvasElement: !!canvasElement,
@@ -491,13 +491,13 @@ export const charts = {
                         chartJsAvailable: typeof Chart !== 'undefined',
                     });
         
-                    // ðŸ›¡ï¸ Cleanup em caso de falha parcial
+                    // ðŸ›¡ï¿½ Cleanup em caso de falha parcial
                     if (this.progressMetasChart) {
                         try {
                             this.progressMetasChart.destroy();
                             this.progressMetasChart = null;
                         } catch (cleanupError) {
-                            logger.warn('âšï¸ Erro durante cleanup', { error: cleanupError.message });
+                            logger.warn('ï¿½ï¿½ Erro durante cleanup', { error: cleanupError.message });
                         }
                     }
         
@@ -505,11 +505,11 @@ export const charts = {
                 }
             }
         
-            FIM DO CÓDIGO DESABILITADO */
+            FIM DO Cï¿½DIGO DESABILITADO */
     },
 
     /**
-     * ?? Atualiza o progresso das metas com histórico da sessão
+     * ?? Atualiza o progresso das metas com histï¿½rico da sessï¿½o
      */
     updateProgressChart(sessionHistory = []) {
         const requestId = generateRequestId('update_progress');
@@ -524,7 +524,7 @@ export const charts = {
             });
 
         if (!Array.isArray(sessionHistory)) {
-            logger.withRequest(requestId).warn('âšï¸ HistÃ³rico invÃ¡lido, usando array vazio');
+            logger.withRequest(requestId).warn('ï¿½ï¿½ HistÃ³rico invÃ¡lido, usando array vazio');
             sessionHistory = [];
         }
 
@@ -551,7 +551,7 @@ export const charts = {
                     performanceTracker.finishOperation(requestId, 'error', {
                         reason: 'chart_init_failed',
                     });
-                    logger.withRequest(requestId).error('âŒ Falha ao inicializar grÃ¡fico');
+                    logger.withRequest(requestId).error('ï¿½ Falha ao inicializar grÃ¡fico');
                     return false;
                 }
                 // Garante assinatura quando o grÃ¡fico Ã© (re)criado
@@ -569,12 +569,12 @@ export const charts = {
             // ðŸ”§ CORREÃ‡ÃƒO: Usa novo sistema de cÃ¡lculos integrado
             const stats = this.calculateProgressStats(normalizedHistory);
 
-            // Disponibiliza Ãºltimas estatÃsticas para utilitÃ¡rios/diagnÃ³sticos leves
+            // Disponibiliza Ãºltimas estatï¿½sticas para utilitÃ¡rios/diagnÃ³sticos leves
             try {
                 this.lastStats = stats;
             } catch { }
 
-            // ðŸ”§ CORREÃ‡ÃƒO: Calcula dados completos do card se funÃ§Ã£o disponÃvel
+            // ðŸ”§ CORREÃ‡ÃƒO: Calcula dados completos do card se funÃ§Ã£o disponï¿½vel
             let cardData = null;
             try {
                 if (typeof window.calculateProgressCardData === 'function') {
@@ -589,7 +589,7 @@ export const charts = {
                     );
                 }
             } catch (error) {
-                logger.warn('âšï¸ Erro ao calcular dados completos do card:', { error: error.message });
+                logger.warn('ï¿½ï¿½ Erro ao calcular dados completos do card:', { error: error.message });
             }
 
             // Calcula metas/gaps/hints a partir do contexto do app (sem travar se faltar dado)
@@ -597,7 +597,7 @@ export const charts = {
 
             performanceTracker.addMarker(requestId, 'ui_updates_start');
 
-            // ðŸ”§ CORREÃ‡ÃƒO: Usa novo sistema de atualizaÃ§Ã£o se disponÃvel
+            // ðŸ”§ CORREÃ‡ÃƒO: Usa novo sistema de atualizaÃ§Ã£o se disponï¿½vel
             if (cardData && cardData.isValid && typeof window.updateProgressCardComplete === 'function') {
                 try {
                     const updateSuccess = window.updateProgressCardComplete(cardData, this.progressMetasChart);
@@ -615,7 +615,7 @@ export const charts = {
                         this.updateProgressStatusNew(stats, targets, goalsSummary);
                     }
                 } catch (updateError) {
-                    logger.warn('âšï¸ Erro no novo sistema, usando fallback:', { error: updateError.message });
+                    logger.warn('ï¿½ï¿½ Erro no novo sistema, usando fallback:', { error: updateError.message });
                     // Fallback para sistema antigo
                     this.updateProgressPieChart(stats, goalsSummary);
                     this.updateProgressStatusNew(stats, targets, goalsSummary);
@@ -635,13 +635,13 @@ export const charts = {
             performanceTracker.finishOperation(requestId, 'error', { error: error.message });
             logger
                 .withRequest(requestId)
-                .error('âŒ Erro ao atualizar progresso:', { error: String(error) });
+                .error('ï¿½ Erro ao atualizar progresso:', { error: String(error) });
             return false;
         }
     },
 
     /**
-     * ðŸ“Š Calcula estatÃsticas do progresso (VERSÃƒO MELHORADA)
+     * ðŸ“Š Calcula estatï¿½sticas do progresso (VERSÃƒO MELHORADA)
      * Integra com o novo sistema de cÃ¡lculos reais
      */
     calculateProgressStats(sessionHistory) {
@@ -651,16 +651,16 @@ export const charts = {
                 return window.calculateRealStats(sessionHistory);
             }
 
-            // Fallback para cÃ¡lculo local se funÃ§Ã£o externa nÃ£o disponÃvel
+            // Fallback para cÃ¡lculo local se funÃ§Ã£o externa nÃ£o disponï¿½vel
             return this._calculateProgressStatsLocal(sessionHistory);
         } catch (error) {
-            logger.error('âŒ Erro ao calcular estatÃsticas de progresso:', { error: String(error) });
+            logger.error('ï¿½ Erro ao calcular estatï¿½sticas de progresso:', { error: String(error) });
             return this._calculateProgressStatsLocal(sessionHistory);
         }
     },
 
     /**
-     * ðŸ“Š CÃ¡lculo local de estatÃsticas (fallback)
+     * ðŸ“Š CÃ¡lculo local de estatï¿½sticas (fallback)
      * @private
      */
     _calculateProgressStatsLocal(sessionHistory) {
@@ -705,7 +705,7 @@ export const charts = {
                 losses++;
             }
 
-            // Soma lucro/prejuÃzo se disponÃvel
+            // Soma lucro/prejuï¿½zo se disponï¿½vel
             if (typeof operacao.valor === 'number' && !isNaN(operacao.valor)) {
                 totalProfit += operacao.valor;
             }
@@ -856,7 +856,7 @@ export const charts = {
                     } else {
                         msg = 'Aprimorar assertividade';
                         level = 'warning';
-                        icon = 'âšï¸';
+                        icon = 'ï¿½ï¿½';
                     }
                 }
                 const meta = targets.winTarget || 80;
@@ -900,7 +900,7 @@ export const charts = {
                     } else {
                         msg = 'Risco alto';
                         level = 'warning';
-                        icon = 'âšï¸';
+                        icon = 'ï¿½ï¿½';
                     }
                 }
                 const meta = targets.lossTarget || 20;
@@ -926,7 +926,7 @@ export const charts = {
                 setCard(lossEl, `${icon} ${msg}`, level, sub);
             }
         } catch (error) {
-            logger.warn('âšï¸ _updateStatusCards: falha ao atualizar cartÃµes', {
+            logger.warn('ï¿½ï¿½ _updateStatusCards: falha ao atualizar cartÃµes', {
                 error: String(error),
             });
         }
@@ -944,7 +944,7 @@ export const charts = {
                     const reinitOk = this.initProgressChart();
                     if (!reinitOk) return false;
                 } else {
-                    // Canvas indisponÃvel no DOM; nÃ£o atualizar agora
+                    // Canvas indisponï¿½vel no DOM; nÃ£o atualizar agora
                     return false;
                 }
             } catch {
@@ -979,7 +979,7 @@ export const charts = {
 
             return true;
         } catch (error) {
-            logger.error('âŒ Erro ao atualizar grÃ¡fico de pizza', { error: String(error) });
+            logger.error('ï¿½ Erro ao atualizar grÃ¡fico de pizza', { error: String(error) });
             return false;
         }
     },
@@ -995,7 +995,7 @@ export const charts = {
         if (winDisplay) winDisplay.textContent = `${stats.winRate.toFixed(1)}%`;
         if (lossDisplay) lossDisplay.textContent = `${stats.lossRate.toFixed(1)}%`;
 
-        // Referências aos elementos percentuais removidas - campos não existem mais
+        // Referï¿½ncias aos elementos percentuais removidas - campos nï¿½o existem mais
 
         // Atualiza valores em R$ 
         try {
@@ -1004,10 +1004,10 @@ export const charts = {
                 const g = summary.goals;
 
                 // Win (R$)
-                const winTargetAmountEl = document.getElementById('win-target-amount') || dom.winTargetAmount;
-                const winRemainingAmountEl = document.getElementById('win-remaining-amount') || dom.winRemainingAmount;
-                const metaTargetAmountEl = document.getElementById('meta-target-amount');
-                const metaAchievedAmountEl = document.getElementById('meta-achieved-amount');
+                const winTargetAmountEl = dom.winTargetAmount || dom.winTargetAmount;
+                const winRemainingAmountEl = dom.winRemainingAmount || dom.winRemainingAmount;
+                const metaTargetAmountEl = dom.metaTargetAmount;
+                const metaAchievedAmountEl = dom.metaAchievedAmount;
 
                 const stopWinAmountBRL = `R$ ${Number(g.stopWinAmount || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
                 const remaining = Math.max(0, g.stopWinAmount - Math.max(0, g.lucroAcumulado || 0));
@@ -1025,13 +1025,13 @@ export const charts = {
                 }
 
                 // Loss (R$)
-                const lossLimitAmountEl = document.getElementById('loss-limit-amount') || dom.lossLimitAmount;
-                const lossSessionResultEl = document.getElementById('loss-session-result') || dom.lossSessionResult;
-                const statusTargetAmountEl = document.getElementById('status-target-amount');
-                const statusAchievedEl = document.getElementById('status-achieved');
-                const statusExceedEl = document.getElementById('status-exceed');
-                const statusMarginEl = document.getElementById('status-margin');
-                const statusRiskUsedEl = document.getElementById('status-risk-used');
+                const lossLimitAmountEl = dom.lossLimitAmount || dom.lossLimitAmount;
+                const lossSessionResultEl = dom.lossSessionResult || dom.lossSessionResult;
+                const statusTargetAmountEl = dom.statusTargetAmount;
+                const statusAchievedEl = dom.statusAchieved;
+                const statusExceedEl = dom.statusExceed;
+                const statusMarginEl = dom.statusMargin;
+                const statusRiskUsedEl = dom.statusRiskUsed;
 
                 const stopLossAmountBRL = `R$ ${Number(g.stopLossAmount || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
                 const sessionPLBRL = `R$ ${Number(g.lucroAcumulado || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
@@ -1069,7 +1069,7 @@ export const charts = {
                 }
             }
         } catch (error) {
-            logger.warn('âšï¸ Erro ao atualizar valores monetÃ¡rios:', error.message);
+            logger.warn('ï¿½ï¿½ Erro ao atualizar valores monetÃ¡rios:', error.message);
         }
     },
 
@@ -1080,7 +1080,7 @@ export const charts = {
         this.updateProgressBarSafe('win', stats.winRate, targets.winTarget);
         this.updateProgressBarSafe('loss', stats.lossRate, targets.lossTarget);
 
-        // Atualiza valores em R$ abaixo das barras, quando possÃvel
+        // Atualiza valores em R$ abaixo das barras, quando possï¿½vel
         try {
             const summary = this._buildGoalsProgressSummarySafe();
             if (summary?.goals) {
@@ -1089,7 +1089,7 @@ export const charts = {
                     dom.winTargetAmount.textContent =
                         ui?._formatarMoedaInternal?.(g.stopWinAmount) ||
                         `R$ ${Number(g.stopWinAmount || 0).toFixed(2)}`;
-                // Usa falta com recuperaÃ§Ã£o (considera prejuÃzo atual)
+                // Usa falta com recuperaÃ§Ã£o (considera prejuï¿½zo atual)
                 const faltaRec =
                     typeof g.restanteWinRecoveryAmount === 'number'
                         ? g.restanteWinRecoveryAmount
@@ -1129,8 +1129,8 @@ export const charts = {
                     g.lucroAcumulado > 0 && g.stopWinAmount > 0
                         ? Math.min(100, (g.lucroAcumulado / g.stopWinAmount) * 100)
                         : 0;
-                const metaFill = document.getElementById('meta-progress-fill');
-                const metaDisp = document.getElementById('meta-progress-display');
+                const metaFill = dom.metaProgressFill;
+                const metaDisp = dom.metaProgressDisplay;
                 if (metaFill) metaFill.style.width = `${metaPercent}%`;
                 if (metaDisp) {
                     metaDisp.textContent = `${metaPercent.toFixed(1)}%`;
@@ -1142,8 +1142,8 @@ export const charts = {
                     g.lucroAcumulado < 0 && g.stopLossAmount > 0
                         ? Math.min(100, (Math.abs(g.lucroAcumulado) / g.stopLossAmount) * 100)
                         : 0;
-                const riscoFill = document.getElementById('risk-used-fill');
-                const riscoDisp = document.getElementById('risk-used-display');
+                const riscoFill = dom.riskUsedFill;
+                const riscoDisp = dom.riskUsedDisplay;
                 if (riscoFill) riscoFill.style.width = `${riscoPercent}%`;
                 if (riscoDisp) {
                     riscoDisp.textContent = `${riscoPercent.toFixed(1)}%`;
@@ -1153,14 +1153,14 @@ export const charts = {
             }
         } catch { }
 
-        // Badges de tendÃªncia (nÃ£o intrusivo; usa prevWinRate/prevLossRate se disponÃveis)
+        // Badges de tendÃªncia (nÃ£o intrusivo; usa prevWinRate/prevLossRate se disponï¿½veis)
         try {
             const wrPrev = typeof stats.prevWinRate === 'number' ? stats.prevWinRate : null;
             const lrPrev = typeof stats.prevLossRate === 'number' ? stats.prevLossRate : null;
             const wrDelta = wrPrev !== null ? (stats.winRate - wrPrev) : 0;
             const lrDelta = lrPrev !== null ? (stats.lossRate - lrPrev) : 0;
 
-            const wrBadge = document.getElementById('meta-trend-badge');
+            const wrBadge = dom.metaTrendBadge;
             if (wrBadge) {
                 if (wrPrev === null || Math.abs(wrDelta) < 0.05) {
                     wrBadge.textContent = '';
@@ -1171,7 +1171,7 @@ export const charts = {
                 }
             }
 
-            const lrBadge = document.getElementById('loss-trend-badge');
+            const lrBadge = dom.lossTrendBadge;
             if (lrBadge) {
                 if (lrPrev === null || Math.abs(lrDelta) < 0.05) {
                     lrBadge.textContent = '';
@@ -1202,7 +1202,7 @@ export const charts = {
         Object.entries(elements).forEach(([key, element]) => {
             if (!element) {
                 if (isDevelopment && isDevelopment()) {
-                    logger.warn(`âšï¸ Elemento ${type}${key} nÃ£o encontrado`);
+                    logger.warn(`ï¿½ï¿½ Elemento ${type}${key} nÃ£o encontrado`);
                 } else {
                     logger.debug && logger.debug(`Elemento ${type}${key} nÃ£o encontrado`);
                 }
@@ -1246,7 +1246,7 @@ export const charts = {
                 }
             } catch (error) {
                 if (isDevelopment && isDevelopment()) {
-                    logger.error(`âŒ Erro ao atualizar ${type}.${key}:`, { error: String(error) });
+                    logger.error(`ï¿½ Erro ao atualizar ${type}.${key}:`, { error: String(error) });
                 } else {
                     logger.debug && logger.debug(`Erro silencioso em ${type}.${key}`);
                 }
@@ -1301,7 +1301,7 @@ export const charts = {
             targetMarker.style.left = `${targetPx}px`;
             currentMarker.style.left = `${currentPx}px`;
 
-            // Mostra valores em R$ (se disponÃveis no contexto global formatador)
+            // Mostra valores em R$ (se disponï¿½veis no contexto global formatador)
             try {
                 const summary = this._buildGoalsProgressSummarySafe();
                 const progressV2 =
@@ -1335,14 +1335,14 @@ export const charts = {
                 }
             } catch { }
         } catch (e) {
-            logger.warn('âšï¸ Falha ao posicionar marcadores de progresso', { error: String(e) });
+            logger.warn('ï¿½ï¿½ Falha ao posicionar marcadores de progresso', { error: String(e) });
         }
     },
 
     updateAssertividadeChart(historico, chartInstance) {
-        // Validação defensiva dos parâmetros
+        // Validaï¿½ï¿½o defensiva dos parï¿½metros
         if (!Array.isArray(historico)) {
-            logger.warn('?? updateAssertividadeChart: histórico não é array, usando array vazio');
+            logger.warn('?? updateAssertividadeChart: histï¿½rico nï¿½o ï¿½ array, usando array vazio');
             historico = [];
         }
 
@@ -1360,7 +1360,7 @@ export const charts = {
 
             const total = wins + losses;
 
-            // Cores fixas para consistência (definidas em updateColors, mas reforçadas aqui)
+            // Cores fixas para consistï¿½ncia (definidas em updateColors, mas reforï¿½adas aqui)
             const winColor = '#00d9a6';
             const lossColor = '#ff6b6b';
 
@@ -1384,11 +1384,11 @@ export const charts = {
                 chartInstance.data.datasets[0].data = [wins, losses];
                 chartInstance.data.datasets[0].backgroundColor = [winColor, lossColor];
 
-                // Restaura borda padrão (será sobrescrita pelo updateColors, mas define aqui por garantia)
+                // Restaura borda padrï¿½o (serï¿½ sobrescrita pelo updateColors, mas define aqui por garantia)
                 const style = getComputedStyle(document.body);
                 const surface = style.getPropertyValue('--surface-color').trim();
                 chartInstance.data.datasets[0].borderColor = surface;
-                chartInstance.data.datasets[0].borderWidth = 0; // Borda padrão é 0 ou controlada pelo tema
+                chartInstance.data.datasets[0].borderWidth = 0; // Borda padrï¿½o ï¿½ 0 ou controlada pelo tema
 
                 // Habilita tooltip
                 if (chartInstance.options.plugins.tooltip) {
@@ -1410,7 +1410,7 @@ export const charts = {
 
     updatePatrimonioChart(historico, capitalInicial, chartInstance, isGlobal = false) {
         try {
-            logger.debug('ðŸ“Š ATUALIZANDO GRÃFICO DE PATRIMÃ”NIO:', {
+            logger.debug('ðŸ“Š ATUALIZANDO GRï¿½FICO DE PATRIMÃ”NIO:', {
                 historico: historico?.length || 0,
                 capitalInicial,
                 isGlobal,
@@ -1422,12 +1422,12 @@ export const charts = {
             }
 
             if (!Array.isArray(historico)) {
-                logger.warn('âšï¸ HistÃ³rico nÃ£o Ã© array:', { type: typeof historico });
+                logger.warn('ï¿½ï¿½ HistÃ³rico nÃ£o Ã© array:', { type: typeof historico });
                 historico = [];
             }
 
             if (typeof capitalInicial !== 'number' || isNaN(capitalInicial)) {
-                logger.warn('âšï¸ Capital inicial invÃ¡lido:', { capitalInicial });
+                logger.warn('ï¿½ï¿½ Capital inicial invÃ¡lido:', { capitalInicial });
                 capitalInicial = 0;
             }
 
@@ -1462,25 +1462,25 @@ export const charts = {
                             // Usar 0 para valores desconhecidos para manter continuidade
                             val = 0;
                             logger.debug(
-                                `âšï¸ OperaÃ§Ã£o ${index} com formato nÃ£o reconhecido, usando valor 0:`,
+                                `ï¿½ï¿½ OperaÃ§Ã£o ${index} com formato nÃ£o reconhecido, usando valor 0:`,
                                 { op }
                             );
                         } else {
-                            logger.warn(`âšï¸ OperaÃ§Ã£o ${index} invÃ¡lida:`, { op });
+                            logger.warn(`ï¿½ï¿½ OperaÃ§Ã£o ${index} invÃ¡lida:`, { op });
                             return; // Skip esta operaÃ§Ã£o
                         }
                         runningCapital += val;
                         capitalHistory.push(runningCapital);
                     } else {
-                        logger.warn(`âšï¸ OperaÃ§Ã£o ${index} invÃ¡lida:`, { op });
+                        logger.warn(`ï¿½ï¿½ OperaÃ§Ã£o ${index} invÃ¡lida:`, { op });
                     }
                 }
             });
 
             // Labels mais informativos
             const labels = isGlobal
-                ? capitalHistory.map((_, i) => (i === 0 ? 'InÃcio' : `Op ${i}`))
-                : capitalHistory.map((_, i) => (i === 0 ? 'InÃcio' : `Op ${i}`));
+                ? capitalHistory.map((_, i) => (i === 0 ? 'Inï¿½cio' : `Op ${i}`))
+                : capitalHistory.map((_, i) => (i === 0 ? 'Inï¿½cio' : `Op ${i}`));
 
             chartInstance.data.labels = labels;
 
@@ -1502,7 +1502,7 @@ export const charts = {
             chartInstance.update('none');
             return true;
         } catch (error) {
-            logger.error('âŒ updatePatrimonioChart: erro ao atualizar dados', {
+            logger.error('ï¿½ updatePatrimonioChart: erro ao atualizar dados', {
                 error: String(error),
             });
             return false;
@@ -1510,13 +1510,13 @@ export const charts = {
     },
 
     /**
-     * Atualiza os charts da modal de Replay com dados de uma sessÃ£o especÃfica
+     * Atualiza os charts da modal de Replay com dados de uma sessÃ£o especï¿½fica
      */
     updateReplayCharts(sessao) {
         try {
             if (!sessao || !Array.isArray(sessao.historicoCombinado)) return false;
             const historico = sessao.historicoCombinado;
-            // EstatÃsticas para o texto central do plugin
+            // Estatï¿½sticas para o texto central do plugin
             const wins = historico.filter((op) => op && (op.resultado === 'win' || op.isWin === true)).length;
             const totalOps = historico.length;
             const winRatePct = totalOps > 0 ? (wins / totalOps) * 100 : 0;
@@ -1554,7 +1554,7 @@ export const charts = {
     updateGlobal(aggregatedData) {
         try {
             if (!aggregatedData) {
-                logger.warn('âšï¸ updateGlobal: dados agregados nÃ£o fornecidos');
+                logger.warn('ï¿½ï¿½ updateGlobal: dados agregados nÃ£o fornecidos');
                 return false;
             }
 
@@ -1562,12 +1562,12 @@ export const charts = {
 
             // ValidaÃ§Ã£o defensiva
             if (!Array.isArray(historico)) {
-                logger.warn('âšï¸ updateGlobal: histÃ³rico nÃ£o Ã© array, usando array vazio');
+                logger.warn('ï¿½ï¿½ updateGlobal: histÃ³rico nÃ£o Ã© array, usando array vazio');
                 historico = [];
             }
 
             if (typeof capitalInicial !== 'number' || isNaN(capitalInicial)) {
-                logger.warn('âšï¸ updateGlobal: capital inicial invÃ¡lido, usando 0');
+                logger.warn('ï¿½ï¿½ updateGlobal: capital inicial invÃ¡lido, usando 0');
                 capitalInicial = 0;
             }
 
@@ -1610,7 +1610,7 @@ export const charts = {
 
             return true;
         } catch (error) {
-            logger.error('âŒ updateGlobal: erro ao atualizar grÃ¡ficos globais', {
+            logger.error('ï¿½ updateGlobal: erro ao atualizar grÃ¡ficos globais', {
                 error: String(error),
             });
             return false;
@@ -1623,22 +1623,22 @@ export const charts = {
         const border = style.getPropertyValue('--border-color').trim();
         const muted = style.getPropertyValue('--text-muted').trim();
 
-        // ?? Cores fixas do Progresso das Metas (consistência visual)
-        const winColor = '#00d9a6';  // Verde para vitórias
+        // ?? Cores fixas do Progresso das Metas (consistï¿½ncia visual)
+        const winColor = '#00d9a6';  // Verde para vitï¿½rias
         const lossColor = '#ff6b6b'; // Vermelho/rosa para derrotas
 
         // Cores para modo vazio (iguais ao enhanced-donut-chart-system.js)
         const emptyColor = '#374151';
         const emptyBorderColor = '#4b5563';
 
-        // Atualiza gráficos de Assertividade (Donut) com cores fixas
+        // Atualiza grï¿½ficos de Assertividade (Donut) com cores fixas
         [this.dashboardAssertividadeChart, this.replayAssertividadeChart].forEach((chart) => {
             if (chart) {
-                // Verifica se está em modo vazio (data = [1])
+                // Verifica se estï¿½ em modo vazio (data = [1])
                 const isEmpty = chart.data.datasets[0].data.length === 1;
 
                 if (isEmpty) {
-                    // Mantém cores de placeholder
+                    // Mantï¿½m cores de placeholder
                     chart.data.datasets[0].backgroundColor = [emptyColor];
                     chart.data.datasets[0].borderColor = emptyBorderColor;
                 } else {
@@ -1652,11 +1652,11 @@ export const charts = {
             }
         });
 
-        // Atualiza gráficos de Patrimônio (Line) com cor verde
+        // Atualiza grï¿½ficos de Patrimï¿½nio (Line) com cor verde
         [this.dashboardPatrimonioChart, this.replayPatrimonioChart].forEach((chart) => {
             if (chart) {
                 chart.data.datasets[0].borderColor = winColor;
-                chart.data.datasets[0].backgroundColor = 'rgba(0, 217, 166, 0.1)'; // Verde com transparência
+                chart.data.datasets[0].backgroundColor = 'rgba(0, 217, 166, 0.1)'; // Verde com transparï¿½ncia
                 chart.data.datasets[0].pointBackgroundColor = winColor;
                 chart.data.datasets[0].fill = true;
                 if (chart.options.scales?.y?.ticks) chart.options.scales.y.ticks.color = muted;
@@ -1703,7 +1703,7 @@ export const charts = {
             this._performanceOptimized = true;
             console.log('âœ… OtimizaÃ§Ãµes de performance inicializadas');
         } catch (error) {
-            console.error('âŒ Erro ao inicializar otimizaÃ§Ãµes:', error);
+            console.error('ï¿½ Erro ao inicializar otimizaÃ§Ãµes:', error);
             this._performanceOptimized = false;
         }
     },

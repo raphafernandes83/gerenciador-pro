@@ -117,20 +117,36 @@ export function mapDOM() {
     dom.lossCurrentBar = safeGetElement('loss-current-bar', true); // Obrigatório
     dom.lossTargetValue = safeGetElement('loss-target-value');
     dom.lossCurrentValue = safeGetElement('loss-current-value');
-    
+
     // Performance Section Elements
     dom.metaTargetPercent = safeGetElement('meta-target-percent');
     dom.metaCurrentPercent = safeGetElement('meta-current-percent');
     dom.metaTargetAmount = safeGetElement('meta-target-amount');
     dom.metaAchievedAmount = safeGetElement('meta-achieved-amount');
     dom.metaProgressValue = safeGetElement('meta-progress-value');
-    
+    dom.metaProgressFill = safeGetElement('meta-progress-fill'); // 🆕 charts.js
+    dom.metaProgressDisplay = safeGetElement('meta-progress-display'); // 🆕 charts.js
+    dom.metaTrendBadge = safeGetElement('meta-trend-badge'); // 🆕 charts.js
+
     // Risk Section Elements
     dom.lossTargetPercent = safeGetElement('loss-target-percent');
     dom.lossCurrentPercent = safeGetElement('loss-current-percent');
     dom.lossLimitAmount = safeGetElement('loss-limit-amount');
     dom.lossSessionResult = safeGetElement('loss-session-result');
     dom.riskUsedValue = safeGetElement('risk-used-value');
+    dom.riskUsedFill = safeGetElement('risk-used-fill'); // 🆕 charts.js
+    dom.riskUsedDisplay = safeGetElement('risk-used-display'); // 🆕 charts.js
+    dom.lossTrendBadge = safeGetElement('loss-trend-badge'); // 🆕 charts.js
+
+    // Status indicators (detailed)
+    dom.statusTargetAmount = safeGetElement('status-target-amount'); // 🆕 charts.js
+    dom.statusAchieved = safeGetElement('status-achieved'); // 🆕 charts.js
+    dom.statusExceed = safeGetElement('status-exceed'); // 🆕 charts.js
+    dom.statusRiskUsed = safeGetElement('status-risk-used'); // 🆕 charts.js
+
+    // Outros elementos do charts.js
+    dom.payoutAtivo = safeGetElement('payout-ativo'); // 🆕 charts.js
+    dom.progressSoftLockBadge = safeGetElement('progress-soft-lock-badge'); // 🆕 charts.js
 
     /**
      * 🎭 Indicadores de status com design melhorado
