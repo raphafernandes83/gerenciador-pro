@@ -29,12 +29,12 @@ const supabaseAnonKey = ENV_SUPABASE_ANON_KEY || SUPABASE_CONFIG.ANON_KEY;
 
 // 🛡️ Validação robusta de configuração
 if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'offline') {
-    console.warn(
+    logger.warn(
         '⚠️ Supabase não configurado. Sistema funcionará em modo offline com funcionalidade limitada.'
     );
     window.__SUPABASE_OFFLINE_MODE__ = true;
 } else {
-    console.info('✅ Configuração Supabase carregada:', {
+    logger.info('✅ Configuração Supabase carregada:', {
         hasUrl: !!supabaseUrl,
         hasKey: !!supabaseAnonKey,
         isDevelopment: SUPABASE_CONFIG.DEVELOPMENT_MODE,
@@ -92,12 +92,12 @@ const initializeSupabaseClient = () => {
     try {
         // 🛡️ Verificação prévia de configuração
         if (window.__SUPABASE_OFFLINE_MODE__) {
-            console.info('🎮 Sistema em modo offline - Supabase não será inicializado');
+            logger.info('🎮 Sistema em modo offline - Supabase não será inicializado');
             return false;
         }
 
         if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'offline') {
-            console.warn('⚠️ Credenciais Supabase ausentes. Verifique a configuração.');
+            logger.warn('⚠️ Credenciais Supabase ausentes. Verifique a configuração.');
             return false;
         }
 
@@ -107,21 +107,21 @@ const initializeSupabaseClient = () => {
             // 🔍 Validação robusta do cliente
             if (client && typeof client.auth === 'object' && typeof client.from === 'function') {
                 supabase = client;
-                console.log('✅ Cliente Supabase inicializado com sucesso!');
+                logger.debug('✅ Cliente Supabase inicializado com sucesso!');
                 return true;
             } else {
-                console.error('❌ Cliente Supabase criado mas inválido');
+                logger.error('❌ Cliente Supabase criado mas inválido');
                 return false;
             }
         } else {
-            console.error(
+            logger.error(
                 '❌ Biblioteca Supabase não carregada. Verifique se o script está incluído no HTML.'
             );
             return false;
         }
     } catch (error) {
         // 🛡️ Log seguro sem vazamento de credenciais
-        console.error('❌ Erro na inicialização do Supabase:', {
+        logger.error('❌ Erro na inicialização do Supabase:', {
             message: error.message,
             timestamp: new Date().toISOString(),
             hasCredentials: !!(supabaseUrl && supabaseAnonKey),
@@ -146,7 +146,7 @@ const initializeSupabaseWithRetry = async () => {
         }
 
         if (attempt < maxRetries) {
-            console.warn(
+            logger.warn(
                 `⚠️ Tentativa ${attempt}/${maxRetries} falhou. Retry em ${retryDelay}ms...`
             );
             await new Promise((resolve) => setTimeout(resolve, retryDelay));
@@ -154,15 +154,15 @@ const initializeSupabaseWithRetry = async () => {
         }
     }
 
-    console.warn(SYSTEM_MESSAGES.WARNING.SUPABASE_FAILED);
-    console.info('ℹ️ Sistema continuará funcionando com cliente null-safe');
+    logger.warn(SYSTEM_MESSAGES.WARNING.SUPABASE_FAILED);
+    logger.info('ℹ️ Sistema continuará funcionando com cliente null-safe');
 };
 
 // Inicialização imediata ou com retry
 if (!initializeSupabaseClient()) {
     // Async retry sem bloquear thread principal
     initializeSupabaseWithRetry().catch((error) => {
-        console.error('💥 Falha crítica na inicialização do Supabase:', error.message);
+        logger.error('💥 Falha crítica na inicialização do Supabase:', error.message);
     });
 }
 
@@ -173,24 +173,24 @@ if (!initializeSupabaseClient()) {
  * @returns {Promise<boolean>} True se conexão válida, false caso contrário
  */
 async function testSupabaseConnection() {
-    console.log('🔍 Iniciando teste de conexão Supabase...');
+    logger.debug('🔍 Iniciando teste de conexão Supabase...');
     const requestId = generateRequestId('supabase');
 
     // Guard Clause 1: Verifica se cliente existe
     if (!supabase) {
-        console.error('❌ Cliente Supabase é null/undefined');
+        logger.error('❌ Cliente Supabase é null/undefined');
         return false;
     }
 
     // Guard Clause 2: Verifica se é cliente null-safe (não conectado)
     if (supabase.isNull === true) {
-        console.warn('⚠️ Usando cliente Supabase null-safe (biblioteca não carregada)');
+        logger.warn('⚠️ Usando cliente Supabase null-safe (biblioteca não carregada)');
         return false;
     }
 
     // Guard Clause 3: Verifica se cliente tem interface esperada
     if (!supabase.auth || typeof supabase.auth.getUser !== 'function') {
-        console.error('❌ Cliente Supabase com interface inválida');
+        logger.error('❌ Cliente Supabase com interface inválida');
         return false;
     }
 
@@ -216,7 +216,7 @@ async function testSupabaseConnection() {
                     const { data: refreshed, error: refreshError } =
                         await supabase.auth.refreshSession();
                     if (!refreshError) {
-                        console.info('🔁 Sessão renovada com sucesso');
+                        logger.info('🔁 Sessão renovada com sucesso');
                         return true;
                     }
                 } catch (_) {
@@ -246,12 +246,12 @@ function _categorizeSupabaseError(authError) {
 
     switch (errorCode) {
         case 'CLIENT_UNAVAILABLE':
-            console.warn('⚠️ Cliente Supabase não disponível (esperado)');
+            logger.warn('⚠️ Cliente Supabase não disponível (esperado)');
             return false;
 
         case 'NETWORK_ERROR':
         case 'CONNECTION_TIMEOUT':
-            console.error('🌐 Erro de rede na conexão Supabase:', {
+            logger.error('🌐 Erro de rede na conexão Supabase:', {
                 code: errorCode,
                 type: 'network',
                 timestamp: new Date().toISOString(),
@@ -261,22 +261,22 @@ function _categorizeSupabaseError(authError) {
         case 'AUTH_SESSION_MISSING':
         case 'JWT_EXPIRED':
             // Estes são erros "normais" quando usuário não está logado
-            console.info('ℹ️ Nenhuma sessão ativa (normal para primeira execução)');
+            logger.info('ℹ️ Nenhuma sessão ativa (normal para primeira execução)');
             return true; // Conexão OK, apenas sem usuário logado
 
         case 'UNKNOWN':
             // Tratamento específico para "Auth session missing!" que vem sem código específico
             if (errorMessage === 'Auth session missing!') {
-                console.info('ℹ️ Sessão não encontrada (comportamento normal na inicialização)');
+                logger.info('ℹ️ Sessão não encontrada (comportamento normal na inicialização)');
                 return true; // Conexão OK, apenas sem usuário logado
             }
             // Para outros erros UNKNOWN, continua para o default
-            console.warn('⚠️ Erro de autenticação desconhecido:', errorCode);
+            logger.warn('⚠️ Erro de autenticação desconhecido:', errorCode);
             return false;
 
         default:
             // 🔧 CORREÇÃO: Log menos agressivo para erros não categorizados
-            console.warn('⚠️ Erro Supabase não categorizado:', {
+            logger.warn('⚠️ Erro Supabase não categorizado:', {
                 code: errorCode,
                 message: errorMessage.substring(0, 100), // Limita tamanho do log
                 type: 'uncategorized',
@@ -293,7 +293,7 @@ function _categorizeSupabaseError(authError) {
  * @param {Object} user - Dados do usuário (pode ser null)
  */
 function _logSuccessfulConnection(user) {
-    console.log(SYSTEM_MESSAGES.SUCCESS.SUPABASE_CONNECTED);
+    logger.debug(SYSTEM_MESSAGES.SUCCESS.SUPABASE_CONNECTED);
 
     if (user && user.user) {
         // Logging seguro - não expõe dados sensíveis completos
@@ -303,9 +303,9 @@ function _logSuccessfulConnection(user) {
             provider: user.user.app_metadata?.provider || 'unknown',
             confirmed: user.user.email_confirmed_at ? 'yes' : 'no',
         };
-        console.log('👤 Usuário conectado:', userInfo);
+        logger.debug('👤 Usuário conectado:', userInfo);
     } else {
-        console.log('ℹ️ Conexão estabelecida - nenhum usuário logado');
+        logger.debug('ℹ️ Conexão estabelecida - nenhum usuário logado');
     }
 }
 
@@ -321,18 +321,18 @@ function _handleConnectionException(error) {
 
     // Categorização de exceções
     if (errorMessage.includes('timeout') || errorMessage.includes('Timeout')) {
-        console.error('⏱️ Timeout na conexão Supabase:', {
+        logger.error('⏱️ Timeout na conexão Supabase:', {
             type: 'timeout',
             duration: SUPABASE_CONFIG.CONNECTION_TIMEOUT,
             suggestion: 'Verificar conectividade de rede',
         });
     } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
-        console.error('🌐 Falha de rede:', {
+        logger.error('🌐 Falha de rede:', {
             type: 'network',
             suggestion: 'Verificar conectividade ou URL do Supabase',
         });
     } else {
-        console.error('💥 Exceção na conexão Supabase:', {
+        logger.error('💥 Exceção na conexão Supabase:', {
             type: errorType,
             message: errorMessage.substring(0, 100),
             timestamp: new Date().toISOString(),
@@ -416,6 +416,7 @@ import {
     demonstrateAdvancedStrategies,
     AdvancedStrategiesUtils,
 } from './src/strategies/AdvancedStrategies.js';
+import { logger } from './src/utils/Logger.js';
 
 // ================================================================
 // EXPOR MÓDULOS GLOBALMENTE PARA OS TESTES
@@ -515,7 +516,7 @@ class App {
 
         for (const [method, count] of Object.entries(methodCounts)) {
             if (count > 5) {
-                console.error(`🚨 Recursão detectada: ${method} chamado ${count} vezes`);
+                logger.error(`🚨 Recursão detectada: ${method} chamado ${count} vezes`);
                 return false;
             }
         }
@@ -533,15 +534,15 @@ class App {
             if (errorHandler && errorHandler.setupGlobalErrorHandling) {
                 // Wrapper com timeout de segurança
                 const timeoutId = setTimeout(() => {
-                    console.warn('⚠️ Timeout na inicialização do errorHandler');
+                    logger.warn('⚠️ Timeout na inicialização do errorHandler');
                 }, TIMING_CONFIG.INITIALIZATION.ERROR_HANDLER_TIMEOUT);
 
                 errorHandler.setupGlobalErrorHandling();
                 clearTimeout(timeoutId);
-                console.log('✅ Error handling ativo');
+                logger.debug('✅ Error handling ativo');
             }
         } catch (error) {
-            console.warn('⚠️ Erro ao inicializar error handling:', error.message);
+            logger.warn('⚠️ Erro ao inicializar error handling:', error.message);
         }
     }
 
@@ -564,13 +565,13 @@ class App {
                 });
 
                 if (initialized) {
-                    console.log('✅ Performance monitoring ativo');
+                    logger.debug('✅ Performance monitoring ativo');
                 } else {
-                    console.warn('⚠️ Performance monitoring não inicializou');
+                    logger.warn('⚠️ Performance monitoring não inicializou');
                 }
             }
         } catch (error) {
-            console.warn('⚠️ Erro ao inicializar performance monitoring:', error.message);
+            logger.warn('⚠️ Erro ao inicializar performance monitoring:', error.message);
         }
     }
 
@@ -588,10 +589,10 @@ class App {
                     enableCompression: false, // Desabilitado para reduzir overhead
                     enableStatistics: false, // Desabilitado para reduzir overhead
                 });
-                console.log('✅ Cache manager ativo');
+                logger.debug('✅ Cache manager ativo');
             }
         } catch (error) {
-            console.warn('⚠️ Erro ao inicializar cache manager:', error.message);
+            logger.warn('⚠️ Erro ao inicializar cache manager:', error.message);
         }
     }
 
@@ -619,10 +620,10 @@ class App {
             try {
                 const { dashboardUIManager } = await import('./src/managers/DashboardUIManager.js');
                 dashboardUIManager.init();
-                console.log('✅ DashboardUIManager inicializado com sucesso');
+                logger.debug('✅ DashboardUIManager inicializado com sucesso');
                 this.initializationSteps.push('dashboard_ui_initialized');
             } catch (error) {
-                console.error('❌ Erro ao inicializar DashboardUIManager:', error);
+                logger.error('❌ Erro ao inicializar DashboardUIManager:', error);
             }
 
             await this._performUISync();
@@ -640,7 +641,7 @@ class App {
      * @private
      */
     async _initializeDependencyInjection() {
-        console.log('🏭 Inicializando Dependency Injection...');
+        logger.debug('🏭 Inicializando Dependency Injection...');
 
         try {
             // Registra módulos legados para compatibilidade
@@ -665,12 +666,12 @@ class App {
             // Inicializa o container de dependências
             this.dependencies = await dependencyInjector.initialize(legacyModules);
 
-            console.log('✅ Dependency Injection inicializado!');
-            console.log('📊 Estatísticas do DI:', dependencyInjector.getStats());
+            logger.debug('✅ Dependency Injection inicializado!');
+            logger.debug('📊 Estatísticas do DI:', dependencyInjector.getStats());
 
             this.initializationSteps.push('dependency_injection_initialized');
         } catch (error) {
-            console.error('❌ Erro ao inicializar Dependency Injection:', error.message);
+            logger.error('❌ Erro ao inicializar Dependency Injection:', error.message);
             throw new Error(`Falha crítica no Dependency Injection: ${error.message}`);
         }
     }
@@ -694,7 +695,7 @@ class App {
      * @private
      */
     _startInitializationProcess() {
-        console.log('🚀 MAIN: Aplicação modularizada iniciando... (Nova Arquitetura v9.3)');
+        logger.debug('🚀 MAIN: Aplicação modularizada iniciando... (Nova Arquitetura v9.3)');
         this.startTime = performance.now();
         this.initialized = true;
     }
@@ -704,28 +705,28 @@ class App {
      * @private
      */
     async _initializeSupabaseConnection() {
-        console.log('🗄️ Inicializando conexão Supabase...');
+        logger.debug('🗄️ Inicializando conexão Supabase...');
 
         let retryCount = 0;
         while (retryCount < this.INITIALIZATION_CONFIG.SUPABASE_RETRY_ATTEMPTS) {
             try {
                 const supabaseConnected = await testSupabaseConnection();
                 if (supabaseConnected) {
-                    console.log(SYSTEM_MESSAGES.SUCCESS.SUPABASE_CONNECTED);
+                    logger.debug(SYSTEM_MESSAGES.SUCCESS.SUPABASE_CONNECTED);
                     this.initializationSteps.push('supabase_connected');
                     return;
                 }
                 retryCount++;
             } catch (error) {
                 retryCount++;
-                console.warn(
+                logger.warn(
                     `⚠️ Tentativa ${retryCount} de conexão Supabase falhou:`,
                     error.message
                 );
             }
         }
 
-        console.warn(SYSTEM_MESSAGES.WARNING.SUPABASE_FAILED);
+        logger.warn(SYSTEM_MESSAGES.WARNING.SUPABASE_FAILED);
         this.initializationSteps.push('supabase_failed');
     }
 
@@ -745,11 +746,11 @@ class App {
             this.initSafePerformanceMonitoring();
             this.initSafeCacheManager();
 
-            console.log('✅ Sistemas de monitoramento seguros ativados');
+            logger.debug('✅ Sistemas de monitoramento seguros ativados');
             this.initializationSteps.push('monitoring_initialized');
         } catch (error) {
-            console.warn('⚠️ Erro ao inicializar monitoramento:', error.message);
-            console.log('🔄 Continuando com sistema básico...');
+            logger.warn('⚠️ Erro ao inicializar monitoramento:', error.message);
+            logger.debug('🔄 Continuando com sistema básico...');
             this.initializationSteps.push('monitoring_partial');
         }
     }
@@ -766,15 +767,15 @@ class App {
 
             const strategiesRegistered = registerAdvancedStrategies();
             if (strategiesRegistered) {
-                console.log('✅ Estratégias avançadas registradas com sucesso!');
+                logger.debug('✅ Estratégias avançadas registradas com sucesso!');
                 demonstrateAdvancedStrategies();
                 this.initializationSteps.push('strategies_registered');
             } else {
-                console.warn('⚠️ Falha ao registrar algumas estratégias avançadas');
+                logger.warn('⚠️ Falha ao registrar algumas estratégias avançadas');
                 this.initializationSteps.push('strategies_partial');
             }
         } catch (error) {
-            console.error('❌ Erro ao registrar estratégias:', error.message);
+            logger.error('❌ Erro ao registrar estratégias:', error.message);
             this.initializationSteps.push('strategies_failed');
         }
     }
@@ -804,7 +805,7 @@ class App {
             logic.loadStateFromStorage();
             this.initializationSteps.push('state_loaded');
 
-            console.log('✅ Módulos legados inicializados com sucesso!');
+            logger.debug('✅ Módulos legados inicializados com sucesso!');
 
             // Renderiza o card principal a partir do template unificado
             try {
@@ -830,10 +831,10 @@ class App {
                     if (inputPanel) inputPanel.innerHTML = '';
                 }
             } catch (e) {
-                console.warn('⚠️ Falha ao renderizar card principal via template:', e.message);
+                logger.warn('⚠️ Falha ao renderizar card principal via template:', e.message);
             }
         } catch (error) {
-            console.error('❌ Erro ao inicializar módulos legados:', error.message);
+            logger.error('❌ Erro ao inicializar módulos legados:', error.message);
             throw new Error(`Falha crítica na inicialização de módulos legados: ${error.message}`);
         }
     }
@@ -844,7 +845,7 @@ class App {
      */
     async _initializeStateManager() {
         try {
-            console.log('🔄 CHECKPOINT 1.1: Inicializando StateManager...');
+            logger.debug('🔄 CHECKPOINT 1.1: Inicializando StateManager...');
 
             // Importar StateManager
             const { stateManager, createBidirectionalSync } = await import('./state-manager.js');
@@ -856,14 +857,14 @@ class App {
             // Quando StateManager muda → atualiza window.state
             createBidirectionalSync(stateManager, window.state);
 
-            console.log('✅ StateManager inicializado e sincronizado com estado legado');
-            console.log('📊 Estado inicial:', stateManager.getState());
-            console.log('📈 Stats:', stateManager.getStats());
+            logger.debug('✅ StateManager inicializado e sincronizado com estado legado');
+            logger.debug('📊 Estado inicial:', stateManager.getState());
+            logger.debug('📈 Stats:', stateManager.getStats());
 
             this.initializationSteps.push('state_manager_initialized');
         } catch (error) {
-            console.error('❌ Erro ao inicializar StateManager:', error.message);
-            console.warn('⚠️ Continuando com estado legado apenas');
+            logger.error('❌ Erro ao inicializar StateManager:', error.message);
+            logger.warn('⚠️ Continuando com estado legado apenas');
             this.initializationSteps.push('state_manager_failed');
         }
     }
@@ -874,18 +875,18 @@ class App {
      */
     async _initializeDOMManager() {
         try {
-            console.log('🔄 CHECKPOINT 2.1: Inicializando DOMManager...');
+            logger.debug('🔄 CHECKPOINT 2.1: Inicializando DOMManager...');
 
             // Importar DOMManager
             const { domManager } = await import('./dom-manager.js');
 
-            console.log('✅ DOMManager inicializado');
-            console.log('📊 Stats:', domManager.getStats());
+            logger.debug('✅ DOMManager inicializado');
+            logger.debug('📊 Stats:', domManager.getStats());
 
             this.initializationSteps.push('dom_manager_initialized');
         } catch (error) {
-            console.error('❌ Erro ao inicializar DOMManager:', error.message);
-            console.warn('⚠️ Continuando com DOM legado apenas');
+            logger.error('❌ Erro ao inicializar DOMManager:', error.message);
+            logger.warn('⚠️ Continuando com DOM legado apenas');
             this.initializationSteps.push('dom_manager_failed');
         }
     }
@@ -896,7 +897,7 @@ class App {
      */
     async _initializeModularSystem() {
         try {
-            console.log('🏗️ CHECKPOINT 3.x: Inicializando Sistema Modular...');
+            logger.debug('🏗️ CHECKPOINT 3.x: Inicializando Sistema Modular...');
 
             // Importar módulos
             const { moduleManager } = await import('./src/modules/ModuleManager.js');
@@ -912,7 +913,7 @@ class App {
             // Registrar dependências
             if (window.stateManager) {
                 sessionModule.registerDependency('stateManager', window.stateManager);
-                console.log('✅ SessionModule conectado ao StateManager');
+                logger.debug('✅ SessionModule conectado ao StateManager');
             }
 
             // Registrar módulos no gerenciador
@@ -931,14 +932,14 @@ class App {
                 manager: moduleManager
             };
 
-            console.log('✅ Sistema Modular inicializado!');
-            console.log('📊 Módulos disponíveis:', Object.keys(window.modules));
-            console.log('📈 Stats:', moduleManager.getStats());
+            logger.debug('✅ Sistema Modular inicializado!');
+            logger.debug('📊 Módulos disponíveis:', Object.keys(window.modules));
+            logger.debug('📈 Stats:', moduleManager.getStats());
 
             this.initializationSteps.push('modular_system_initialized');
         } catch (error) {
-            console.error('❌ Erro ao inicializar Sistema Modular:', error.message);
-            console.warn('⚠️ Continuando sem sistema modular');
+            logger.error('❌ Erro ao inicializar Sistema Modular:', error.message);
+            logger.warn('⚠️ Continuando sem sistema modular');
             this.initializationSteps.push('modular_system_failed');
         }
     }
@@ -982,9 +983,9 @@ class App {
             // Expor o novo manager globalmente para testes
             window.tradingManager = this.tradingManager;
 
-            console.log('🔄 Migração de compatibilidade configurada com sucesso!');
+            logger.debug('🔄 Migração de compatibilidade configurada com sucesso!');
         } catch (error) {
-            console.error('❌ Erro ao inicializar sistemas refatorados:', error.message);
+            logger.error('❌ Erro ao inicializar sistemas refatorados:', error.message);
             throw new Error(`Falha na inicialização de sistemas refatorados: ${error.message}`);
         }
     }
@@ -1014,9 +1015,9 @@ class App {
             sidebarManager.integrateWithSettings();
             this.initializationSteps.push('sidebar_manager_initialized');
 
-            console.log('✅ Sidebar inicializada com sucesso!');
+            logger.debug('✅ Sidebar inicializada com sucesso!');
         } catch (error) {
-            console.warn('⚠️ Erro ao inicializar sidebar:', error.message);
+            logger.warn('⚠️ Erro ao inicializar sidebar:', error.message);
             this.initializationSteps.push('sidebar_failed');
             // Não é crítico, continua a aplicação
         }
@@ -1040,9 +1041,9 @@ class App {
             ]);
 
             await syncPromise;
-            console.log('✅ Interface sincronizada com sucesso!');
+            logger.debug('✅ Interface sincronizada com sucesso!');
         } catch (error) {
-            console.error('❌ Erro na sincronização da UI:', error.message);
+            logger.error('❌ Erro na sincronização da UI:', error.message);
             throw new Error(`Falha crítica na sincronização da UI: ${error.message}`);
         }
     }
@@ -1100,11 +1101,11 @@ class App {
         const endTime = performance.now();
         const initializationTime = (endTime - this.startTime).toFixed(2);
 
-        console.log(
+        logger.debug(
             `✨ MAIN: Aplicação pronta! Nova arquitetura v9.3 ativa em ${initializationTime}ms`
         );
-        console.log('📈 MAIN: Estatísticas do sistema:', legacyAdapter.getStats());
-        console.log('🔄 MAIN: Passos de inicialização:', this.initializationSteps);
+        logger.debug('📈 MAIN: Estatísticas do sistema:', legacyAdapter.getStats());
+        logger.debug('🔄 MAIN: Passos de inicialização:', this.initializationSteps);
 
         this.initializationSteps.push('initialization_completed');
     }
@@ -1114,7 +1115,7 @@ class App {
      * @private
      */
     _handleInitializationError(error) {
-        console.error('❌ Erro durante inicialização:', error);
+        logger.error('❌ Erro durante inicialização:', error);
 
         // Adiciona erro aos passos para diagnóstico
         this.initializationSteps.push(`error_${error.name || 'unknown'}`);
@@ -1126,7 +1127,7 @@ class App {
         }
 
         // Log dos passos completados para diagnóstico
-        console.log('🔍 Passos completados antes do erro:', this.initializationSteps);
+        logger.debug('🔍 Passos completados antes do erro:', this.initializationSteps);
 
         // Tentativa de usar tratamento de erro avançado se disponível
         if (window.errorHandler && typeof window.errorHandler.handleError === 'function') {
@@ -1137,7 +1138,7 @@ class App {
                     initializationTime: performance.now() - this.startTime,
                 });
             } catch (handlerError) {
-                console.warn('⚠️ Erro no handler de erro:', handlerError.message);
+                logger.warn('⚠️ Erro no handler de erro:', handlerError.message);
             }
         }
 
@@ -1170,13 +1171,13 @@ class App {
  * Inicialização limpa e controlada
  */
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('📱 DOM carregado, inicializando aplicação...');
+    logger.debug('📱 DOM carregado, inicializando aplicação...');
 
     const app = new App();
 
     try {
         await app.init();
-        console.log('✅ Aplicação inicializada com sucesso!');
+        logger.debug('✅ Aplicação inicializada com sucesso!');
 
         // 🔁 Purga automática da Lixeira: agora e diariamente
         try {
@@ -1186,11 +1187,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         } catch (_) { }
     } catch (error) {
-        console.error('❌ Falha crítica na inicialização:', error);
+        logger.error('❌ Falha crítica na inicialização:', error);
 
         // O tratamento de erro detalhado já foi feito no _handleInitializationError
         // Aqui apenas garantimos que o erro seja logado
-        console.log('🔍 Inicialização falhou. Veja logs detalhados acima.');
+        logger.debug('🔍 Inicialização falhou. Veja logs detalhados acima.');
     }
 });
 
@@ -1199,10 +1200,10 @@ export { supabase };
 
 // Funções de limpeza de dados corrompidos (disponíveis no console)
 window.clearCorruptedData = async () => {
-    console.log('🧹 Iniciando limpeza de dados corrompidos...');
+    logger.debug('🧹 Iniciando limpeza de dados corrompidos...');
     try {
         const removed = await dbManager.clearCorruptedData();
-        console.log(`✅ ${removed} sessões corrompidas removidas.`);
+        logger.debug(`✅ ${removed} sessões corrompidas removidas.`);
         if (removed > 0) {
             // Recarregar a aba diário
             if (typeof ui !== 'undefined' && ui.renderDiario) {
@@ -1211,16 +1212,16 @@ window.clearCorruptedData = async () => {
         }
         return removed;
     } catch (error) {
-        console.error('❌ Erro:', error);
+        logger.error('❌ Erro:', error);
         return 0;
     }
 };
 
 window.repairCorruptedData = async () => {
-    console.log('🔧 Iniciando reparo de dados corrompidos...');
+    logger.debug('🔧 Iniciando reparo de dados corrompidos...');
     try {
         const repaired = await dbManager.repairCorruptedData();
-        console.log(`✅ ${repaired} sessões reparadas.`);
+        logger.debug(`✅ ${repaired} sessões reparadas.`);
         if (repaired > 0) {
             // Recarregar a aba diário
             if (typeof ui !== 'undefined' && ui.renderDiario) {
@@ -1229,17 +1230,17 @@ window.repairCorruptedData = async () => {
         }
         return repaired;
     } catch (error) {
-        console.error('❌ Erro:', error);
+        logger.error('❌ Erro:', error);
         return 0;
     }
 };
 
 // 🔧 Função para reparar resultados financeiros zerados
 window.repairResultadosZerados = async () => {
-    console.log('🔧 Iniciando reparo de resultados financeiros zerados...');
+    logger.debug('🔧 Iniciando reparo de resultados financeiros zerados...');
     try {
         const result = await dbManager.repairInvalidResultados();
-        console.log(`✅ Reparo concluído:`, result);
+        logger.debug(`✅ Reparo concluído:`, result);
         if (result.repaired > 0) {
             // Recarregar a aba diário
             if (typeof ui !== 'undefined' && ui.renderDiario) {
@@ -1248,7 +1249,7 @@ window.repairResultadosZerados = async () => {
         }
         return result;
     } catch (error) {
-        console.error('❌ Erro:', error);
+        logger.error('❌ Erro:', error);
         return { repaired: 0, errors: 1, error: error.message };
     }
 };
@@ -1262,10 +1263,10 @@ window.repairResultadosZerados = async () => {
 
 // Função para testar a sincronização entre cards
 window.testRealTimeSync = function () {
-    console.log('\n🧪 TESTANDO SINCRONIZAÇÃO EM TEMPO REAL...\n');
+    logger.debug('\n🧪 TESTANDO SINCRONIZAÇÃO EM TEMPO REAL...\n');
 
     // Teste 1: Capital Inicial
-    console.log('📝 Teste 1: Mudança no capital inicial');
+    logger.debug('📝 Teste 1: Mudança no capital inicial');
     const capitalInput = document.getElementById('capital-inicial');
     if (capitalInput) {
         capitalInput.value = '15000';
@@ -1274,77 +1275,77 @@ window.testRealTimeSync = function () {
         setTimeout(() => {
             const sidebarCapital = document.getElementById('sidebar-capital-inicial');
             if (sidebarCapital) {
-                console.log(`✅ Capital sincronizado: ${sidebarCapital.value}`);
+                logger.debug(`✅ Capital sincronizado: ${sidebarCapital.value}`);
             } else {
-                console.log('⚠️ Sidebar não está aberto para teste');
+                logger.debug('⚠️ Sidebar não está aberto para teste');
             }
         }, 200);
     }
 
     // Teste 2: Entrada Inicial
     setTimeout(() => {
-        console.log('📝 Teste 2: Mudança na entrada inicial');
+        logger.debug('📝 Teste 2: Mudança na entrada inicial');
         const entradaInput = document.getElementById('percentual-entrada');
         if (entradaInput) {
             entradaInput.value = '3.5';
             entradaInput.dispatchEvent(new Event('change', { bubbles: true }));
-            console.log('✅ Entrada alterada para 3.5%');
+            logger.debug('✅ Entrada alterada para 3.5%');
         }
     }, 300);
 
     // Teste 3: Payout
     setTimeout(() => {
-        console.log('📝 Teste 3: Mudança de payout');
+        logger.debug('📝 Teste 3: Mudança de payout');
         const payoutBtn = Array.from(document.querySelectorAll('.payout-buttons button')).find(
             (btn) => btn.textContent.trim() === '90'
         );
         if (payoutBtn) {
             payoutBtn.click();
-            console.log('✅ Payout 90% selecionado');
+            logger.debug('✅ Payout 90% selecionado');
         }
     }, 600);
 
     // Teste 4: Estratégia
     setTimeout(() => {
-        console.log('📝 Teste 4: Mudança de estratégia');
+        logger.debug('📝 Teste 4: Mudança de estratégia');
         const strategySelect = document.getElementById('estrategia-select');
         if (strategySelect) {
             strategySelect.value = 'fixa';
             strategySelect.dispatchEvent(new Event('change', { bubbles: true }));
-            console.log('✅ Estratégia alterada para Mão Fixa');
+            logger.debug('✅ Estratégia alterada para Mão Fixa');
         }
     }, 900);
 
     // Teste 5: Stop Win
     setTimeout(() => {
-        console.log('📝 Teste 5: Mudança no Stop Win');
+        logger.debug('📝 Teste 5: Mudança no Stop Win');
         const stopWinInput = document.getElementById('stop-win-perc');
         if (stopWinInput) {
             stopWinInput.value = '12';
             stopWinInput.dispatchEvent(new Event('change', { bubbles: true }));
-            console.log('✅ Stop Win alterado para 12%');
+            logger.debug('✅ Stop Win alterado para 12%');
         }
     }, 1200);
 
     // Teste 6: Stop Loss
     setTimeout(() => {
-        console.log('📝 Teste 6: Mudança no Stop Loss');
+        logger.debug('📝 Teste 6: Mudança no Stop Loss');
         const stopLossInput = document.getElementById('stop-loss-perc');
         if (stopLossInput) {
             stopLossInput.value = '18';
             stopLossInput.dispatchEvent(new Event('change', { bubbles: true }));
-            console.log('✅ Stop Loss alterado para 18%');
+            logger.debug('✅ Stop Loss alterado para 18%');
         }
 
         // Resumo final
         setTimeout(() => {
-            console.log('\n🎯 TESTE CONCLUÍDO!');
-            console.log('📋 Para testar sincronização do sidebar:');
-            console.log('1. Abra o menu lateral (botão ☰)');
-            console.log('2. Clique em "Parâmetros e Controles"');
-            console.log('3. Altere valores e veja a sincronização automática');
-            console.log('4. Note que NÃO há botão "Aplicar" - tudo é automático!');
-            console.log('\n💡 Execute: testRealTimeSync() no console para testar novamente');
+            logger.debug('\n🎯 TESTE CONCLUÍDO!');
+            logger.debug('📋 Para testar sincronização do sidebar:');
+            logger.debug('1. Abra o menu lateral (botão ☰)');
+            logger.debug('2. Clique em "Parâmetros e Controles"');
+            logger.debug('3. Altere valores e veja a sincronização automática');
+            logger.debug('4. Note que NÃO há botão "Aplicar" - tudo é automático!');
+            logger.debug('\n💡 Execute: testRealTimeSync() no console para testar novamente');
         }, 500);
     }, 1500);
 };
@@ -1353,40 +1354,40 @@ window.testRealTimeSync = function () {
 // SISTEMA DE TESTE PARA SINCRONIZAÇÃO DE PAYOUT + VISUAL FOCUS
 // =================================================================
 window.testPayoutAndFocus = function () {
-    console.log('\n🧪 TESTANDO PAYOUT SYNC + VISUAL FOCUS...\n');
+    logger.debug('\n🧪 TESTANDO PAYOUT SYNC + VISUAL FOCUS...\n');
 
     let testIndex = 0;
     const tests = [
         // Teste 1: Payout Sync Main → Sidebar
         () => {
-            console.log('📝 Teste 1: Payout 90% no card principal');
+            logger.debug('📝 Teste 1: Payout 90% no card principal');
             const btn = Array.from(document.querySelectorAll('.payout-buttons button')).find(
                 (b) => b.textContent.trim() === '90'
             );
             if (btn) {
                 btn.click();
-                console.log('✅ Clique executado no payout 90%');
+                logger.debug('✅ Clique executado no payout 90%');
             } else {
-                console.log('❌ Botão payout 90% não encontrado');
+                logger.debug('❌ Botão payout 90% não encontrado');
             }
         },
 
         // Teste 2: Verificar sincronização no sidebar
         () => {
-            console.log('📝 Teste 2: Verificando sincronização no sidebar');
+            logger.debug('📝 Teste 2: Verificando sincronização no sidebar');
             const sidebarBtn = document.querySelector('#sidebar-payout-90');
             if (sidebarBtn && sidebarBtn.classList.contains('active-payout')) {
-                console.log('✅ Sidebar sincronizado corretamente');
+                logger.debug('✅ Sidebar sincronizado corretamente');
             } else if (!sidebarBtn) {
-                console.log('⚠️ Sidebar não está aberto - abra o menu lateral primeiro');
+                logger.debug('⚠️ Sidebar não está aberto - abra o menu lateral primeiro');
             } else {
-                console.log('❌ Sidebar NÃO sincronizado');
+                logger.debug('❌ Sidebar NÃO sincronizado');
             }
         },
 
         // Teste 3: Focus Effect (Verde Elegante)
         () => {
-            console.log('📝 Teste 3: Efeito de focus verde elegante no capital inicial');
+            logger.debug('📝 Teste 3: Efeito de focus verde elegante no capital inicial');
             const capitalField = document.getElementById('capital-inicial');
             if (capitalField) {
                 capitalField.focus();
@@ -1407,25 +1408,25 @@ window.testPayoutAndFocus = function () {
                         boxShadow.includes('255, 193');
 
                     if (hasCorrectGreen && !hasUnwantedColors) {
-                        console.log('✅ Efeito verde ELEGANTE aplicado corretamente');
+                        logger.debug('✅ Efeito verde ELEGANTE aplicado corretamente');
                     } else if (hasUnwantedColors) {
-                        console.log('❌ AINDA tem cores indesejadas (amarelo/dourado)');
-                        console.log('🔍 Border:', borderColor);
-                        console.log('🔍 Shadow:', boxShadow);
+                        logger.debug('❌ AINDA tem cores indesejadas (amarelo/dourado)');
+                        logger.debug('🔍 Border:', borderColor);
+                        logger.debug('🔍 Shadow:', boxShadow);
                     } else {
-                        console.log('❌ Efeito verde NÃO aplicado');
-                        console.log('🔍 Border:', borderColor);
-                        console.log('🔍 Shadow:', boxShadow);
+                        logger.debug('❌ Efeito verde NÃO aplicado');
+                        logger.debug('🔍 Border:', borderColor);
+                        logger.debug('🔍 Shadow:', boxShadow);
                     }
                 }, 100);
             } else {
-                console.log('❌ Campo capital inicial não encontrado');
+                logger.debug('❌ Campo capital inicial não encontrado');
             }
         },
 
         // Teste 4: Typing Effect
         () => {
-            console.log('📝 Teste 4: Efeito de digitação');
+            logger.debug('📝 Teste 4: Efeito de digitação');
             const capitalField = document.getElementById('capital-inicial');
             if (capitalField) {
                 capitalField.value = '25000';
@@ -1433,9 +1434,9 @@ window.testPayoutAndFocus = function () {
 
                 setTimeout(() => {
                     if (capitalField.classList.contains('typing')) {
-                        console.log('✅ Efeito de digitação ativo');
+                        logger.debug('✅ Efeito de digitação ativo');
                     } else {
-                        console.log('💡 Efeito de digitação pode ter expirado (normal)');
+                        logger.debug('💡 Efeito de digitação pode ter expirado (normal)');
                     }
                 }, 50);
             }
@@ -1443,30 +1444,30 @@ window.testPayoutAndFocus = function () {
 
         // Teste 5: Payout Sidebar → Main (se sidebar estiver aberto)
         () => {
-            console.log('📝 Teste 5: Payout 92% no sidebar');
+            logger.debug('📝 Teste 5: Payout 92% no sidebar');
             const sidebarBtn = document.querySelector('#sidebar-payout-92');
             if (sidebarBtn) {
                 sidebarBtn.click();
-                console.log('✅ Clique executado no sidebar');
+                logger.debug('✅ Clique executado no sidebar');
 
                 setTimeout(() => {
                     const mainBtn = Array.from(
                         document.querySelectorAll('.payout-buttons button')
                     ).find((b) => b.textContent.trim() === '92');
                     if (mainBtn && mainBtn.classList.contains('active-payout')) {
-                        console.log('✅ Card principal sincronizado');
+                        logger.debug('✅ Card principal sincronizado');
                     } else {
-                        console.log('❌ Card principal NÃO sincronizado');
+                        logger.debug('❌ Card principal NÃO sincronizado');
                     }
                 }, 100);
             } else {
-                console.log('⚠️ Botão do sidebar não encontrado - abra o menu lateral');
+                logger.debug('⚠️ Botão do sidebar não encontrado - abra o menu lateral');
             }
         },
 
         // Teste 6: Focus no sidebar (se estiver aberto)
         () => {
-            console.log('📝 Teste 6: Focus no sidebar');
+            logger.debug('📝 Teste 6: Focus no sidebar');
             const sidebarField = document.getElementById('sidebar-capital-inicial');
             if (sidebarField) {
                 sidebarField.focus();
@@ -1476,13 +1477,13 @@ window.testPayoutAndFocus = function () {
                         computedStyle.borderColor.includes('230, 118') ||
                         computedStyle.boxShadow.includes('230, 118');
                     if (hasGreenBorder) {
-                        console.log('✅ Efeito de focus no sidebar funcionando');
+                        logger.debug('✅ Efeito de focus no sidebar funcionando');
                     } else {
-                        console.log('❌ Efeito de focus no sidebar NÃO funcionando');
+                        logger.debug('❌ Efeito de focus no sidebar NÃO funcionando');
                     }
                 }, 100);
             } else {
-                console.log(
+                logger.debug(
                     '⚠️ Campo do sidebar não encontrado - abra Parâmetros e Controles no menu lateral'
                 );
             }
@@ -1496,12 +1497,12 @@ window.testPayoutAndFocus = function () {
             testIndex++;
             setTimeout(runNextTest, 800);
         } else {
-            console.log('\n🎯 TODOS OS TESTES CONCLUÍDOS!');
-            console.log('💡 Para testar completamente:');
-            console.log('1. Abra o menu lateral (botão ☰)');
-            console.log('2. Clique em "Parâmetros e Controles"');
-            console.log('3. Execute novamente: testPayoutAndFocus()');
-            console.log('4. Teste manualmente clicando nos botões e campos');
+            logger.debug('\n🎯 TODOS OS TESTES CONCLUÍDOS!');
+            logger.debug('💡 Para testar completamente:');
+            logger.debug('1. Abra o menu lateral (botão ☰)');
+            logger.debug('2. Clique em "Parâmetros e Controles"');
+            logger.debug('3. Execute novamente: testPayoutAndFocus()');
+            logger.debug('4. Teste manualmente clicando nos botões e campos');
         }
     }
 
@@ -1512,10 +1513,10 @@ window.testPayoutAndFocus = function () {
 // TESTE ESPECÍFICO PARA VALIDAÇÃO DO DESAFIO DE BORDAS VERDES
 // =================================================================
 window.testGreenBorderChallenge = function () {
-    console.log('\n🎯 TESTE DO DESAFIO: BORDAS VERDES ELEGANTES\n');
+    logger.debug('\n🎯 TESTE DO DESAFIO: BORDAS VERDES ELEGANTES\n');
 
     // Teste 1: Verificação Visual Stop Win
-    console.log('📝 Testando campo Stop Win (%) - o que estava com problema...');
+    logger.debug('📝 Testando campo Stop Win (%) - o que estava com problema...');
     const stopWinField = document.getElementById('stop-win-perc');
     if (stopWinField) {
         stopWinField.focus();
@@ -1525,8 +1526,8 @@ window.testGreenBorderChallenge = function () {
             const border = style.borderColor;
             const shadow = style.boxShadow;
 
-            console.log('🔍 Border atual:', border);
-            console.log('🔍 Shadow atual:', shadow);
+            logger.debug('🔍 Border atual:', border);
+            logger.debug('🔍 Shadow atual:', shadow);
 
             // Verifica verde elegante (76, 175, 80)
             const hasCorrectGreen =
@@ -1538,13 +1539,13 @@ window.testGreenBorderChallenge = function () {
             const hasUnwantedColors = hasYellow || hasGold;
 
             if (hasCorrectGreen && !hasUnwantedColors) {
-                console.log('✅ SUCESSO! Apenas verde elegante, sem amarelo/dourado');
+                logger.debug('✅ SUCESSO! Apenas verde elegante, sem amarelo/dourado');
             } else if (hasUnwantedColors) {
-                console.log('❌ FALHA! Ainda tem cores indesejadas');
-                if (hasYellow) console.log('🟡 Detectado: Verde saturado (230, 118)');
-                if (hasGold) console.log('🟨 Detectado: Dourado/Amarelo');
+                logger.debug('❌ FALHA! Ainda tem cores indesejadas');
+                if (hasYellow) logger.debug('🟡 Detectado: Verde saturado (230, 118)');
+                if (hasGold) logger.debug('🟨 Detectado: Dourado/Amarelo');
             } else {
-                console.log('❌ FALHA! Verde elegante não aplicado');
+                logger.debug('❌ FALHA! Verde elegante não aplicado');
             }
 
             stopWinField.blur();
@@ -1553,7 +1554,7 @@ window.testGreenBorderChallenge = function () {
 
     // Teste 2: Todos os campos principais
     setTimeout(() => {
-        console.log('\n📝 Testando TODOS os campos principais...');
+        logger.debug('\n📝 Testando TODOS os campos principais...');
         const fields = [
             'capital-inicial',
             'percentual-entrada',
@@ -1579,24 +1580,24 @@ window.testGreenBorderChallenge = function () {
                             style.boxShadow.includes('230, 118');
 
                         if (hasGreen && !hasUnwanted) {
-                            console.log(`✅ ${fieldId}: Verde elegante OK`);
+                            logger.debug(`✅ ${fieldId}: Verde elegante OK`);
                             testsPassed++;
                         } else {
-                            console.log(`❌ ${fieldId}: Problema detectado`);
+                            logger.debug(`❌ ${fieldId}: Problema detectado`);
                         }
 
                         field.blur();
 
                         if (index === fields.length - 1) {
-                            console.log(
+                            logger.debug(
                                 `\n🎯 RESULTADO: ${testsPassed}/${fields.length} campos corretos`
                             );
                             if (testsPassed === fields.length) {
-                                console.log('🎉 DESAFIO CONCLUÍDO COM SUCESSO!');
-                                console.log('✨ Todas as bordas são verdes elegantes');
-                                console.log('🚫 Nenhuma cor indesejada detectada');
+                                logger.debug('🎉 DESAFIO CONCLUÍDO COM SUCESSO!');
+                                logger.debug('✨ Todas as bordas são verdes elegantes');
+                                logger.debug('🚫 Nenhuma cor indesejada detectada');
                             } else {
-                                console.log('⚠️ Alguns campos ainda precisam de ajuste');
+                                logger.debug('⚠️ Alguns campos ainda precisam de ajuste');
                             }
                         }
                     }, 100);
@@ -1610,8 +1611,8 @@ window.testGreenBorderChallenge = function () {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         if (window.realTimeSync) {
-            console.log('✅ Sistema de sincronização em tempo real ativo');
-            console.log('🚀 Executando teste automático em 2 segundos...');
+            logger.debug('✅ Sistema de sincronização em tempo real ativo');
+            logger.debug('🚀 Executando teste automático em 2 segundos...');
             setTimeout(() => {
                 window.testRealTimeSync();
             }, 2000);
@@ -1619,7 +1620,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Novo teste para payout e focus
         if (window.payoutSync && window.fieldFocusManager) {
-            console.log('🚀 Executando testes avançados de payout e focus em 5 segundos...');
+            logger.debug('🚀 Executando testes avançados de payout e focus em 5 segundos...');
             setTimeout(() => {
                 window.testPayoutAndFocus();
             }, 5000);
@@ -1632,7 +1633,7 @@ document.addEventListener('DOMContentLoaded', () => {
  * Testa se todos os sistemas foram inicializados corretamente
  */
 function testInitialization() {
-    console.log('🧪 Testando inicialização do sistema...');
+    logger.debug('🧪 Testando inicialização do sistema...');
 
     const startTime = performance.now();
     const results = {
@@ -1646,20 +1647,20 @@ function testInitialization() {
 
     try {
         // 1. Teste de conexão Supabase
-        console.log('🗄️ Testando conexão Supabase...');
+        logger.debug('🗄️ Testando conexão Supabase...');
         try {
             if (typeof supabase !== 'undefined' && supabase) {
                 results.supabase = true;
-                console.log('✅ Supabase: Conectado');
+                logger.debug('✅ Supabase: Conectado');
             } else {
-                console.warn('⚠️ Supabase: Não conectado');
+                logger.warn('⚠️ Supabase: Não conectado');
             }
         } catch (error) {
-            console.warn('⚠️ Supabase:', error.message);
+            logger.warn('⚠️ Supabase:', error.message);
         }
 
         // 2. Teste de objetos globais
-        console.log('🌐 Testando objetos globais...');
+        logger.debug('🌐 Testando objetos globais...');
         try {
             const globalObjects = [
                 'config',
@@ -1676,55 +1677,55 @@ function testInitialization() {
             globalObjects.forEach((obj) => {
                 if (typeof window[obj] !== 'undefined') {
                     foundObjects++;
-                    console.log(`✅ ${obj}: disponível`);
+                    logger.debug(`✅ ${obj}: disponível`);
                 } else {
-                    console.log(`❌ ${obj}: não encontrado`);
+                    logger.debug(`❌ ${obj}: não encontrado`);
                 }
             });
 
             if (foundObjects >= 6) {
                 results.globalObjects = true;
-                console.log(`✅ Objetos globais: ${foundObjects}/${globalObjects.length}`);
+                logger.debug(`✅ Objetos globais: ${foundObjects}/${globalObjects.length}`);
             }
         } catch (error) {
-            console.warn('⚠️ Objetos globais:', error.message);
+            logger.warn('⚠️ Objetos globais:', error.message);
         }
 
         // 3. Teste de estratégias registradas
-        console.log('🎯 Testando estratégias...');
+        logger.debug('🎯 Testando estratégias...');
         try {
             if (typeof window.registerAdvancedStrategies === 'function') {
                 results.strategiesRegistered = true;
-                console.log('✅ Estratégias: Registradas');
+                logger.debug('✅ Estratégias: Registradas');
             }
         } catch (error) {
-            console.warn('⚠️ Estratégias:', error.message);
+            logger.warn('⚠️ Estratégias:', error.message);
         }
 
         // 4. Teste de Trading Manager
-        console.log('💼 Testando Trading Manager...');
+        logger.debug('💼 Testando Trading Manager...');
         try {
             if (typeof window.tradingManager !== 'undefined' && window.tradingManager) {
                 results.tradingManager = true;
-                console.log('✅ Trading Manager: Ativo');
+                logger.debug('✅ Trading Manager: Ativo');
             } else {
-                console.warn('⚠️ Trading Manager: Não encontrado');
+                logger.warn('⚠️ Trading Manager: Não encontrado');
             }
         } catch (error) {
-            console.warn('⚠️ Trading Manager:', error.message);
+            logger.warn('⚠️ Trading Manager:', error.message);
         }
 
         // 5. Teste de DOM mapeado
-        console.log('🗺️ Testando DOM mapeado...');
+        logger.debug('🗺️ Testando DOM mapeado...');
         try {
             if (typeof dom !== 'undefined' && Object.keys(dom).length > 10) {
                 results.domMapped = true;
-                console.log(`✅ DOM: ${Object.keys(dom).length} elementos mapeados`);
+                logger.debug(`✅ DOM: ${Object.keys(dom).length} elementos mapeados`);
             } else {
-                console.warn('⚠️ DOM: Poucos elementos mapeados');
+                logger.warn('⚠️ DOM: Poucos elementos mapeados');
             }
         } catch (error) {
-            console.warn('⚠️ DOM:', error.message);
+            logger.warn('⚠️ DOM:', error.message);
         }
 
         // Resultado geral
@@ -1732,17 +1733,17 @@ function testInitialization() {
         results.overall = successCount >= 3; // Pelo menos 3 de 5 testes
 
         const endTime = performance.now();
-        console.log(`⏱️ Testes Initialization executados em ${(endTime - startTime).toFixed(2)}ms`);
+        logger.debug(`⏱️ Testes Initialization executados em ${(endTime - startTime).toFixed(2)}ms`);
 
         if (results.overall) {
-            console.log('✅ INITIALIZATION: Sistema inicializado corretamente!');
+            logger.debug('✅ INITIALIZATION: Sistema inicializado corretamente!');
         } else {
-            console.warn('⚠️ INITIALIZATION: Alguns componentes não inicializados');
+            logger.warn('⚠️ INITIALIZATION: Alguns componentes não inicializados');
         }
 
         return results;
     } catch (error) {
-        console.error('❌ Erro crítico nos testes Initialization:', error);
+        logger.error('❌ Erro crítico nos testes Initialization:', error);
         return { ...results, overall: false };
     }
 }
@@ -1750,5 +1751,5 @@ function testInitialization() {
 // Exposição global
 if (typeof window !== 'undefined') {
     window.testInitialization = testInitialization;
-    console.log('🧪 testInitialization() disponível globalmente');
+    logger.debug('🧪 testInitialization() disponível globalmente');
 }

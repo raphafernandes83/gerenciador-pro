@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 // IMPORTS - Organizados por categoria
 // ============================================================================
 
@@ -24,15 +24,15 @@ import optimizedCharts from './src/performance/OptimizedCharts.js';
 import performanceProfiler from './src/performance/PerformanceProfiler.js';
 import smartDebouncer from './src/performance/SmartDebouncer.js';
 
-// Helper function para validaÃ§Ã£o de chartInstance
+// Helper function para validação de chartInstance
 function isValidChartInstance(chartInstance, functionName = 'charts') {
     if (!chartInstance) {
-        logger.debug(`ðŸ” ${functionName}: chartInstance nÃ£o fornecida`);
+        logger.debug(`� ${functionName}: chartInstance não fornecida`);
         return false;
     }
 
     if (!chartInstance.data || !chartInstance.data.datasets || !chartInstance.data.datasets[0]) {
-        logger.debug(`ðŸ” ${functionName}: chartInstance mal configurada`);
+        logger.debug(`� ${functionName}: chartInstance mal configurada`);
         return false;
     }
 
@@ -40,18 +40,16 @@ function isValidChartInstance(chartInstance, functionName = 'charts') {
 }
 
 
-// 🆕 CHECKPOINT 2.2c: Helper para DOMManager
-const domHelper = {
-    add(el, ...c) { if(window.domManager) return window.domManager.addClass(el,...c); if(typeof el==='string')el=document.querySelector(el); el?.classList.add(...c); return!!el; },
-    remove(el, ...c) { if(window.domManager) return window.domManager.removeClass(el,...c); if(typeof el==='string')el=document.querySelector(el); el?.classList.remove(...c); return!!el; }
-};
+// ?? CHECKPOINT 2.2c: Helper de transi��o para DOMManager (CONSOLIDADO)
+// Importa domHelper centralizado (anteriormente duplicado em 3 arquivos)
+import { domHelper } from './src/dom-helper.js';
 
 export const charts = {
     dashboardAssertividadeChart: null,
     dashboardPatrimonioChart: null,
     replayAssertividadeChart: null,
     replayPatrimonioChart: null,
-    // ===== GRÃFICO DE PROGRESSO DE METAS (RECONSTRUÃDO) =====
+    // ===== GR�FICO DE PROGRESSO DE METAS (RECONSTRU�DO) =====
     progressMetasChart: null,
 
     _rafId: 0,
@@ -62,7 +60,7 @@ export const charts = {
     _progressUpdateThreshold: 100, // ms
 
     async init() {
-        // Inicializar sistema de otimizaÃ§Ã£o de performance
+        // Inicializar sistema de otimização de performance
         if (!this._performanceOptimized) {
             await this._initPerformanceOptimizations();
         }
@@ -87,7 +85,7 @@ export const charts = {
                 {
                     type: 'doughnut',
                     data: {
-                        labels: ['VitÃ³rias', 'Derrotas'],
+                        labels: ['Vitórias', 'Derrotas'],
                         datasets: [{ data: [0, 0], borderWidth: 0 }],
                     },
                     options: { ...commonOptions, cutout: '70%' },
@@ -110,7 +108,7 @@ export const charts = {
                 {
                     type: 'doughnut',
                     data: {
-                        labels: ['VitÃ³rias', 'Derrotas'],
+                        labels: ['Vitórias', 'Derrotas'],
                         datasets: [{ data: [0, 0], borderWidth: 0 }],
                     },
                     options: { ...commonOptions, cutout: '70%' },
@@ -158,13 +156,13 @@ export const charts = {
     },
 
     /**
-     * Agenda uma atualizaÃ§Ã£o de progresso coalescida com otimizaÃ§Ãµes de performance.
+     * Agenda uma atualização de progresso coalescida com otimizações de performance.
      * Usa debounce inteligente e throttling para evitar re-renders excessivos.
      */
     scheduleProgressUpdate(history) {
         const historyData = Array.isArray(history) ? history : [];
 
-        // Usar sistema otimizado se disponÃvel
+        // Usar sistema otimizado se dispon�vel
         if (this._performanceOptimized && window.smartDebouncer) {
             smartDebouncer.scheduleUpdate(
                 'progress_chart_update',
@@ -191,7 +189,7 @@ export const charts = {
             this._pendingHistory = null;
             this._rafId = 0;
 
-            // Medir performance da atualizaÃ§Ã£o
+            // Medir performance da atualização
             const measurementId = window.performanceProfiler?.startMeasurement(
                 'progress_chart_update',
                 {
@@ -212,7 +210,7 @@ export const charts = {
     },
 
     /**
-     * Executa atualizaÃ§Ã£o de progresso com profiling de performance
+     * Executa atualização de progresso com profiling de performance
      */
     _performProgressUpdate(history) {
         const measurementId = performanceProfiler.startMeasurement('optimized_progress_update', {
@@ -232,13 +230,13 @@ export const charts = {
         }
     },
 
-    // ===== IntegraÃ§Ã£o com metas de Stop Win/Loss (puro + seguro) =====
+    // ===== Integração com metas de Stop Win/Loss (puro + seguro) =====
     _buildGoalsProgressSummarySafe() {
         try {
-            // ðŸ”§ CORREÃ‡ÃƒO: Usar state/config diretamente como no backup funcionando
+            // 🔧 CORREÇÃO: Usar state/config diretamente como no backup funcionando
             const stateRef = window.state || {};
             const configRef = window.config || {};
-            // Usando window.state/config para cálculos
+            // Usando window.state/config para c�lculos
 
             const capitalAtual = Number(stateRef.capitalAtual) || Number(stateRef.capital) || 0;
             const capitalInicio =
@@ -262,7 +260,7 @@ export const charts = {
                 Number(document.getElementById('payout-ativo')?.value) ||
                 0;
 
-            // Usa funÃ§Ãµes puras se a flag estiver ativa e se existirem globalmente; senÃ£o, calcula inline mÃnimo
+            // Usa funções puras se a flag estiver ativa e se existirem globalmente; senão, calcula inline m�nimo
             const goalsV2Enabled =
                 (window.Features && window.Features.FEATURE_goals_v2) || Features.FEATURE_goals_v2;
             const hasPure =
@@ -283,11 +281,11 @@ export const charts = {
                 const status = window.computeStopStatus(goals);
                 const hint = window.computeNextActionHint(goals, entryAmount, payoutPercent);
                 const lock = window.computeLockMode(goals);
-                // Lock ativado quando necessário
+                // Lock ativado quando necess�rio
                 return { goals, status, hint, lock };
             }
 
-            // CÃ¡lculo mÃnimo inline
+            // Cálculo m�nimo inline
             const swAmount = capitalInicio * (stopWinPerc / 100);
             const slAmount = capitalInicio * (stopLossPerc / 100);
             const lucro = capitalAtual - capitalInicio;
@@ -328,23 +326,23 @@ export const charts = {
                 return;
             }
 
-            // Fallback: aplicar diretamente no badge caso ui nÃ£o esteja disponÃvel
+            // Fallback: aplicar diretamente no badge caso ui não esteja dispon�vel
             const badge = document.getElementById('progress-soft-lock-badge');
             if (badge) {
-                const icon = lock.type === 'STOP_WIN' ? 'ðŸŽ¯' : 'âšï¸';
+                const icon = lock.type === 'STOP_WIN' ? '🎯' : '��';
                 const msg =
                     lock.type === 'STOP_WIN'
                         ? 'Meta de ganhos atingida'
                         : 'Limite de perda atingido';
 
                 badge.textContent = `${icon} ${msg}`;
-                domHelper.remove(badge, 'hidden'); // 🆕
-                domHelper.add(badge, 'show'); // 🆕
+                domHelper.remove(badge, 'hidden'); // ??
+                domHelper.add(badge, 'show'); // ??
                 badge.style.display = 'inline-flex';
                 badge.style.visibility = 'visible';
                 badge.style.opacity = '1';
 
-                // Dispara popup se disponÃvel
+                // Dispara popup se dispon�vel
                 if (window.ui && typeof window.ui.showInsight === 'function') {
                     window.ui.showInsight(lock.reason, 'warning', 3000);
                 }
@@ -355,51 +353,51 @@ export const charts = {
     },
 
     /**
-     * 🍩 Inicializa o gráfico de pizza de progresso das metas
-     * 🚫 DESABILITADO: Este método não deve mais criar gráficos
-     * O gráfico é gerenciado exclusivamente pelo progress-card-module.js
+     * ?? Inicializa o gr�fico de pizza de progresso das metas
+     * ?? DESABILITADO: Este m�todo n�o deve mais criar gr�ficos
+     * O gr�fico � gerenciado exclusivamente pelo progress-card-module.js
      */
     initProgressChart() {
-        logger.warn('🚫 initProgressChart() DESABILITADO - O gráfico é gerenciado pelo progress-card-module.js');
+        logger.warn('?? initProgressChart() DESABILITADO - O gr�fico � gerenciado pelo progress-card-module.js');
 
-        // 🛡️ PROTEÇÃO: Sempre retorna true para não quebrar código que depende deste método
-        // Mas NÃO cria nenhum gráfico
+        // ??? PROTE��O: Sempre retorna true para n�o quebrar c�digo que depende deste m�todo
+        // Mas N�O cria nenhum gr�fico
         return true;
 
-        /* CÓDIGO DESABILITADO PARA EVITAR GRÁFICO DUPLICADO (verde escuro/vermelho escuro)
+        /* C�DIGO DESABILITADO PARA EVITAR GR�FICO DUPLICADO (verde escuro/vermelho escuro)
         
-        logger.info('🎯 Inicializando gráfico de progresso de metas...');
+        logger.info('?? Inicializando gr�fico de progresso de metas...');
 
-        // 🛡️ PROTEÇÃO: Evita reinicialização se gráfico já existe
+        // ??? PROTE��O: Evita reinicializa��o se gr�fico j� existe
         if (this.progressMetasChart) {
-            logger.warn('⚠️ Gráfico já existe, pulando inicialização para evitar duplicação');
-            return true; // Retorna sucesso pois o gráfico já está pronto
+            logger.warn('?? Gr�fico j� existe, pulando inicializa��o para evitar duplica��o');
+            return true; // Retorna sucesso pois o gr�fico j� est� pronto
         }
 
-        // 🛡️ Validação robusta de DOM com diagnóstico
+        // ??? Valida��o robusta de DOM com diagn�stico
         const canvasElement = dom.progressPieChart;
         if (!canvasElement) {
-            logger.error('❌ Canvas progressPieChart não encontrado no DOM');
-                    logger.debug('ðŸ”Ž DOM disponÃvel:', {
+            logger.error('? Canvas progressPieChart n�o encontrado no DOM');
+                    logger.debug('🔎 DOM dispon�vel:', {
                         keys: Object.keys(dom).filter((key) => key.includes('progress')),
                     });
                     return false;
                 }
         
-                // ðŸ›¡ï¸ ValidaÃ§Ã£o adicional de contexto Canvas
+                // 🛡� Validação adicional de contexto Canvas
                 try {
                     const context = canvasElement.getContext('2d');
                     if (!context) {
-                        logger.error('âŒ Falha ao obter contexto 2D do canvas');
+                        logger.error('� Falha ao obter contexto 2D do canvas');
                         return false;
                     }
                 } catch (contextError) {
-                    logger.error('âŒ Erro ao validar contexto canvas:', { error: String(contextError) });
+                    logger.error('� Erro ao validar contexto canvas:', { error: String(contextError) });
                     return false;
                 }
         
                 try {
-                    // DestrÃ³i qualquer instÃ¢ncia existente neste canvas registrada pelo Chart.js
+                    // Destrói qualquer instância existente neste canvas registrada pelo Chart.js
                     try {
                         if (typeof Chart !== 'undefined' && typeof Chart.getChart === 'function') {
                             const existing =
@@ -411,7 +409,7 @@ export const charts = {
                         }
                     } catch (_) { }
         
-                    // DestrÃ³i grÃ¡fico anterior se existir
+                    // Destrói gráfico anterior se existir
                     if (this.progressMetasChart) {
                         try {
                             this.progressMetasChart.destroy();
@@ -419,14 +417,14 @@ export const charts = {
                         this.progressMetasChart = null;
                     }
         
-                    // ðŸ”§ CORREÃ‡ÃƒO: ConfiguraÃ§Ãµes otimizadas para funcionalidade real
+                    // 🔧 CORREÇÃO: Configurações otimizadas para funcionalidade real
                     const progressConfig = {
                         type: 'doughnut',
                         data: {
-                            labels: ['VitÃ³rias', 'Derrotas'],
+                            labels: ['Vitórias', 'Derrotas'],
                             datasets: [
                                 {
-                                    data: [0, 0], // Inicializa com zeros, serÃ¡ atualizado com dados reais
+                                    data: [0, 0], // Inicializa com zeros, será atualizado com dados reais
                                     backgroundColor: ['#00e676', '#ff3d00'],
                                     borderWidth: 0,
                                     cutout: '75%',
@@ -441,20 +439,20 @@ export const charts = {
                                     display: false,
                                 },
                                 tooltip: {
-                                    enabled: false, // CORREÇÃO: Desabilitado para evitar sobreposição de gráfico fantasma
+                                    enabled: false, // CORRE��O: Desabilitado para evitar sobreposi��o de gr�fico fantasma
                                 },
                             },
                             animation: {
-                                duration: 300, // AnimaÃ§Ã£o mais rÃ¡pida para melhor responsividade
+                                duration: 300, // Animação mais rápida para melhor responsividade
                                 easing: 'easeInOutQuart',
                             },
                         },
                     };
         
-                    // ðŸ”§ CORREÃ‡ÃƒO: CriaÃ§Ã£o mais robusta da instÃ¢ncia
+                    // 🔧 CORREÇÃO: Criação mais robusta da instância
                     this.progressMetasChart = new Chart(canvasElement.getContext('2d'), progressConfig);
         
-                    // ðŸ”§ CORREÃ‡ÃƒO: Inicializa com dados padrÃ£o seguros
+                    // 🔧 CORREÇÃO: Inicializa com dados padrão seguros
                     this.progressMetasChart.$currentStats = {
                         winRate: 0,
                         totalOperations: 0
@@ -462,30 +460,30 @@ export const charts = {
         
                     // Plugin: texto central com WR atual
                     // REMOVIDO: O plugin centerText causava conflitos de propriedade readonly.
-                    // A exibição de texto central deve ser feita via HTML/CSS sobreposto ou plugin seguro.
+                    // A exibi��o de texto central deve ser feita via HTML/CSS sobreposto ou plugin seguro.
         
         
-                    // ðŸ›¡ï¸ ValidaÃ§Ã£o pÃ³s-inicializaÃ§Ã£o mais rigorosa
+                    // 🛡� Validação pós-inicialização mais rigorosa
                     if (!this.progressMetasChart ||
                         typeof this.progressMetasChart.update !== 'function' ||
                         !this.progressMetasChart.data ||
                         !this.progressMetasChart.data.datasets) {
-                        logger.error('âŒ GrÃ¡fico criado mas com interface invÃ¡lida');
+                        logger.error('� Gráfico criado mas com interface inválida');
                         return false;
                     }
         
-                    // ðŸ”§ CORREÃ‡ÃƒO: ForÃ§a primeira renderizaÃ§Ã£o
+                    // 🔧 CORREÇÃO: Força primeira renderização
                     try {
                         this.progressMetasChart.update('none');
                     } catch (updateError) {
-                        logger.warn('âšï¸ Erro na primeira renderizaÃ§Ã£o:', { error: updateError.message });
+                        logger.warn('�� Erro na primeira renderização:', { error: updateError.message });
                     }
         
-                    logger.info('âœ… GrÃ¡fico de progresso inicializado com sucesso');
+                    logger.info('✅ Gráfico de progresso inicializado com sucesso');
                     return true;
                 } catch (error) {
-                    // ðŸ” DiagnÃ³stico detalhado do erro
-                    logger.error('âŒ Erro ao inicializar grÃ¡fico de progresso:', {
+                    // � Diagnóstico detalhado do erro
+                    logger.error('� Erro ao inicializar gráfico de progresso:', {
                         message: error.message,
                         stack: error.stack?.substring(0, 200),
                         canvasElement: !!canvasElement,
@@ -493,13 +491,13 @@ export const charts = {
                         chartJsAvailable: typeof Chart !== 'undefined',
                     });
         
-                    // ðŸ›¡ï¸ Cleanup em caso de falha parcial
+                    // 🛡� Cleanup em caso de falha parcial
                     if (this.progressMetasChart) {
                         try {
                             this.progressMetasChart.destroy();
                             this.progressMetasChart = null;
                         } catch (cleanupError) {
-                            logger.warn('âšï¸ Erro durante cleanup', { error: cleanupError.message });
+                            logger.warn('�� Erro durante cleanup', { error: cleanupError.message });
                         }
                     }
         
@@ -507,11 +505,11 @@ export const charts = {
                 }
             }
         
-            FIM DO CÓDIGO DESABILITADO */
+            FIM DO C�DIGO DESABILITADO */
     },
 
     /**
-     * 🔄 Atualiza o progresso das metas com histórico da sessão
+     * ?? Atualiza o progresso das metas com hist�rico da sess�o
      */
     updateProgressChart(sessionHistory = []) {
         const requestId = generateRequestId('update_progress');
@@ -521,19 +519,19 @@ export const charts = {
 
         logger
             .withRequest(requestId)
-            .debug('ðŸ”„ CHARTS: Atualizando progresso com histÃ³rico:', {
+            .debug('🔄 CHARTS: Atualizando progresso com histórico:', {
                 length: sessionHistory?.length || 0,
             });
 
         if (!Array.isArray(sessionHistory)) {
-            logger.withRequest(requestId).warn('âšï¸ HistÃ³rico invÃ¡lido, usando array vazio');
+            logger.withRequest(requestId).warn('�� Histórico inválido, usando array vazio');
             sessionHistory = [];
         }
 
         try {
             performanceTracker.addMarker(requestId, 'normalization_start');
 
-            // NormalizaÃ§Ã£o: aceita histÃ³rico com { isWin:boolean } ou { resultado:'win'|'loss' }
+            // Normalização: aceita histórico com { isWin:boolean } ou { resultado:'win'|'loss' }
             const normalizedHistory = sessionHistory
                 .map((op) => {
                     if (!op || typeof op !== 'object') return null;
@@ -546,41 +544,41 @@ export const charts = {
 
             performanceTracker.addMarker(requestId, 'chart_validation');
 
-            // Inicializa grÃ¡fico se nÃ£o existir
+            // Inicializa gráfico se não existir
             if (!this.progressMetasChart) {
-                logger.withRequest(requestId).info('ðŸŽ¯ GrÃ¡fico nÃ£o existe, inicializando...');
+                logger.withRequest(requestId).info('🎯 Gráfico não existe, inicializando...');
                 if (!this.initProgressChart()) {
                     performanceTracker.finishOperation(requestId, 'error', {
                         reason: 'chart_init_failed',
                     });
-                    logger.withRequest(requestId).error('âŒ Falha ao inicializar grÃ¡fico');
+                    logger.withRequest(requestId).error('� Falha ao inicializar gráfico');
                     return false;
                 }
-                // Garante assinatura quando o grÃ¡fico Ã© (re)criado
+                // Garante assinatura quando o gráfico é (re)criado
                 this._ensureStoreSubscription();
             }
 
             performanceTracker.addMarker(requestId, 'stats_calculation');
 
-            // Define metas padrÃ£o se nÃ£o definidas
+            // Define metas padrão se não definidas
             const targets = {
                 winTarget: (typeof config.metaWinRate === 'number' ? config.metaWinRate : 60),
                 lossTarget: (typeof config.metaLossRate === 'number' ? config.metaLossRate : 40),
             };
 
-            // ðŸ”§ CORREÃ‡ÃƒO: Usa novo sistema de cÃ¡lculos integrado
+            // 🔧 CORREÇÃO: Usa novo sistema de cálculos integrado
             const stats = this.calculateProgressStats(normalizedHistory);
 
-            // Disponibiliza Ãºltimas estatÃsticas para utilitÃ¡rios/diagnÃ³sticos leves
+            // Disponibiliza últimas estat�sticas para utilitários/diagnósticos leves
             try {
                 this.lastStats = stats;
             } catch { }
 
-            // ðŸ”§ CORREÃ‡ÃƒO: Calcula dados completos do card se funÃ§Ã£o disponÃvel
+            // 🔧 CORREÇÃO: Calcula dados completos do card se função dispon�vel
             let cardData = null;
             try {
                 if (typeof window.calculateProgressCardData === 'function') {
-                    // FASE 3: Busca dados anteriores do cache para comparaÃ§Ã£o de trends
+                    // FASE 3: Busca dados anteriores do cache para comparação de trends
                     const previousData = window.progressCardCache?.getPrevious() || null;
 
                     cardData = window.calculateProgressCardData(
@@ -591,7 +589,7 @@ export const charts = {
                     );
                 }
             } catch (error) {
-                logger.warn('âšï¸ Erro ao calcular dados completos do card:', { error: error.message });
+                logger.warn('�� Erro ao calcular dados completos do card:', { error: error.message });
             }
 
             // Calcula metas/gaps/hints a partir do contexto do app (sem travar se faltar dado)
@@ -599,17 +597,17 @@ export const charts = {
 
             performanceTracker.addMarker(requestId, 'ui_updates_start');
 
-            // ðŸ”§ CORREÃ‡ÃƒO: Usa novo sistema de atualizaÃ§Ã£o se disponÃvel
+            // 🔧 CORREÇÃO: Usa novo sistema de atualização se dispon�vel
             if (cardData && cardData.isValid && typeof window.updateProgressCardComplete === 'function') {
                 try {
                     const updateSuccess = window.updateProgressCardComplete(cardData, this.progressMetasChart);
                     if (updateSuccess) {
-                        logger.debug('âœ… Card atualizado via novo sistema');
+                        logger.debug('✅ Card atualizado via novo sistema');
 
-                        // FASE 3: Armazena dados atuais no cache para futuras comparaÃ§Ãµes
+                        // FASE 3: Armazena dados atuais no cache para futuras comparações
                         if (window.progressCardCache) {
                             window.progressCardCache.store(cardData);
-                            logger.debug('ðŸ’¾ Dados armazenados no cache para comparaÃ§Ãµes futuras');
+                            logger.debug('💾 Dados armazenados no cache para comparações futuras');
                         }
                     } else {
                         // Fallback para sistema antigo
@@ -617,7 +615,7 @@ export const charts = {
                         this.updateProgressStatusNew(stats, targets, goalsSummary);
                     }
                 } catch (updateError) {
-                    logger.warn('âšï¸ Erro no novo sistema, usando fallback:', { error: updateError.message });
+                    logger.warn('�� Erro no novo sistema, usando fallback:', { error: updateError.message });
                     // Fallback para sistema antigo
                     this.updateProgressPieChart(stats, goalsSummary);
                     this.updateProgressStatusNew(stats, targets, goalsSummary);
@@ -631,38 +629,38 @@ export const charts = {
             this._applyLockMode(goalsSummary?.lock);
 
             performanceTracker.finishOperation(requestId, 'success', { stats });
-            logger.withRequest(requestId).info('âœ… CHARTS: Progresso atualizado');
+            logger.withRequest(requestId).info('✅ CHARTS: Progresso atualizado');
             return true;
         } catch (error) {
             performanceTracker.finishOperation(requestId, 'error', { error: error.message });
             logger
                 .withRequest(requestId)
-                .error('âŒ Erro ao atualizar progresso:', { error: String(error) });
+                .error('� Erro ao atualizar progresso:', { error: String(error) });
             return false;
         }
     },
 
     /**
-     * ðŸ“Š Calcula estatÃsticas do progresso (VERSÃƒO MELHORADA)
-     * Integra com o novo sistema de cÃ¡lculos reais
+     * 📊 Calcula estat�sticas do progresso (VERSÃO MELHORADA)
+     * Integra com o novo sistema de cálculos reais
      */
     calculateProgressStats(sessionHistory) {
         try {
-            // Importa funÃ§Ã£o de cÃ¡lculo real dinamicamente
+            // Importa função de cálculo real dinamicamente
             if (typeof window.calculateRealStats === 'function') {
                 return window.calculateRealStats(sessionHistory);
             }
 
-            // Fallback para cÃ¡lculo local se funÃ§Ã£o externa nÃ£o disponÃvel
+            // Fallback para cálculo local se função externa não dispon�vel
             return this._calculateProgressStatsLocal(sessionHistory);
         } catch (error) {
-            logger.error('âŒ Erro ao calcular estatÃsticas de progresso:', { error: String(error) });
+            logger.error('� Erro ao calcular estat�sticas de progresso:', { error: String(error) });
             return this._calculateProgressStatsLocal(sessionHistory);
         }
     },
 
     /**
-     * ðŸ“Š CÃ¡lculo local de estatÃsticas (fallback)
+     * 📊 Cálculo local de estat�sticas (fallback)
      * @private
      */
     _calculateProgressStatsLocal(sessionHistory) {
@@ -684,30 +682,30 @@ export const charts = {
         let totalProfit = 0;
         let validOperations = 0;
 
-        // Processamento mais robusto das operaÃ§Ãµes
+        // Processamento mais robusto das operações
         for (const operacao of sessionHistory) {
             if (!operacao || typeof operacao !== 'object') {
                 continue;
             }
 
-            // Determina resultado da operaÃ§Ã£o
+            // Determina resultado da operação
             let isWin = null;
             if (typeof operacao.isWin === 'boolean') {
                 isWin = operacao.isWin;
             } else if (typeof operacao.resultado === 'string') {
                 isWin = operacao.resultado === 'win';
             } else {
-                continue; // Pula operaÃ§Ãµes sem resultado claro
+                continue; // Pula operações sem resultado claro
             }
 
-            // Conta vitÃ³rias e derrotas
+            // Conta vitórias e derrotas
             if (isWin) {
                 wins++;
             } else {
                 losses++;
             }
 
-            // Soma lucro/prejuÃzo se disponÃvel
+            // Soma lucro/preju�zo se dispon�vel
             if (typeof operacao.valor === 'number' && !isNaN(operacao.valor)) {
                 totalProfit += operacao.valor;
             }
@@ -733,10 +731,10 @@ export const charts = {
     },
 
     /**
-     * ðŸ§ª ForÃ§a dados de teste no grÃ¡fico
+     * 🧪 Força dados de teste no gráfico
      */
     testProgressWithData(testData = null) {
-        logger.info('ðŸ§ª TESTE: Aplicando dados de teste no grÃ¡fico...');
+        logger.info('🧪 TESTE: Aplicando dados de teste no gráfico...');
 
         const testStats = testData || {
             totalOperations: 25,
@@ -749,23 +747,23 @@ export const charts = {
 
         const testTargets = { winTarget: 80, lossTarget: 20 };
 
-        // ForÃ§a atualizaÃ§Ã£o dos displays ANTES do grÃ¡fico
+        // Força atualização dos displays ANTES do gráfico
         const winDisplay = dom.winRateDisplay;
         const lossDisplay = dom.lossRateDisplay;
 
         if (winDisplay) winDisplay.textContent = testStats.winRate.toFixed(1) + '%';
         if (lossDisplay) lossDisplay.textContent = testStats.lossRate.toFixed(1) + '%';
 
-        // AtualizaÃ§Ã£o normal tambÃ©m
+        // Atualização normal também
         this.updateProgressPieChart(testStats);
         this.updateProgressBarsNew(testStats, testTargets);
         this.updateProgressStatusNew(testStats, testTargets);
 
-        logger.debug('ðŸ§ª Dados de teste aplicados COM FORÃ‡A:', testStats);
+        logger.debug('🧪 Dados de teste aplicados COM FORÇA:', testStats);
     },
 
     /**
-     * ðŸŽ¨ Resolve cores CSS dinamicamente
+     * 🎨 Resolve cores CSS dinamicamente
      */
     getResolvedColors() {
         const style = getComputedStyle(document.documentElement);
@@ -779,12 +777,12 @@ export const charts = {
     },
 
     /**
-     * ðŸ“Š Atualiza status textual do progresso
+     * 📊 Atualiza status textual do progresso
      */
     updateProgressStatusNew(stats, targets, goalsSummary = null) {
-        logger.debug('ðŸ“Š Atualizando status do progresso:', { stats, targets });
+        logger.debug('📊 Atualizando status do progresso:', { stats, targets });
 
-        // AtualizaÃ§Ã£o com fallback
+        // Atualização com fallback
         const elements = {
             operationsCount: dom.operationsCount,
             winCount: dom.winCount,
@@ -805,18 +803,18 @@ export const charts = {
         // Atualizar os "cards" de status (parte destacada na UI)
         this._updateStatusCards(stats, targets, goalsSummary);
 
-        // Atualiza header "SessÃ£o Ativa - X ops"
+        // Atualiza header "Sessão Ativa - X ops"
         try {
             if (dom.progressSessionInfo) {
                 const isActive = !!(window.state && window.state.isSessionActive);
                 const count = Number(stats.totalOperations || 0);
-                dom.progressSessionInfo.textContent = `${isActive ? 'SessÃ£o Ativa' : 'SessÃ£o Inativa'} Â· ${count} ops`;
+                dom.progressSessionInfo.textContent = `${isActive ? 'Sessão Ativa' : 'Sessão Inativa'} · ${count} ops`;
             }
         } catch { }
     },
 
     /**
-     * ðŸŽ¯ Atualiza os cartÃµes de status (Win / Loss) com mensagens e classes
+     * 🎯 Atualiza os cartões de status (Win / Loss) com mensagens e classes
      */
     _updateStatusCards(stats, targets, goalsSummary = null) {
         try {
@@ -836,29 +834,29 @@ export const charts = {
                     const subNode = el.querySelector('.status-subtext');
                     if (subNode && typeof subtext === 'string') subNode.textContent = subtext;
                     // Reset classes visuais
-                    domHelper.remove(el, 'excellent', 'good', 'warning', 'neutral'); // 🆕
-                    domHelper.add(el, level); // 🆕
+                    domHelper.remove(el, 'excellent', 'good', 'warning', 'neutral'); // ??
+                    domHelper.add(el, level); // ??
                 } catch { }
             };
 
             // WIN STATUS
             if (winEl) {
-                let msg = 'Vamos comeÃ§ar!';
+                let msg = 'Vamos começar!';
                 let level = 'neutral';
-                let icon = 'ðŸŸ¢';
+                let icon = '🟢';
                 if (totalOps > 0) {
                     if (stats.winRate >= (targets.winTarget || 80)) {
                         msg = 'Meta atingida';
                         level = 'excellent';
-                        icon = 'âœ…';
+                        icon = '✅';
                     } else if (stats.winRate >= (targets.winTarget || 80) * 0.8) {
-                        msg = 'Quase lÃ¡';
+                        msg = 'Quase lá';
                         level = 'good';
-                        icon = 'ðŸŸ¡';
+                        icon = '🟡';
                     } else {
                         msg = 'Aprimorar assertividade';
                         level = 'warning';
-                        icon = 'âšï¸';
+                        icon = '��';
                     }
                 }
                 const meta = targets.winTarget || 80;
@@ -874,12 +872,12 @@ export const charts = {
                     const faltaTxt =
                         ui?._formatarMoedaInternal?.(falta) ||
                         `R$ ${Number(falta || 0).toFixed(2)}`;
-                    sub = `Meta: ${meta}% Â· Atual: ${atual}% Â· Faltam: ${faltaTxt} (${faltapct.toFixed(1)}%)`;
+                    sub = `Meta: ${meta}% · Atual: ${atual}% · Faltam: ${faltaTxt} (${faltapct.toFixed(1)}%)`;
                 } else {
                     const extra = goalsSummary?.goals
-                        ? ` Â· Falta: ${ui?._formatarMoedaInternal?.(goalsSummary.goals.restanteWinRecoveryAmount ?? goalsSummary.goals.restanteWinAmount) || 'R$ 0,00'}`
+                        ? ` · Falta: ${ui?._formatarMoedaInternal?.(goalsSummary.goals.restanteWinRecoveryAmount ?? goalsSummary.goals.restanteWinAmount) || 'R$ 0,00'}`
                         : '';
-                    sub = `Meta: ${meta}% Â· Atual: ${atual}%${extra}`;
+                    sub = `Meta: ${meta}% · Atual: ${atual}%${extra}`;
                 }
                 setCard(winEl, `${icon} ${msg}`, level, sub);
             }
@@ -888,21 +886,21 @@ export const charts = {
             if (lossEl) {
                 let msg = 'Controle total';
                 let level = 'excellent';
-                let icon = 'âœ…';
+                let icon = '✅';
                 if (totalOps > 0) {
                     const limit = targets.lossTarget || 20;
                     if (stats.lossRate <= limit) {
                         msg = 'Controle total';
                         level = 'excellent';
-                        icon = 'âœ…';
+                        icon = '✅';
                     } else if (stats.lossRate <= limit + 5) {
-                        msg = 'AtenÃ§Ã£o';
+                        msg = 'Atenção';
                         level = 'good';
-                        icon = 'ðŸŸ¡';
+                        icon = '🟡';
                     } else {
                         msg = 'Risco alto';
                         level = 'warning';
-                        icon = 'âšï¸';
+                        icon = '��';
                     }
                 }
                 const meta = targets.lossTarget || 20;
@@ -918,27 +916,27 @@ export const charts = {
                     const resultadoTxt =
                         ui?._formatarMoedaInternal?.(g.lucroAcumulado) ||
                         `R$ ${Number(g.lucroAcumulado || 0).toFixed(2)}`;
-                    sub = `Limite: ${meta}% Â· Atual: ${atual}% Â· Risco usado: ${risco}% Â· Resultado: ${resultadoTxt} Â· Limite(R$): -${limiteTxt.replace('R$ ', '')}`;
+                    sub = `Limite: ${meta}% · Atual: ${atual}% · Risco usado: ${risco}% · Resultado: ${resultadoTxt} · Limite(R$): -${limiteTxt.replace('R$ ', '')}`;
                 } else {
                     const extra = goalsSummary?.goals
-                        ? ` Â· Margem: ${ui?._formatarMoedaInternal?.(goalsSummary.goals.restanteLossAmount) || 'R$ 0,00'}`
+                        ? ` · Margem: ${ui?._formatarMoedaInternal?.(goalsSummary.goals.restanteLossAmount) || 'R$ 0,00'}`
                         : '';
-                    sub = `Limite: ${meta}% Â· Atual: ${atual}%${extra}`;
+                    sub = `Limite: ${meta}% · Atual: ${atual}%${extra}`;
                 }
                 setCard(lossEl, `${icon} ${msg}`, level, sub);
             }
         } catch (error) {
-            logger.warn('âšï¸ _updateStatusCards: falha ao atualizar cartÃµes', {
+            logger.warn('�� _updateStatusCards: falha ao atualizar cartões', {
                 error: String(error),
             });
         }
     },
 
     /**
-     * ðŸ¥§ Atualiza apenas o grÃ¡fico de pizza
+     * 🥧 Atualiza apenas o gráfico de pizza
      */
     updateProgressPieChart(stats, goalsSummary = null) {
-        // VerificaÃ§Ãµes defensivas: grÃ¡fico e canvas precisam estar vÃ¡lidos
+        // Verificações defensivas: gráfico e canvas precisam estar válidos
         if (!this.progressMetasChart || !this.progressMetasChart.canvas) {
             // Tentar re-inicializar se o canvas existir no DOM mapeado
             try {
@@ -946,7 +944,7 @@ export const charts = {
                     const reinitOk = this.initProgressChart();
                     if (!reinitOk) return false;
                 } else {
-                    // Canvas indisponÃvel no DOM; nÃ£o atualizar agora
+                    // Canvas indispon�vel no DOM; não atualizar agora
                     return false;
                 }
             } catch {
@@ -958,9 +956,9 @@ export const charts = {
             // Atualiza cores dinamicamente
             const colors = this.getResolvedColors();
 
-            // Anel Ãºnico Win/Loss - SIMPLIFICADO
+            // Anel único Win/Loss - SIMPLIFICADO
             this.progressMetasChart.data.datasets[0].backgroundColor = [
-                colors.primary,  // Verde para vitÃ³rias
+                colors.primary,  // Verde para vitórias
                 colors.secondary // Vermelho para derrotas
             ];
 
@@ -971,7 +969,7 @@ export const charts = {
 
             this.progressMetasChart.update('active');
 
-            // Texto central Ã© desenhado pelo plugin; esconder rÃ³tulo DOM (garantia)
+            // Texto central é desenhado pelo plugin; esconder rótulo DOM (garantia)
             try {
                 if (dom.totalOperationsDisplay) dom.totalOperationsDisplay.style.display = 'none';
             } catch { }
@@ -981,13 +979,13 @@ export const charts = {
 
             return true;
         } catch (error) {
-            logger.error('âŒ Erro ao atualizar grÃ¡fico de pizza', { error: String(error) });
+            logger.error('� Erro ao atualizar gráfico de pizza', { error: String(error) });
             return false;
         }
     },
 
     /**
-     * ðŸ“Š Atualiza cards de informaÃ§Ã£o (sem barras visuais)
+     * 📊 Atualiza cards de informação (sem barras visuais)
      */
     updateProgressInfoCards(stats, targets) {
         // Atualiza displays de percentual
@@ -997,7 +995,7 @@ export const charts = {
         if (winDisplay) winDisplay.textContent = `${stats.winRate.toFixed(1)}%`;
         if (lossDisplay) lossDisplay.textContent = `${stats.lossRate.toFixed(1)}%`;
 
-        // Referências aos elementos percentuais removidas - campos não existem mais
+        // Refer�ncias aos elementos percentuais removidas - campos n�o existem mais
 
         // Atualiza valores em R$ 
         try {
@@ -1022,8 +1020,8 @@ export const charts = {
                 if (metaTargetAmountEl) metaTargetAmountEl.textContent = stopWinAmountBRL;
                 if (metaAchievedAmountEl) {
                     metaAchievedAmountEl.textContent = achievedBRL;
-                    domHelper.remove(metaAchievedAmountEl, 'text-positive', 'text-negative'); // 🆕
-                    if (achieved > 0) domHelper.add(metaAchievedAmountEl, 'text-positive'); // 🆕
+                    domHelper.remove(metaAchievedAmountEl, 'text-positive', 'text-negative'); // ??
+                    if (achieved > 0) domHelper.add(metaAchievedAmountEl, 'text-positive'); // ??
                 }
 
                 // Loss (R$)
@@ -1041,17 +1039,17 @@ export const charts = {
                 if (lossLimitAmountEl) lossLimitAmountEl.textContent = stopLossAmountBRL;
                 if (lossSessionResultEl) {
                     lossSessionResultEl.textContent = sessionPLBRL;
-                    domHelper.remove(lossSessionResultEl, 'text-positive', 'text-negative'); // 🆕
-                    if ((g.lucroAcumulado || 0) > 0) domHelper.add(lossSessionResultEl, 'text-positive'); // 🆕
-                    if ((g.lucroAcumulado || 0) < 0) domHelper.add(lossSessionResultEl, 'text-negative'); // 🆕
+                    domHelper.remove(lossSessionResultEl, 'text-positive', 'text-negative'); // ??
+                    if ((g.lucroAcumulado || 0) > 0) domHelper.add(lossSessionResultEl, 'text-positive'); // ??
+                    if ((g.lucroAcumulado || 0) < 0) domHelper.add(lossSessionResultEl, 'text-negative'); // ??
                 }
 
-                // Status (lado esquerdo da prÃ©via)
+                // Status (lado esquerdo da prévia)
                 if (statusTargetAmountEl) statusTargetAmountEl.textContent = stopWinAmountBRL;
                 if (statusAchievedEl) {
                     statusAchievedEl.textContent = achievedBRL;
-                    domHelper.remove(statusAchievedEl, 'text-positive', 'text-negative'); // 🆕
-                    if (achieved > 0) domHelper.add(statusAchievedEl, 'text-positive'); // 🆕
+                    domHelper.remove(statusAchievedEl, 'text-positive', 'text-negative'); // ??
+                    if (achieved > 0) domHelper.add(statusAchievedEl, 'text-positive'); // ??
                 }
                 if (statusExceedEl) {
                     const excedente = Math.max(0, (g.lucroAcumulado || 0) - (g.stopWinAmount || 0));
@@ -1066,23 +1064,23 @@ export const charts = {
                     const denom = Number(g.stopLossAmount) || 0;
                     const riscoUsado = denom > 0 && (g.lucroAcumulado || 0) < 0 ? (Math.abs(g.lucroAcumulado || 0) / denom) * 100 : 0;
                     statusRiskUsedEl.textContent = `${riscoUsado.toFixed(1)}%`;
-                    domHelper.remove(statusRiskUsedEl, 'text-positive', 'text-negative'); // 🆕
-                    if (riscoUsado > 0) domHelper.add(statusRiskUsedEl, 'text-negative'); // 🆕
+                    domHelper.remove(statusRiskUsedEl, 'text-positive', 'text-negative'); // ??
+                    if (riscoUsado > 0) domHelper.add(statusRiskUsedEl, 'text-negative'); // ??
                 }
             }
         } catch (error) {
-            logger.warn('âšï¸ Erro ao atualizar valores monetÃ¡rios:', error.message);
+            logger.warn('�� Erro ao atualizar valores monetários:', error.message);
         }
     },
 
     /**
-     * ðŸ“Š Atualiza barras de progresso com verificaÃ§Ãµes
+     * 📊 Atualiza barras de progresso com verificações
      */
     updateProgressBarsNew(stats, targets) {
         this.updateProgressBarSafe('win', stats.winRate, targets.winTarget);
         this.updateProgressBarSafe('loss', stats.lossRate, targets.lossTarget);
 
-        // Atualiza valores em R$ abaixo das barras, quando possÃvel
+        // Atualiza valores em R$ abaixo das barras, quando poss�vel
         try {
             const summary = this._buildGoalsProgressSummarySafe();
             if (summary?.goals) {
@@ -1091,17 +1089,17 @@ export const charts = {
                     dom.winTargetAmount.textContent =
                         ui?._formatarMoedaInternal?.(g.stopWinAmount) ||
                         `R$ ${Number(g.stopWinAmount || 0).toFixed(2)}`;
-                // Usa falta com recuperaÃ§Ã£o (considera prejuÃzo atual)
+                // Usa falta com recuperação (considera preju�zo atual)
                 const faltaRec =
                     typeof g.restanteWinRecoveryAmount === 'number'
                         ? g.restanteWinRecoveryAmount
                         : g.restanteWinAmount;
-                // Layout original: mostrar restante atÃ© a meta
+                // Layout original: mostrar restante até a meta
                 if (dom.winRemainingAmount)
                     dom.winRemainingAmount.textContent =
                         ui?._formatarMoedaInternal?.(faltaRec) ||
                         `R$ ${Number(faltaRec || 0).toFixed(2)}`;
-                // Limite (R$) no preview Ã© positivo (sem sinal), mantendo coerÃªncia
+                // Limite (R$) no preview é positivo (sem sinal), mantendo coerência
                 if (dom.lossLimitAmount)
                     dom.lossLimitAmount.textContent =
                         ui?._formatarMoedaInternal?.(g.stopLossAmount) ||
@@ -1111,19 +1109,19 @@ export const charts = {
                         ui?._formatarMoedaInternal?.(g.lucroAcumulado) ||
                         `R$ ${Number(g.lucroAcumulado || 0).toFixed(2)}`;
                     dom.lossSessionResult.textContent = txt;
-                    // cor por sinal (apenas classe; CSS jÃ¡ governa as cores globais)
-                    domHelper.remove(dom.lossSessionResult, 'positive', 'negative'); // 🆕
-                    if (g.lucroAcumulado > 0) domHelper.add(dom.lossSessionResult, 'positive'); // 🆕
-                    if (g.lucroAcumulado < 0) domHelper.add(dom.lossSessionResult, 'negative'); // 🆕
+                    // cor por sinal (apenas classe; CSS já governa as cores globais)
+                    domHelper.remove(dom.lossSessionResult, 'positive', 'negative'); // ??
+                    if (g.lucroAcumulado > 0) domHelper.add(dom.lossSessionResult, 'positive'); // ??
+                    if (g.lucroAcumulado < 0) domHelper.add(dom.lossSessionResult, 'negative'); // ??
                 }
                 // Cor para "Meta Restante": se houver atingido > 0 e ainda restar pouco, manter neutro; 
-                // regra simples: se restante == 0 e lucro > 0, destacar positivo no P/L jÃ¡ cobre o caso.
+                // regra simples: se restante == 0 e lucro > 0, destacar positivo no P/L já cobre o caso.
                 if (dom.winRemainingAmount) {
-                    domHelper.remove(dom.winRemainingAmount, 'positive', 'negative'); // 🆕
+                    domHelper.remove(dom.winRemainingAmount, 'positive', 'negative'); // ??
                     const restante = Number(faltaRec || 0);
-                    // NÃ£o colorimos restante positivo como negativo para nÃ£o confundir; mantemos neutro.
+                    // Não colorimos restante positivo como negativo para não confundir; mantemos neutro.
                     if (restante === 0 && g.lucroAcumulado > 0) {
-                        domHelper.add(dom.winRemainingAmount, 'positive'); // 🆕
+                        domHelper.add(dom.winRemainingAmount, 'positive'); // ??
                     }
                 }
                 // Mini barras
@@ -1136,8 +1134,8 @@ export const charts = {
                 if (metaFill) metaFill.style.width = `${metaPercent}%`;
                 if (metaDisp) {
                     metaDisp.textContent = `${metaPercent.toFixed(1)}%`;
-                    domHelper.remove(metaDisp, 'positive', 'negative'); // 🆕
-                    if (metaPercent > 0) domHelper.add(metaDisp, 'positive'); // 🆕
+                    domHelper.remove(metaDisp, 'positive', 'negative'); // ??
+                    if (metaPercent > 0) domHelper.add(metaDisp, 'positive'); // ??
                 }
 
                 const riscoPercent =
@@ -1149,13 +1147,13 @@ export const charts = {
                 if (riscoFill) riscoFill.style.width = `${riscoPercent}%`;
                 if (riscoDisp) {
                     riscoDisp.textContent = `${riscoPercent.toFixed(1)}%`;
-                    domHelper.remove(riscoDisp, 'positive', 'negative'); // 🆕
-                    if (riscoPercent > 0) domHelper.add(riscoDisp, 'negative'); // 🆕
+                    domHelper.remove(riscoDisp, 'positive', 'negative'); // ??
+                    if (riscoPercent > 0) domHelper.add(riscoDisp, 'negative'); // ??
                 }
             }
         } catch { }
 
-        // Badges de tendÃªncia (nÃ£o intrusivo; usa prevWinRate/prevLossRate se disponÃveis)
+        // Badges de tendência (não intrusivo; usa prevWinRate/prevLossRate se dispon�veis)
         try {
             const wrPrev = typeof stats.prevWinRate === 'number' ? stats.prevWinRate : null;
             const lrPrev = typeof stats.prevLossRate === 'number' ? stats.prevLossRate : null;
@@ -1168,7 +1166,7 @@ export const charts = {
                     wrBadge.textContent = '';
                     wrBadge.className = 'trend-badge';
                 } else {
-                    wrBadge.textContent = `${wrDelta > 0 ? 'â–²' : 'â–¼'} ${Math.abs(wrDelta).toFixed(1)} pp`;
+                    wrBadge.textContent = `${wrDelta > 0 ? '▲' : '▼'} ${Math.abs(wrDelta).toFixed(1)} pp`;
                     wrBadge.className = `trend-badge ${wrDelta > 0 ? 'trend-up' : 'trend-down'}`;
                 }
             }
@@ -1179,7 +1177,7 @@ export const charts = {
                     lrBadge.textContent = '';
                     lrBadge.className = 'trend-badge';
                 } else {
-                    lrBadge.textContent = `${lrDelta > 0 ? 'â–²' : 'â–¼'} ${Math.abs(lrDelta).toFixed(1)} pp`;
+                    lrBadge.textContent = `${lrDelta > 0 ? '▲' : '▼'} ${Math.abs(lrDelta).toFixed(1)} pp`;
                     lrBadge.className = `trend-badge ${lrDelta > 0 ? 'trend-up' : 'trend-down'}`;
                 }
             }
@@ -1187,10 +1185,10 @@ export const charts = {
     },
 
     /**
-     * ðŸ“Š Atualiza uma barra individual com verificaÃ§Ãµes
+     * 📊 Atualiza uma barra individual com verificações
      */
     updateProgressBarSafe(type, currentRate, targetRate) {
-        logger.debug(`ðŸ”„ Atualizando barra ${type}:`, { currentRate, targetRate });
+        logger.debug(`🔄 Atualizando barra ${type}:`, { currentRate, targetRate });
 
         const elements = {
             display: dom[`${type}RateDisplay`],
@@ -1204,15 +1202,15 @@ export const charts = {
         Object.entries(elements).forEach(([key, element]) => {
             if (!element) {
                 if (isDevelopment && isDevelopment()) {
-                    logger.warn(`âšï¸ Elemento ${type}${key} nÃ£o encontrado`);
+                    logger.warn(`�� Elemento ${type}${key} não encontrado`);
                 } else {
-                    logger.debug && logger.debug(`Elemento ${type}${key} nÃ£o encontrado`);
+                    logger.debug && logger.debug(`Elemento ${type}${key} não encontrado`);
                 }
                 return;
             }
 
             try {
-                // NormalizaÃ§Ã£o segura para percentuais
+                // Normalização segura para percentuais
                 const clampPercent = (v) => {
                     const n = Number(v);
                     if (!isFinite(n)) return 0;
@@ -1248,7 +1246,7 @@ export const charts = {
                 }
             } catch (error) {
                 if (isDevelopment && isDevelopment()) {
-                    logger.error(`âŒ Erro ao atualizar ${type}.${key}:`, { error: String(error) });
+                    logger.error(`� Erro ao atualizar ${type}.${key}:`, { error: String(error) });
                 } else {
                     logger.debug && logger.debug(`Erro silencioso em ${type}.${key}`);
                 }
@@ -1261,7 +1259,7 @@ export const charts = {
             if (!currentBar || !currentBar.parentElement) return;
             const track = currentBar.parentElement; // .progress-bar-track
 
-            // Cria marcadores se nÃ£o existirem
+            // Cria marcadores se não existirem
             const ensureMarker = (markerId, cssClass) => {
                 let mk = track.querySelector(`#${markerId}`);
                 if (!mk) {
@@ -1303,7 +1301,7 @@ export const charts = {
             targetMarker.style.left = `${targetPx}px`;
             currentMarker.style.left = `${currentPx}px`;
 
-            // Mostra valores em R$ (se disponÃveis no contexto global formatador)
+            // Mostra valores em R$ (se dispon�veis no contexto global formatador)
             try {
                 const summary = this._buildGoalsProgressSummarySafe();
                 const progressV2 =
@@ -1323,7 +1321,7 @@ export const charts = {
                                 : 0;
                         currentMarker.title = `Faltam: ${ui?._formatarMoedaInternal?.(faltaRec) || ''} (${faltapct.toFixed(1)}%)`;
                     } else {
-                        currentMarker.title = `Falta (com recuperaÃ§Ã£o): ${ui?._formatarMoedaInternal?.(faltaRec) || ''}`;
+                        currentMarker.title = `Falta (com recuperação): ${ui?._formatarMoedaInternal?.(faltaRec) || ''}`;
                     }
                 }
                 if (type === 'loss' && summary?.goals) {
@@ -1337,14 +1335,14 @@ export const charts = {
                 }
             } catch { }
         } catch (e) {
-            logger.warn('âšï¸ Falha ao posicionar marcadores de progresso', { error: String(e) });
+            logger.warn('�� Falha ao posicionar marcadores de progresso', { error: String(e) });
         }
     },
 
     updateAssertividadeChart(historico, chartInstance) {
-        // Validação defensiva dos parâmetros
+        // Valida��o defensiva dos par�metros
         if (!Array.isArray(historico)) {
-            logger.warn('⚠️ updateAssertividadeChart: histórico não é array, usando array vazio');
+            logger.warn('?? updateAssertividadeChart: hist�rico n�o � array, usando array vazio');
             historico = [];
         }
 
@@ -1362,7 +1360,7 @@ export const charts = {
 
             const total = wins + losses;
 
-            // Cores fixas para consistência (definidas em updateColors, mas reforçadas aqui)
+            // Cores fixas para consist�ncia (definidas em updateColors, mas refor�adas aqui)
             const winColor = '#00d9a6';
             const lossColor = '#ff6b6b';
 
@@ -1386,11 +1384,11 @@ export const charts = {
                 chartInstance.data.datasets[0].data = [wins, losses];
                 chartInstance.data.datasets[0].backgroundColor = [winColor, lossColor];
 
-                // Restaura borda padrão (será sobrescrita pelo updateColors, mas define aqui por garantia)
+                // Restaura borda padr�o (ser� sobrescrita pelo updateColors, mas define aqui por garantia)
                 const style = getComputedStyle(document.body);
                 const surface = style.getPropertyValue('--surface-color').trim();
                 chartInstance.data.datasets[0].borderColor = surface;
-                chartInstance.data.datasets[0].borderWidth = 0; // Borda padrão é 0 ou controlada pelo tema
+                chartInstance.data.datasets[0].borderWidth = 0; // Borda padr�o � 0 ou controlada pelo tema
 
                 // Habilita tooltip
                 if (chartInstance.options.plugins.tooltip) {
@@ -1400,10 +1398,10 @@ export const charts = {
 
             chartInstance.update('none');
 
-            logger.debug('✅ updateAssertividadeChart: dados atualizados', { wins, losses, total });
+            logger.debug('? updateAssertividadeChart: dados atualizados', { wins, losses, total });
             return true;
         } catch (error) {
-            logger.error('❌ updateAssertividadeChart: erro ao atualizar dados', {
+            logger.error('? updateAssertividadeChart: erro ao atualizar dados', {
                 error: String(error),
             });
             return false;
@@ -1412,7 +1410,7 @@ export const charts = {
 
     updatePatrimonioChart(historico, capitalInicial, chartInstance, isGlobal = false) {
         try {
-            logger.debug('ðŸ“Š ATUALIZANDO GRÃFICO DE PATRIMÃ”NIO:', {
+            logger.debug('📊 ATUALIZANDO GR�FICO DE PATRIMÔNIO:', {
                 historico: historico?.length || 0,
                 capitalInicial,
                 isGlobal,
@@ -1424,12 +1422,12 @@ export const charts = {
             }
 
             if (!Array.isArray(historico)) {
-                logger.warn('âšï¸ HistÃ³rico nÃ£o Ã© array:', { type: typeof historico });
+                logger.warn('�� Histórico não é array:', { type: typeof historico });
                 historico = [];
             }
 
             if (typeof capitalInicial !== 'number' || isNaN(capitalInicial)) {
-                logger.warn('âšï¸ Capital inicial invÃ¡lido:', { capitalInicial });
+                logger.warn('�� Capital inicial inválido:', { capitalInicial });
                 capitalInicial = 0;
             }
 
@@ -1464,25 +1462,25 @@ export const charts = {
                             // Usar 0 para valores desconhecidos para manter continuidade
                             val = 0;
                             logger.debug(
-                                `âšï¸ OperaÃ§Ã£o ${index} com formato nÃ£o reconhecido, usando valor 0:`,
+                                `�� Operação ${index} com formato não reconhecido, usando valor 0:`,
                                 { op }
                             );
                         } else {
-                            logger.warn(`âšï¸ OperaÃ§Ã£o ${index} invÃ¡lida:`, { op });
-                            return; // Skip esta operaÃ§Ã£o
+                            logger.warn(`�� Operação ${index} inválida:`, { op });
+                            return; // Skip esta operação
                         }
                         runningCapital += val;
                         capitalHistory.push(runningCapital);
                     } else {
-                        logger.warn(`âšï¸ OperaÃ§Ã£o ${index} invÃ¡lida:`, { op });
+                        logger.warn(`�� Operação ${index} inválida:`, { op });
                     }
                 }
             });
 
             // Labels mais informativos
             const labels = isGlobal
-                ? capitalHistory.map((_, i) => (i === 0 ? 'InÃcio' : `Op ${i}`))
-                : capitalHistory.map((_, i) => (i === 0 ? 'InÃcio' : `Op ${i}`));
+                ? capitalHistory.map((_, i) => (i === 0 ? 'In�cio' : `Op ${i}`))
+                : capitalHistory.map((_, i) => (i === 0 ? 'In�cio' : `Op ${i}`));
 
             chartInstance.data.labels = labels;
 
@@ -1495,7 +1493,7 @@ export const charts = {
                 chartInstance.options.plugins.tooltip.enabled = !isZen;
             }
 
-            logger.debug('âœ… Dados do grÃ¡fico atualizados:', {
+            logger.debug('✅ Dados do gráfico atualizados:', {
                 labels: labels.length,
                 data: chartInstance.data.datasets[0].data.length,
                 zenMode: isZen,
@@ -1504,7 +1502,7 @@ export const charts = {
             chartInstance.update('none');
             return true;
         } catch (error) {
-            logger.error('âŒ updatePatrimonioChart: erro ao atualizar dados', {
+            logger.error('� updatePatrimonioChart: erro ao atualizar dados', {
                 error: String(error),
             });
             return false;
@@ -1512,13 +1510,13 @@ export const charts = {
     },
 
     /**
-     * Atualiza os charts da modal de Replay com dados de uma sessÃ£o especÃfica
+     * Atualiza os charts da modal de Replay com dados de uma sessão espec�fica
      */
     updateReplayCharts(sessao) {
         try {
             if (!sessao || !Array.isArray(sessao.historicoCombinado)) return false;
             const historico = sessao.historicoCombinado;
-            // EstatÃsticas para o texto central do plugin
+            // Estat�sticas para o texto central do plugin
             const wins = historico.filter((op) => op && (op.resultado === 'win' || op.isWin === true)).length;
             const totalOps = historico.length;
             const winRatePct = totalOps > 0 ? (wins / totalOps) * 100 : 0;
@@ -1531,7 +1529,7 @@ export const charts = {
                 try { this.replayAssertividadeChart.update('none'); } catch (_) { }
             }
             if (this.replayPatrimonioChart) {
-                // Propagar tambÃ©m para o grÃ¡fico de patrimÃ´nio (plugin global usa as mesmas stats)
+                // Propagar também para o gráfico de patrimônio (plugin global usa as mesmas stats)
                 this.replayPatrimonioChart.$currentStats = {
                     winRate: winRatePct,
                     totalOperations: totalOps,
@@ -1551,48 +1549,48 @@ export const charts = {
     },
 
     /**
-     * Atualiza grÃ¡ficos globais com dados agregados
+     * Atualiza gráficos globais com dados agregados
      */
     updateGlobal(aggregatedData) {
         try {
             if (!aggregatedData) {
-                logger.warn('âšï¸ updateGlobal: dados agregados nÃ£o fornecidos');
+                logger.warn('�� updateGlobal: dados agregados não fornecidos');
                 return false;
             }
 
             const { historico = [], capitalInicial = 0 } = aggregatedData;
 
-            // ValidaÃ§Ã£o defensiva
+            // Validação defensiva
             if (!Array.isArray(historico)) {
-                logger.warn('âšï¸ updateGlobal: histÃ³rico nÃ£o Ã© array, usando array vazio');
+                logger.warn('�� updateGlobal: histórico não é array, usando array vazio');
                 historico = [];
             }
 
             if (typeof capitalInicial !== 'number' || isNaN(capitalInicial)) {
-                logger.warn('âšï¸ updateGlobal: capital inicial invÃ¡lido, usando 0');
+                logger.warn('�� updateGlobal: capital inicial inválido, usando 0');
                 capitalInicial = 0;
             }
 
-            // Calcula stats para texto central uma Ãºnica vez
+            // Calcula stats para texto central uma única vez
             const wins = historico.filter((op) => op && (op.resultado === 'win' || op.isWin === true)).length;
             const totalOps = historico.length;
             const winRatePct = totalOps > 0 ? (wins / totalOps) * 100 : 0;
 
-            // Atualiza grÃ¡ficos da DASHBOARD se existirem
+            // Atualiza gráficos da DASHBOARD se existirem
             if (this.dashboardAssertividadeChart) {
-                // Propaga stats ao plugin de texto central (usado tambÃ©m em Replay)
+                // Propaga stats ao plugin de texto central (usado também em Replay)
                 this.dashboardAssertividadeChart.$currentStats = {
                     winRate: winRatePct,
                     totalOperations: totalOps,
                 };
 
-                // Normaliza histÃ³rico para funÃ§Ã£o de atualizaÃ§Ã£o
+                // Normaliza histórico para função de atualização
                 const histAssert = historico.map((op) => ({ resultado: op?.isWin ? 'win' : op?.isWin === false ? 'loss' : op?.resultado }));
                 this.updateAssertividadeChart(histAssert, this.dashboardAssertividadeChart);
             }
 
             if (this.dashboardPatrimonioChart) {
-                // TambÃ©m propaga stats para o grÃ¡fico de patrimÃ´nio, pois o plugin Ã© global
+                // Também propaga stats para o gráfico de patrimônio, pois o plugin é global
                 this.dashboardPatrimonioChart.$currentStats = {
                     winRate: winRatePct,
                     totalOperations: totalOps,
@@ -1605,14 +1603,14 @@ export const charts = {
                 );
             }
 
-            logger.debug('âœ… updateGlobal: grÃ¡ficos globais atualizados', {
+            logger.debug('✅ updateGlobal: gráficos globais atualizados', {
                 historicoLength: historico.length,
                 capitalInicial,
             });
 
             return true;
         } catch (error) {
-            logger.error('âŒ updateGlobal: erro ao atualizar grÃ¡ficos globais', {
+            logger.error('� updateGlobal: erro ao atualizar gráficos globais', {
                 error: String(error),
             });
             return false;
@@ -1625,22 +1623,22 @@ export const charts = {
         const border = style.getPropertyValue('--border-color').trim();
         const muted = style.getPropertyValue('--text-muted').trim();
 
-        // 🎨 Cores fixas do Progresso das Metas (consistência visual)
-        const winColor = '#00d9a6';  // Verde para vitórias
+        // ?? Cores fixas do Progresso das Metas (consist�ncia visual)
+        const winColor = '#00d9a6';  // Verde para vit�rias
         const lossColor = '#ff6b6b'; // Vermelho/rosa para derrotas
 
         // Cores para modo vazio (iguais ao enhanced-donut-chart-system.js)
         const emptyColor = '#374151';
         const emptyBorderColor = '#4b5563';
 
-        // Atualiza gráficos de Assertividade (Donut) com cores fixas
+        // Atualiza gr�ficos de Assertividade (Donut) com cores fixas
         [this.dashboardAssertividadeChart, this.replayAssertividadeChart].forEach((chart) => {
             if (chart) {
-                // Verifica se está em modo vazio (data = [1])
+                // Verifica se est� em modo vazio (data = [1])
                 const isEmpty = chart.data.datasets[0].data.length === 1;
 
                 if (isEmpty) {
-                    // Mantém cores de placeholder
+                    // Mant�m cores de placeholder
                     chart.data.datasets[0].backgroundColor = [emptyColor];
                     chart.data.datasets[0].borderColor = emptyBorderColor;
                 } else {
@@ -1654,11 +1652,11 @@ export const charts = {
             }
         });
 
-        // Atualiza gráficos de Patrimônio (Line) com cor verde
+        // Atualiza gr�ficos de Patrim�nio (Line) com cor verde
         [this.dashboardPatrimonioChart, this.replayPatrimonioChart].forEach((chart) => {
             if (chart) {
                 chart.data.datasets[0].borderColor = winColor;
-                chart.data.datasets[0].backgroundColor = 'rgba(0, 217, 166, 0.1)'; // Verde com transparência
+                chart.data.datasets[0].backgroundColor = 'rgba(0, 217, 166, 0.1)'; // Verde com transpar�ncia
                 chart.data.datasets[0].pointBackgroundColor = winColor;
                 chart.data.datasets[0].fill = true;
                 if (chart.options.scales?.y?.ticks) chart.options.scales.y.ticks.color = muted;
@@ -1672,11 +1670,11 @@ export const charts = {
     },
 
     /**
-     * Inicializa otimizaÃ§Ãµes de performance
+     * Inicializa otimizações de performance
      */
     async _initPerformanceOptimizations() {
         try {
-            console.log('ðŸš€ Inicializando otimizaÃ§Ãµes de performance...');
+            console.log('🚀 Inicializando otimizações de performance...');
 
             // Inicializar profiler de performance
             if (window.performanceProfiler) {
@@ -1688,7 +1686,7 @@ export const charts = {
                 await optimizedCharts.init();
             }
 
-            // Precarregar mÃ³dulos pesados
+            // Precarregar módulos pesados
             if (window.lazyLoader) {
                 lazyLoader.preloadModules([
                     {
@@ -1699,19 +1697,19 @@ export const charts = {
                 ]);
             }
 
-            // Configurar limpeza automÃ¡tica de performance
+            // Configurar limpeza automática de performance
             this._setupPerformanceCleanup();
 
             this._performanceOptimized = true;
-            console.log('âœ… OtimizaÃ§Ãµes de performance inicializadas');
+            console.log('✅ Otimizações de performance inicializadas');
         } catch (error) {
-            console.error('âŒ Erro ao inicializar otimizaÃ§Ãµes:', error);
+            console.error('� Erro ao inicializar otimizações:', error);
             this._performanceOptimized = false;
         }
     },
 
     /**
-     * Configura limpeza automÃ¡tica de dados de performance
+     * Configura limpeza automática de dados de performance
      */
     _setupPerformanceCleanup() {
         // Limpar dados de performance a cada 5 minutos
@@ -1725,7 +1723,7 @@ export const charts = {
                     // Limpar updates antigos
                     const stats = smartDebouncer.getStats();
                     if (stats.pendingCount > 50) {
-                        console.warn('ðŸ§¹ Muitos updates pendentes, limpando...');
+                        console.warn('🧹 Muitos updates pendentes, limpando...');
                         smartDebouncer.clear();
                     }
                 }
@@ -1739,7 +1737,7 @@ export const charts = {
     },
 
     /**
-     * ObtÃ©m relatÃ³rio de performance dos charts
+     * Obtém relatório de performance dos charts
      */
     getPerformanceReport() {
         const report = {

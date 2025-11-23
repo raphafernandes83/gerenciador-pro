@@ -346,7 +346,7 @@ export const logic = {
                     );
                 }
             } catch (error) {
-                console.warn('⚠️ Erro ao mover operação para lixeira:', error);
+                logger.warn('⚠️ Erro ao mover operação para lixeira:', error);
             }
             state.undoStack = [];
             state.historicoCombinado.splice(opIndex, 1);
@@ -398,7 +398,7 @@ export const logic = {
                     );
                 }
             } catch (error) {
-                console.warn('⚠️ Erro ao mover operação arquivada para lixeira:', error);
+                logger.warn('⚠️ Erro ao mover operação arquivada para lixeira:', error);
             }
             sessao.historicoCombinado.splice(opIndex, 1);
             sessao.resultadoFinanceiro = sessao.historicoCombinado.reduce((acc, op) => acc + (Number(op.valor) || 0), 0);
@@ -539,7 +539,7 @@ export const logic = {
                 if (config.incorporarLucros) recalcularPlanoCompleto = true;
             }
             if (config.modoGuiado) {
-                console.log('🎯 MODO GUIADO - VITÓRIA - Atualizando próxima etapa:', {
+                logger.debug('🎯 MODO GUIADO - VITÓRIA - Atualizando próxima etapa:', {
                     estrategia: config.estrategiaAtiva,
                     etapaAtual: etapa.etapa,
                     aporteAtual: aporte,
@@ -549,20 +549,20 @@ export const logic = {
                 if (config.estrategiaAtiva === CONSTANTS.STRATEGY.FIXED || reiniciaCiclo) {
                     state.proximaEtapaIndex = 0;
                     state.proximoAporte = 1;
-                    console.log('  ➡️ Reiniciando ciclo - próxima: etapa 0, aporte 1');
+                    logger.debug('  ➡️ Reiniciando ciclo - próxima: etapa 0, aporte 1');
                 } else if (etapa.etapa === 'Mão Fixa') {
                     state.proximaEtapaIndex = 1; // Vai para "Reinvestir"
                     state.proximoAporte = 1;
-                    console.log('  ➡️ Mão Fixa WIN - próxima: etapa 1 (Reinvestir), aporte 1');
+                    logger.debug('  ➡️ Mão Fixa WIN - próxima: etapa 1 (Reinvestir), aporte 1');
                 } else if (etapa.entrada2 !== undefined && aporte === 1) {
                     state.proximoAporte = 2; // Continua na mesma etapa, vai para aporte 2
-                    console.log('  ➡️ Aporte 1 WIN - próxima: mesma etapa, aporte 2');
+                    logger.debug('  ➡️ Aporte 1 WIN - próxima: mesma etapa, aporte 2');
                 } else {
                     // Para outras etapas sem aporte 2, avança para próxima etapa
                     if (state.proximaEtapaIndex < state.planoDeOperacoes.length - 1) {
                         state.proximaEtapaIndex++;
                         state.proximoAporte = 1;
-                        console.log(
+                        logger.debug(
                             `  ➡️ Etapa simples WIN - próxima: etapa ${state.proximaEtapaIndex}, aporte 1`
                         );
                     }
@@ -596,7 +596,7 @@ export const logic = {
         const estadoGlobal = window.state || state;
         const configGlobal = window.config || config;
 
-        console.log('🔍 [METAS] Estado usado para verificação:', {
+        logger.debug('🔍 [METAS] Estado usado para verificação:', {
             fonte: estadoGlobal === window.state ? 'window.state (global)' : 'state (local)',
             capitalAtual: estadoGlobal.capitalAtual,
             capitalInicioSessao: estadoGlobal.capitalInicioSessao,
@@ -625,7 +625,7 @@ export const logic = {
                 ? estadoGlobal.stopLossValor
                 : 0;
 
-        console.log('🎯 LOGIC: Verificando metas...', {
+        logger.debug('🎯 LOGIC: Verificando metas...', {
             capitalInicial: capitalInicioSeguro,
             capitalAtual: capitalAtualSeguro,
             stopWin: stopWinSeguro,
@@ -640,7 +640,7 @@ export const logic = {
 
         const lucroPrejuizoTotal = capitalAtualSeguro - capitalInicioSeguro;
 
-        console.log(`💰 LOGIC: Lucro/Prejuízo atual: ${lucroPrejuizoTotal.toFixed(2)}`);
+        logger.debug(`💰 LOGIC: Lucro/Prejuízo atual: ${lucroPrejuizoTotal.toFixed(2)}`);
         let metaAtingidaHoje = false;
         let tipoMeta = null;
 
@@ -684,12 +684,12 @@ export const logic = {
      */
     updateProgressCharts() {
         try {
-            console.log('🎯 LOGIC: Iniciando atualização do progresso...');
+            logger.debug('🎯 LOGIC: Iniciando atualização do progresso...');
 
             // 🔧 CORREÇÃO: Obtém histórico de forma mais robusta
             const history = this._getSessionHistory();
 
-            console.log('📋 Histórico atual:', {
+            logger.debug('📋 Histórico atual:', {
                 length: history.length,
                 isArray: Array.isArray(history),
                 firstOps: history.slice(0, 3).map((op) => ({
@@ -846,7 +846,7 @@ export const logic = {
  * Testa todas as funcionalidades principais da lógica de negócio
  */
 async function testLogicFunctions() {
-    console.log('🧪 Testando funções de lógica...');
+    logger.debug('🧪 Testando funções de lógica...');
 
     const startTime = performance.now();
     const results = {
@@ -860,7 +860,7 @@ async function testLogicFunctions() {
 
     try {
         // 1. Teste de cálculos básicos
-        console.log('🔢 Testando cálculos...');
+        logger.debug('🔢 Testando cálculos...');
         try {
             // Backup config atual
             const originalConfig = { ...config };
@@ -875,7 +875,7 @@ async function testLogicFunctions() {
             if (entrada === 20) {
                 // 2% de 1000
                 results.calculations = true;
-                console.log('✅ Cálculos: OK (entrada =', entrada, ')');
+                logger.debug('✅ Cálculos: OK (entrada =', entrada, ')');
             } else {
                 logger.warn('⚠️ Cálculos: entrada esperada 20, obtida', { entrada });
             }
@@ -887,7 +887,7 @@ async function testLogicFunctions() {
         }
 
         // 2. Teste de geração de plano
-        console.log('📋 Testando geração de plano...');
+        logger.debug('📋 Testando geração de plano...');
         try {
             // Backup estado atual
             const originalStrategy = config.estrategiaAtiva;
@@ -897,7 +897,7 @@ async function testLogicFunctions() {
 
             if (state.planoDeOperacoes && state.planoDeOperacoes.length > 0) {
                 results.planGeneration = true;
-                console.log('✅ Plano:', state.planoDeOperacoes.length, 'operações geradas');
+                logger.debug('✅ Plano:', state.planoDeOperacoes.length, 'operações geradas');
             }
 
             // Restaura estratégia
@@ -907,7 +907,7 @@ async function testLogicFunctions() {
         }
 
         // 3. Teste de gerenciamento de estado
-        console.log('🏦 Testando gerenciamento de estado...');
+        logger.debug('🏦 Testando gerenciamento de estado...');
         try {
             const originalCapital = state.capitalAtual;
 
@@ -922,7 +922,7 @@ async function testLogicFunctions() {
 
             if (state.capitalAtual === 1500) {
                 results.stateManagement = true;
-                console.log('✅ Estado: OK');
+                logger.debug('✅ Estado: OK');
             }
 
             // Restaura capital
@@ -936,7 +936,7 @@ async function testLogicFunctions() {
         }
 
         // 4. Teste de validação
-        console.log('✅ Testando validações...');
+        logger.debug('✅ Testando validações...');
         try {
             // Testa validação de entrada inválida
             const originalPayout = config.payout;
@@ -946,13 +946,13 @@ async function testLogicFunctions() {
 
             config.payout = originalPayout; // Restaura
             results.validation = true;
-            console.log('✅ Validação: OK');
+            logger.debug('✅ Validação: OK');
         } catch (error) {
             logger.warn('⚠️ Validação', { error: error.message });
         }
 
         // 5. Teste de controle de sessão
-        console.log('🎮 Testando controle de sessão...');
+        logger.debug('🎮 Testando controle de sessão...');
         try {
             const originalSession = state.isSessionActive;
 
@@ -962,7 +962,7 @@ async function testLogicFunctions() {
 
             state.isSessionActive = originalSession; // Restaura
             results.sessionControl = true;
-            console.log('✅ Sessão: OK');
+            logger.debug('✅ Sessão: OK');
         } catch (error) {
             logger.warn('⚠️ Controle de sessão', { error: error.message });
         }
@@ -972,10 +972,10 @@ async function testLogicFunctions() {
         results.overall = successCount >= 3; // Pelo menos 3 de 5 testes
 
         const endTime = performance.now();
-        console.log(`⏱️ Testes Logic executados em ${(endTime - startTime).toFixed(2)}ms`);
+        logger.debug(`⏱️ Testes Logic executados em ${(endTime - startTime).toFixed(2)}ms`);
 
         if (results.overall) {
-            console.log('✅ LOGIC FUNCTIONS: Funcionando corretamente!');
+            logger.debug('✅ LOGIC FUNCTIONS: Funcionando corretamente!');
         } else {
             logger.warn('⚠️ LOGIC FUNCTIONS: Alguns problemas encontrados');
         }
@@ -990,5 +990,5 @@ async function testLogicFunctions() {
 // Exposição global
 if (typeof window !== 'undefined') {
     window.testLogicFunctions = testLogicFunctions;
-    console.log('🧪 testLogicFunctions() disponível globalmente');
+    logger.debug('🧪 testLogicFunctions() disponível globalmente');
 }

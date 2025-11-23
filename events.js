@@ -24,32 +24,10 @@ import {
 } from './src/utils/TimerManager.js';
 
 // ============================================================================
-// 🆕 CHECKPOINT 2.2b: Helper de transição para DOMManager
+// 🆕 CHECKPOINT 2.2b: Helper de transição para DOMManager (CONSOLIDADO)
 // ============================================================================
-const domHelper = {
-    addClass(element, ...classes) {
-        if (window.domManager) return window.domManager.addClass(element, ...classes);
-        if (typeof element === 'string') element = document.querySelector(element);
-        element?.classList.add(...classes);
-        return !!element;
-    },
-    removeClass(element, ...classes) {
-        if (window.domManager) return window.domManager.removeClass(element, ...classes);
-        if (typeof element === 'string') element = document.querySelector(element);
-        element?.classList.remove(...classes);
-        return !!element;
-    },
-    toggleClass(element, className, force) {
-        if (window.domManager) return window.domManager.toggleClass(element, className, force);
-        if (typeof element === 'string') element = document.querySelector(element);
-        return element ? element.classList.toggle(className, force) : false;
-    },
-    hasClass(element, className) {
-        if (window.domManager) return window.domManager.hasClass(element, className);
-        if (typeof element === 'string') element = document.querySelector(element);
-        return element ? element.classList.contains(className) : false;
-    }
-};
+// Importa domHelper centralizado (anteriormente duplicado em 3 arquivos)
+import { domHelper } from './src/dom-helper.js';
 
 // Cache leve para dados agregados do Dashboard, invalidado em mudanças de sessões
 const dashboardAggregateCache = new Map();
