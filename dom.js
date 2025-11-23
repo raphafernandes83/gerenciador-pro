@@ -77,6 +77,7 @@ export function mapDOM() {
     dom.undoBtn = safeGetElement('undo-btn');
     dom.finishSessionBtn = safeGetElement('finish-session-btn');
     dom.newSessionBtn = safeGetElement('new-session-btn');
+    dom.sidebarNewSessionBtn = safeGetElement('sidebar-new-session-btn'); // 🆕 ui.js
 
     // Timeline
     dom.timelineContainer = safeGetElement('timeline-container');
@@ -167,6 +168,7 @@ export function mapDOM() {
     dom.generatePdfBtn = safeGetElement('generate-pdf-btn');
     dom.dashboardAssertividadeChart = safeGetElement('dashboard-assertividade-chart');
     dom.dashboardPatrimonioChart = safeGetElement('dashboard-patrimonio-chart');
+    dom.dashboardContent = safeGetElement('dashboard-content'); // 🆕 ui.js
 
     // Diário
     dom.diarioFilterButtons = safeGetElement('diario-filter-buttons');
@@ -179,6 +181,7 @@ export function mapDOM() {
     dom.analiseInsightPanel = safeGetElement('analise-insight-panel');
     dom.analiseInsightTitle = safeGetElement('analise-insight-title');
     dom.analiseInsightText = safeGetElement('analise-insight-text');
+    dom.analiseContent = safeGetElement('analise-content'); // 🆕 events.js
 
     // Popup de insights
     dom.insightPopup = safeGetElement('insight-popup');

@@ -1,0 +1,223 @@
+{
+  "file": "ui.js",
+  "timestamp": "2025-11-23T20:12:49.448Z",
+  "total": 13,
+  "byPriority": {
+    "high": [
+      {
+        "line": 1211,
+        "type": "querySelector by ID",
+        "selector": "#timeline-container",
+        "fullMatch": "document.querySelector('#timeline-container')",
+        "priority": "high",
+        "code": "document.querySelector('#timeline-container')"
+      },
+      {
+        "line": 1990,
+        "type": "getElementById",
+        "selector": "progress-soft-lock-badge",
+        "fullMatch": "document.getElementById('progress-soft-lock-badge')",
+        "priority": "high",
+        "code": "const badge = document.getElementById('progress-soft-lock-badge');"
+      },
+      {
+        "line": 2428,
+        "type": "getElementById",
+        "selector": "dashboard-content",
+        "fullMatch": "document.getElementById('dashboard-content')",
+        "priority": "high",
+        "code": "const dashboardElement = document.getElementById('dashboard-content');"
+      },
+      {
+        "line": 2527,
+        "type": "getElementById",
+        "selector": "sidebar-new-session-btn",
+        "fullMatch": "document.getElementById('sidebar-new-session-btn')",
+        "priority": "high",
+        "code": "const sidebarBtn = document.getElementById('sidebar-new-session-btn');"
+      }
+    ],
+    "medium": [
+      {
+        "line": 1845,
+        "type": "querySelector by class",
+        "selector": ".timeline-edit-panel",
+        "fullMatch": "document.querySelector('.timeline-edit-panel')",
+        "priority": "medium",
+        "code": "const existingPanel = document.querySelector('.timeline-edit-panel');"
+      }
+    ],
+    "low": [
+      {
+        "line": 411,
+        "type": "querySelectorAll",
+        "selector": "*",
+        "fullMatch": "document.querySelectorAll('*')",
+        "priority": "low",
+        "code": "domQueries: document.querySelectorAll('*').length,"
+      },
+      {
+        "line": 412,
+        "type": "querySelectorAll",
+        "selector": "[id]",
+        "fullMatch": "document.querySelectorAll('[id]')",
+        "priority": "low",
+        "code": "elementsFound: document.querySelectorAll('[id]').length,"
+      },
+      {
+        "line": 413,
+        "type": "querySelectorAll",
+        "selector": "[onclick]",
+        "fullMatch": "document.querySelectorAll('[onclick]')",
+        "priority": "low",
+        "code": "eventListeners: document.querySelectorAll('[onclick]').length,"
+      },
+      {
+        "line": 562,
+        "type": "querySelectorAll",
+        "selector": "*",
+        "fullMatch": "document.querySelectorAll('*')",
+        "priority": "low",
+        "code": "domQueries: document.querySelectorAll('*').length,"
+      },
+      {
+        "line": 563,
+        "type": "querySelectorAll",
+        "selector": "[id]",
+        "fullMatch": "document.querySelectorAll('[id]')",
+        "priority": "low",
+        "code": "elementsFound: document.querySelectorAll('[id]').length,"
+      },
+      {
+        "line": 564,
+        "type": "querySelectorAll",
+        "selector": "[onclick]",
+        "fullMatch": "document.querySelectorAll('[onclick]')",
+        "priority": "low",
+        "code": "eventListeners: document.querySelectorAll('[onclick]').length,"
+      },
+      {
+        "line": 584,
+        "type": "querySelectorAll",
+        "selector": "*",
+        "fullMatch": "document.querySelectorAll('*')",
+        "priority": "low",
+        "code": "const domComplexity = document.querySelectorAll('*').length;"
+      },
+      {
+        "line": 2768,
+        "type": "querySelectorAll",
+        "selector": "#trader-name",
+        "fullMatch": "document.querySelectorAll('#trader-name')",
+        "priority": "low",
+        "code": "const traderNameElements = document.querySelectorAll('#trader-name');"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "line": 411,
+      "type": "querySelectorAll",
+      "selector": "*",
+      "fullMatch": "document.querySelectorAll('*')",
+      "priority": "low",
+      "code": "domQueries: document.querySelectorAll('*').length,"
+    },
+    {
+      "line": 412,
+      "type": "querySelectorAll",
+      "selector": "[id]",
+      "fullMatch": "document.querySelectorAll('[id]')",
+      "priority": "low",
+      "code": "elementsFound: document.querySelectorAll('[id]').length,"
+    },
+    {
+      "line": 413,
+      "type": "querySelectorAll",
+      "selector": "[onclick]",
+      "fullMatch": "document.querySelectorAll('[onclick]')",
+      "priority": "low",
+      "code": "eventListeners: document.querySelectorAll('[onclick]').length,"
+    },
+    {
+      "line": 562,
+      "type": "querySelectorAll",
+      "selector": "*",
+      "fullMatch": "document.querySelectorAll('*')",
+      "priority": "low",
+      "code": "domQueries: document.querySelectorAll('*').length,"
+    },
+    {
+      "line": 563,
+      "type": "querySelectorAll",
+      "selector": "[id]",
+      "fullMatch": "document.querySelectorAll('[id]')",
+      "priority": "low",
+      "code": "elementsFound: document.querySelectorAll('[id]').length,"
+    },
+    {
+      "line": 564,
+      "type": "querySelectorAll",
+      "selector": "[onclick]",
+      "fullMatch": "document.querySelectorAll('[onclick]')",
+      "priority": "low",
+      "code": "eventListeners: document.querySelectorAll('[onclick]').length,"
+    },
+    {
+      "line": 584,
+      "type": "querySelectorAll",
+      "selector": "*",
+      "fullMatch": "document.querySelectorAll('*')",
+      "priority": "low",
+      "code": "const domComplexity = document.querySelectorAll('*').length;"
+    },
+    {
+      "line": 1211,
+      "type": "querySelector by ID",
+      "selector": "#timeline-container",
+      "fullMatch": "document.querySelector('#timeline-container')",
+      "priority": "high",
+      "code": "document.querySelector('#timeline-container')"
+    },
+    {
+      "line": 1845,
+      "type": "querySelector by class",
+      "selector": ".timeline-edit-panel",
+      "fullMatch": "document.querySelector('.timeline-edit-panel')",
+      "priority": "medium",
+      "code": "const existingPanel = document.querySelector('.timeline-edit-panel');"
+    },
+    {
+      "line": 1990,
+      "type": "getElementById",
+      "selector": "progress-soft-lock-badge",
+      "fullMatch": "document.getElementById('progress-soft-lock-badge')",
+      "priority": "high",
+      "code": "const badge = document.getElementById('progress-soft-lock-badge');"
+    },
+    {
+      "line": 2428,
+      "type": "getElementById",
+      "selector": "dashboard-content",
+      "fullMatch": "document.getElementById('dashboard-content')",
+      "priority": "high",
+      "code": "const dashboardElement = document.getElementById('dashboard-content');"
+    },
+    {
+      "line": 2527,
+      "type": "getElementById",
+      "selector": "sidebar-new-session-btn",
+      "fullMatch": "document.getElementById('sidebar-new-session-btn')",
+      "priority": "high",
+      "code": "const sidebarBtn = document.getElementById('sidebar-new-session-btn');"
+    },
+    {
+      "line": 2768,
+      "type": "querySelectorAll",
+      "selector": "#trader-name",
+      "fullMatch": "document.querySelectorAll('#trader-name')",
+      "priority": "low",
+      "code": "const traderNameElements = document.querySelectorAll('#trader-name');"
+    }
+  ]
+}

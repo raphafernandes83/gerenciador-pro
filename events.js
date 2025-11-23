@@ -965,7 +965,7 @@ export const events = {
         }
         state.lastAggregatedData = aggregatedData;
         await this.renderGlobalDashboard(aggregatedData);
-        const analiseContent = document.getElementById('analise-content');
+        const analiseContent = dom.analiseContent;
         // 🆕 CHECKPOINT 2.2b: Usando domHelper
         if (analiseContent && domHelper.hasClass(analiseContent, 'active')) {
             this.handleAnalysisDimensionChange();

@@ -1,0 +1,29 @@
+{
+  "file": "events.js",
+  "timestamp": "2025-11-23T20:07:51.996Z",
+  "total": 1,
+  "byPriority": {
+    "high": [
+      {
+        "line": 968,
+        "type": "getElementById",
+        "selector": "analise-content",
+        "fullMatch": "document.getElementById('analise-content')",
+        "priority": "high",
+        "code": "const analiseContent = document.getElementById('analise-content');"
+      }
+    ],
+    "medium": [],
+    "low": []
+  },
+  "findings": [
+    {
+      "line": 968,
+      "type": "getElementById",
+      "selector": "analise-content",
+      "fullMatch": "document.getElementById('analise-content')",
+      "priority": "high",
+      "code": "const analiseContent = document.getElementById('analise-content');"
+    }
+  ]
+}

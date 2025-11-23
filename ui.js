@@ -1208,7 +1208,7 @@ const ui = {
             );
             this.renderizarTimelineCompleta(
                 historicoPrincipal,
-                document.querySelector('#timeline-container')
+                dom.timelineContainer
             );
 
             await this.atualizarDashboardSessao();
@@ -1987,7 +1987,7 @@ const ui = {
 
             this.mostrarInsightPopup(`${msg}${reason ? ` · ${reason}` : ''}`, icon);
 
-            const badge = document.getElementById('progress-soft-lock-badge');
+            const badge = dom.progressSoftLockBadge;
             if (badge) {
                 badge.textContent = `${icon} ${msg}`;
                 // 🆕 CHECKPOINT 2.2a: Usando domHelper
@@ -2425,7 +2425,7 @@ const ui = {
         });
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
-        const dashboardElement = document.getElementById('dashboard-content');
+        const dashboardElement = dom.dashboardContent;
         if (!dashboardElement) {
             this.showModal({
                 title: 'Erro',
@@ -2524,7 +2524,7 @@ const ui = {
 
         // Suporte ao botão Nova Sessão no modal da sidebar (se presente)
         try {
-            const sidebarBtn = document.getElementById('sidebar-new-session-btn');
+            const sidebarBtn = dom.sidebarNewSessionBtn;
             if (sidebarBtn) {
                 // 🆕 CHECKPOINT 2.2a: Usando domHelper
                 domHelper.toggleClass(sidebarBtn, 'hidden', sessionActive);
