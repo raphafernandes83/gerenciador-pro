@@ -6,7 +6,7 @@
 import {
     validateField,
     validateMultipleFields,
-    attachRealtimeValidation,
+    attachRealTimeValidation,
     showFieldError,
     clearFieldError,
     sanitizeNumericInput
