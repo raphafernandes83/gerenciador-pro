@@ -4,7 +4,7 @@
  */
 
 import { state, config, CONSTANTS } from '../../state.js';
-import { logger } from './Logger.js';
+import { logger } from '../utils/Logger.js';
 import { sessionManager } from '../managers/SessionManager.js';
 
 /**
