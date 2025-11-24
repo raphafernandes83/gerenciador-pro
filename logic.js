@@ -34,144 +34,32 @@ import { logger } from './src/utils/Logger.js';
 import { memoize, memoizeByArraySignature } from './src/utils/PerformanceUtils.js';
 import { generateRequestId, safeLog } from './src/utils/SecurityUtils.js';
 
-// Funções puras que já foram testadas
-// ===== Normalização de operações =====
-function normalizeOperation(op) {
-    if (!op || typeof op !== 'object') return { isWin: null, valor: null, raw: op };
+// Novos módulos refatorados
+import * as CalculationsUtils from './src/utils/CalculationsUtils.js';
+import * as StateLoader from './src/utils/StateLoader.js';
+import { reprocessarHistorico as reprocessHistoryFunc, logicaAvancoPlano as planAdvanceFunc } from './src/business/HistoryProcessor.js';
+import { verificarMetas as checkGoalsFunc } from './src/business/GoalsChecker.js';
 
-    // Determinar isWin
-    const isWin = typeof op.isWin === 'boolean'
-        ? op.isWin
-        : typeof op.resultado === 'string'
-            ? op.resultado === 'win'
-            : null;
+// ============================================================================
+// FUNÇÕES DE CÁLCULO - Agora importadas de CalculationsUtils.js
+// ============================================================================
 
-    // Determinar valor (PnL)
-    let valor = null;
-    if (typeof op.valor === 'number' && isFinite(op.valor)) {
-        valor = op.valor;
-    } else if (typeof op.lucro === 'number' && isFinite(op.lucro)) {
-        valor = op.lucro;
-    } else if (
-        (typeof op.valorEntrada === 'number' || typeof op.valorRetorno === 'number') &&
-        typeof op.resultado === 'string'
-    ) {
-        // Formato legado baseado em entrada/retorno
-        valor = op.resultado === 'win' ? (op.valorRetorno || 0) : -(op.valorEntrada || 0);
-    } else if (typeof op.aporte === 'number') {
-        // Deriva a partir de aporte e payout quando possível
-        const payoutFactor = typeof op.payout === 'number' && isFinite(op.payout) && op.payout > 1
-            ? op.payout
-            : 1.8; // fallback conservador
-        if (isWin === true) valor = op.aporte * payoutFactor - op.aporte;
-        if (isWin === false) valor = -op.aporte;
-    }
+// Re-exportar funções de cálculo do módulo centralizado
+export const {
+    normalizeOperation,
+    normalizeHistory,
+    calcularSequencias,
+    calcularExpectativaMatematica,
+    calcularDrawdown,
+    calcularPayoffRatio
+} = CalculationsUtils;
 
-    return { isWin, valor, raw: op };
-}
+// ============================================================================
+// GERENCIAMENTO DE ESTADO - Agora importado de StateLoader.js
+// ============================================================================
 
-function normalizeHistory(historico) {
-    if (!Array.isArray(historico)) return [];
-    return historico.map(normalizeOperation);
-}
-
-export const calcularSequencias = memoizeByArraySignature(function calcularSequencias(historico) {
-    return calculateSequences(historico);
-});
-
-export const calcularExpectativaMatematica = memoizeByArraySignature(function calcularExpectativaMatematica(historico) {
-    if (!Array.isArray(historico)) return { ev: null, class: '' };
-
-    const normalized = normalizeHistory(historico);
-    const wins = normalized.filter((op) => op.isWin === true);
-    const losses = normalized.filter((op) => op.isWin === false);
-    const totalOps = wins.length + losses.length;
-    if (totalOps === 0) return { ev: null, class: '' };
-
-    const winRate = toPercentage(wins.length / totalOps);
-    // Payout médio (se ausente, usa 87%)
-    const avgPayout = wins.length > 0 && typeof wins[0].raw?.payout === 'number'
-        ? wins.reduce((acc, op) => acc + (op.raw.payout || 87), 0) / wins.length
-        : 87;
-
-    const evDecimal = (winRate * (avgPayout / 100)) / 100 - (1 - winRate / 100);
-    const ev = toPercentage(evDecimal);
-    return { ev, class: ev > 0 ? 'positive' : 'negative' };
-});
-
-export const calcularDrawdown = memoize(function calcularDrawdown(historico, capitalInicial) {
-    return calculateMaxDrawdown(historico, capitalInicial);
-}, (historico, capitalInicial) => `${historico?.length || 0}|${capitalInicial}`);
-
-export const calcularPayoffRatio = memoizeByArraySignature(function calcularPayoffRatio(historico) {
-    if (!Array.isArray(historico)) return Infinity;
-
-    const normalized = normalizeHistory(historico);
-    const wins = normalized.filter((op) => op.isWin === true && typeof op.valor === 'number');
-    const losses = normalized.filter((op) => op.isWin === false && typeof op.valor === 'number');
-    if (losses.length === 0 || wins.length === 0) return Infinity;
-
-    const ganhoMedio = wins.reduce((acc, op) => acc + (op.valor || 0), 0) / wins.length;
-    const perdaMedio = Math.abs(
-        losses.reduce((acc, op) => acc + (op.valor || 0), 0) / losses.length
-    );
-    return perdaMedio > 0 ? ganhoMedio / perdaMedio : Infinity;
-});
-
-export function updateState(newState) {
-    let needsRecalculation = false;
-    const planDependencies = [
-        'capitalInicial',
-        'percentualEntrada',
-        'stopWinPerc',
-        'stopLossPerc',
-        'payout',
-        'estrategiaAtiva',
-        'divisorRecuperacao',
-    ];
-
-    Object.keys(newState).forEach((key) => {
-        const value = newState[key];
-        if (key in config) {
-            config[key] = value;
-        } else if (key in state) {
-            state[key] = value;
-        }
-
-        const storageKey = `gerenciadorPro${key.charAt(0).toUpperCase() + key.slice(1)}`;
-        localStorage.setItem(storageKey, JSON.stringify(value));
-
-        if (planDependencies.includes(key)) {
-            needsRecalculation = true;
-        }
-    });
-
-    // Aplica efeitos colaterais esperados pelo restante da aplicação
-    try {
-        if (needsRecalculation) {
-            // Atualiza valores derivados de config/state
-            sessionManager.updateCalculatedValues();
-            // Recalcula plano conforme dependências
-            sessionManager.recalculatePlan(true);
-        }
-
-        // Persistência de sessão ativa
-        if (state.isSessionActive) {
-            sessionManager.saveActiveSession();
-        }
-
-        // Atualizações de UI essenciais
-        ui.syncUIFromState?.();
-        ui.atualizarDashboardSessao?.();
-        ui.atualizarStatusIndicadores?.();
-        ui.atualizarVisibilidadeBotoesSessao?.();
-        ui.atualizarVisibilidadeContextual?.();
-    } catch (_) {
-        // Evita quebrar fluxo caso alguma UI não esteja pronta
-    }
-
-    return needsRecalculation;
-}
+// Re-exportar função de atualização de estado
+export const updateState = StateLoader.updateState;
 
 // Objeto com a lógica de negócio que manipula o estado
 export const logic = {
@@ -200,32 +88,7 @@ export const logic = {
     },
 
     loadStateFromStorage() {
-        // Carrega a configuração guardada, fundindo com a configuração padrão
-        Object.keys(config).forEach((key) => {
-            const storageKey = `gerenciadorPro${key.charAt(0).toUpperCase() + key.slice(1)}`;
-            const savedValue = this.safeJSONParse(storageKey, null);
-            if (savedValue !== null) {
-                config[key] = savedValue;
-            }
-        });
-
-        // Carrega filtros específicos do estado que persistem entre sessões
-        // 🆕 CHECKPOINT 1.3b: Usando StateManager
-        const filterPeriod = this.safeJSONParse('gerenciadorProDashboardFilterPeriod', 'all');
-        const filterMode = this.safeJSONParse('gerenciadorProDashboardFilterMode', 'all');
-
-        if (window.stateManager) {
-            window.stateManager.setState({
-                dashboardFilterPeriod: filterPeriod,
-                dashboardFilterMode: filterMode
-            }, 'logic.loadStateFromStorage:filters');
-        } else {
-            state.dashboardFilterPeriod = filterPeriod;
-            state.dashboardFilterMode = filterMode;
-        }
-
-        // Garante que os valores calculados estão corretos após carregar
-        this.updateCalculatedValues();
+        return StateLoader.loadStateFromStorage();
     },
 
     updateCalculatedValues() {
@@ -465,217 +328,15 @@ export const logic = {
     },
 
     reprocessarHistorico() {
-        // 🆕 CHECKPOINT 1.2: Usando StateManager
-        if (window.stateManager) {
-            window.stateManager.setState({ capitalAtual: state.capitalInicioSessao }, 'logic.reprocessarHistorico:init');
-        } else {
-            state.capitalAtual = state.capitalInicioSessao;
-        }
-        state.capitalDeCalculo = state.capitalInicioSessao;
-        state.proximaEtapaIndex = 0;
-        state.proximoAporte = 1;
-        state.metaAtingida = false;
-        state.alertaStopWin80Mostrado = false;
-        state.alertaStopLoss80Mostrado = false;
-        this.calcularPlano();
-        state.planoDeOperacoes.forEach((p) => {
-            p.concluida = p.concluida1 = p.concluida2 = false;
-        });
-        const historicoProcessado = [...state.historicoCombinado];
-        for (const operacao of historicoProcessado) {
-            // 🆕 CHECKPOINT 1.2: Usando StateManager
-            if (window.stateManager) {
-                const estadoAtual = window.stateManager.getState();
-                window.stateManager.setState(
-                    { capitalAtual: estadoAtual.capitalAtual + operacao.valor },
-                    'logic.reprocessarHistorico:loop'
-                );
-            } else {
-                state.capitalAtual += operacao.valor;
-            }
-            const etapa = state.planoDeOperacoes[state.proximaEtapaIndex];
-            const aporte = state.proximoAporte;
-            if (config.estrategiaAtiva === CONSTANTS.STRATEGY.CYCLES) {
-                if (etapa.entrada2 === undefined) {
-                    etapa.concluida = true;
-                } else {
-                    if (aporte === 1) etapa.concluida1 = true;
-                    else etapa.concluida2 = true;
-                }
-            }
-            this.logicaAvancoPlano(operacao.isWin, state.proximaEtapaIndex, aporte, operacao.valor);
-        }
-        this.verificarMetas();
+        return reprocessHistoryFunc();
     },
 
     logicaAvancoPlano(isWin, index, aporte, resultado) {
-        const etapa = state.planoDeOperacoes[index];
-        let recalcularPlanoCompleto = false;
-
-        if (isWin) {
-            if (config.incorporarLucros) {
-                if (
-                    config.estrategiaAtiva === CONSTANTS.STRATEGY.FIXED ||
-                    etapa.etapa === 'Mão Fixa' ||
-                    etapa.etapa === 'Reinvestir'
-                ) {
-                    state.capitalDeCalculo += resultado;
-                    recalcularPlanoCompleto = true;
-                } else if (etapa.entrada2 !== undefined && aporte === 2) {
-                    state.capitalDeCalculo += resultado;
-                    recalcularPlanoCompleto = true;
-                }
-            }
-            let reiniciaCiclo =
-                config.estrategiaAtiva === CONSTANTS.STRATEGY.CYCLES &&
-                (etapa.etapa === 'Reinvestir' ||
-                    etapa.etapa === 'Recuperação' ||
-                    (etapa.entrada2 !== undefined && aporte === 2));
-            if (reiniciaCiclo) {
-                state.planoDeOperacoes.forEach((p) => {
-                    p.concluida = p.concluida1 = p.concluida2 = false;
-                });
-                state.capitalDeCalculo = state.capitalAtual;
-                if (config.incorporarLucros) recalcularPlanoCompleto = true;
-            }
-            if (config.modoGuiado) {
-                logger.debug('🎯 MODO GUIADO - VITÓRIA - Atualizando próxima etapa:', {
-                    estrategia: config.estrategiaAtiva,
-                    etapaAtual: etapa.etapa,
-                    aporteAtual: aporte,
-                    reiniciaCiclo,
-                });
-
-                if (config.estrategiaAtiva === CONSTANTS.STRATEGY.FIXED || reiniciaCiclo) {
-                    state.proximaEtapaIndex = 0;
-                    state.proximoAporte = 1;
-                    logger.debug('  ➡️ Reiniciando ciclo - próxima: etapa 0, aporte 1');
-                } else if (etapa.etapa === 'Mão Fixa') {
-                    state.proximaEtapaIndex = 1; // Vai para "Reinvestir"
-                    state.proximoAporte = 1;
-                    logger.debug('  ➡️ Mão Fixa WIN - próxima: etapa 1 (Reinvestir), aporte 1');
-                } else if (etapa.entrada2 !== undefined && aporte === 1) {
-                    state.proximoAporte = 2; // Continua na mesma etapa, vai para aporte 2
-                    logger.debug('  ➡️ Aporte 1 WIN - próxima: mesma etapa, aporte 2');
-                } else {
-                    // Para outras etapas sem aporte 2, avança para próxima etapa
-                    if (state.proximaEtapaIndex < state.planoDeOperacoes.length - 1) {
-                        state.proximaEtapaIndex++;
-                        state.proximoAporte = 1;
-                        logger.debug(
-                            `  ➡️ Etapa simples WIN - próxima: etapa ${state.proximaEtapaIndex}, aporte 1`
-                        );
-                    }
-                }
-            }
-        } else {
-            if (config.estrategiaAtiva === CONSTANTS.STRATEGY.FIXED) {
-                if (config.incorporarLucros) recalcularPlanoCompleto = true;
-                if (config.modoGuiado) {
-                    state.proximaEtapaIndex = 0;
-                    state.proximoAporte = 1;
-                }
-            } else {
-                recalcularPlanoCompleto = true;
-                if (config.modoGuiado) {
-                    if (etapa.etapa === 'Mão Fixa' || etapa.etapa === 'Reinvestir')
-                        state.proximaEtapaIndex = 2;
-                    else if (index < state.planoDeOperacoes.length - 1) state.proximaEtapaIndex++;
-                    state.proximoAporte = 1;
-                }
-            }
-        }
-
-        if (recalcularPlanoCompleto) {
-            this.calcularPlano(true); // Forçar redesenho completo
-        }
+        return planAdvanceFunc(isWin, index, aporte, resultado);
     },
 
     async verificarMetas() {
-        // 🛡️ PROTEÇÃO ULTRA-CRÍTICA: SEMPRE usar estado global mais recente
-        const estadoGlobal = window.state || state;
-        const configGlobal = window.config || config;
-
-        logger.debug('🔍 [METAS] Estado usado para verificação:', {
-            fonte: estadoGlobal === window.state ? 'window.state (global)' : 'state (local)',
-            capitalAtual: estadoGlobal.capitalAtual,
-            capitalInicioSessao: estadoGlobal.capitalInicioSessao,
-            historico: estadoGlobal.historicoCombinado?.length || 0,
-        });
-
-        // 🛡️ PROTEÇÃO CRÍTICA: Validar dados antes de usar
-        const capitalInicioSeguro =
-            typeof estadoGlobal.capitalInicioSessao === 'number' &&
-                !isNaN(estadoGlobal.capitalInicioSessao)
-                ? estadoGlobal.capitalInicioSessao
-                : configGlobal.capitalInicial || 0;
-
-        const capitalAtualSeguro =
-            typeof estadoGlobal.capitalAtual === 'number' && !isNaN(estadoGlobal.capitalAtual)
-                ? estadoGlobal.capitalAtual
-                : capitalInicioSeguro;
-
-        const stopWinSeguro =
-            typeof estadoGlobal.stopWinValor === 'number' && !isNaN(estadoGlobal.stopWinValor)
-                ? estadoGlobal.stopWinValor
-                : 0;
-
-        const stopLossSeguro =
-            typeof estadoGlobal.stopLossValor === 'number' && !isNaN(estadoGlobal.stopLossValor)
-                ? estadoGlobal.stopLossValor
-                : 0;
-
-        logger.debug('🎯 LOGIC: Verificando metas...', {
-            capitalInicial: capitalInicioSeguro,
-            capitalAtual: capitalAtualSeguro,
-            stopWin: stopWinSeguro,
-            stopLoss: stopLossSeguro,
-            valoresOriginais: {
-                capitalInicioSessao: estadoGlobal.capitalInicioSessao,
-                capitalAtual: estadoGlobal.capitalAtual,
-                stopWinValor: estadoGlobal.stopWinValor,
-                stopLossValor: estadoGlobal.stopLossValor,
-            },
-        });
-
-        const lucroPrejuizoTotal = capitalAtualSeguro - capitalInicioSeguro;
-
-        logger.debug(`💰 LOGIC: Lucro/Prejuízo atual: ${lucroPrejuizoTotal.toFixed(2)}`);
-        let metaAtingidaHoje = false;
-        let tipoMeta = null;
-
-        if (lucroPrejuizoTotal >= stopWinSeguro && stopWinSeguro > 0) {
-            state.metaAtingida = true;
-            metaAtingidaHoje = true;
-            tipoMeta = 'win';
-        } else if (lucroPrejuizoTotal <= -stopLossSeguro && stopLossSeguro > 0) {
-            state.metaAtingida = true;
-            metaAtingidaHoje = true;
-            tipoMeta = 'loss';
-        } else {
-            state.metaAtingida = false;
-        }
-
-        if (!metaAtingidaHoje) {
-            if (
-                !state.alertaStopWin80Mostrado &&
-                lucroPrejuizoTotal >= stopWinSeguro * 0.8 &&
-                stopWinSeguro > 0
-            ) {
-                ui.mostrarInsightPopup('Atenção: Você está perto da sua meta de ganhos!');
-                state.alertaStopWin80Mostrado = true;
-            }
-            if (
-                !state.alertaStopLoss80Mostrado &&
-                lucroPrejuizoTotal <= -stopLossSeguro * 0.8 &&
-                stopLossSeguro > 0
-            ) {
-                ui.mostrarInsightPopup('Cuidado: Você está a aproximar-se do seu limite de perda!');
-                state.alertaStopLoss80Mostrado = true;
-            }
-        }
-
-        return { metaAtingidaHoje, tipoMeta };
+        return await checkGoalsFunc();
     },
 
     /**
