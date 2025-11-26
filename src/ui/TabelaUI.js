@@ -8,6 +8,7 @@ import { BaseUI } from './BaseUI.js';
 import { state } from '../../state.js';
 import { dom } from '../../dom.js';
 import { logger } from '../utils/Logger.js';
+import { debounce } from '../utils/PerformanceUtils.js';
 
 /**
  * Componente responsável pela tabela de operações
@@ -18,6 +19,17 @@ export class TabelaUI extends BaseUI {
         this.paginaAtual = 1;
         this.itensPorPagina = 10;
         this.filtroAtivo = 'todos';
+
+        // 🚀 Cache de performance
+        this._cacheHistoricoFiltrado = null;
+        this._ultimoFiltro = null;
+
+        // 🚀 Debounce para filtros
+        this._atualizarTabelaDebounced = debounce(
+            () => this.atualizarTabela(),
+            150, // 150ms de debounce
+            { leading: false, trailing: true }
+        );
     }
 
     /**
@@ -51,11 +63,22 @@ export class TabelaUI extends BaseUI {
     }
 
     /**
-     * Obtém histórico filtrado
+     * Obtém histórico filtrado com cache
      * @private
      */
     _getHistoricoFiltrado() {
-        let historico = state.historicoCombinado || [];
+        const historicoAtual = state.historicoCombinado || [];
+
+        // 🚀 Cache: Retornar cache se filtro não mudou e histórico é o mesmo
+        if (
+            this._cacheHistoricoFiltrado &&
+            this._ultimoFiltro === this.filtroAtivo &&
+            this._cacheHistoricoFiltrado.sourceLength === historicoAtual.length
+        ) {
+            return this._cacheHistoricoFiltrado.data;
+        }
+
+        let historico = historicoAtual;
 
         // Aplicar filtro
         if (this.filtroAtivo === 'win') {
@@ -64,11 +87,18 @@ export class TabelaUI extends BaseUI {
             historico = historico.filter(op => !op.isWin);
         }
 
+        // Salvar no cache
+        this._cacheHistoricoFiltrado = {
+            data: historico,
+            sourceLength: historicoAtual.length
+        };
+        this._ultimoFiltro = this.filtroAtivo;
+
         return historico;
     }
 
     /**
-     * Renderiza linhas da tabela
+     * Renderiza linhas da tabela com otimização de performance
      * @private
      */
     _renderizarLinhas(historico) {
@@ -80,14 +110,18 @@ export class TabelaUI extends BaseUI {
         const fim = inicio + this.itensPorPagina;
         const paginaOperacoes = historico.slice(inicio, fim);
 
-        // Limpar tbody
-        tbody.innerHTML = '';
+        // 🚀 Usar DocumentFragment para inserção em lote (melhor performance)
+        const fragment = document.createDocumentFragment();
 
-        // Renderizar cada linha
+        // Renderizar cada linha no fragment
         paginaOperacoes.forEach((operacao, index) => {
             const linha = this._criarLinha(operacao, inicio + index);
-            tbody.appendChild(linha);
+            fragment.appendChild(linha);
         });
+
+        // Limpar tbody e inserir tudo de uma vez (1 reflow ao invés de N)
+        tbody.innerHTML = '';
+        tbody.appendChild(fragment);
     }
 
     /**
@@ -237,12 +271,17 @@ export class TabelaUI extends BaseUI {
     }
 
     /**
-     * Define filtro
+     * Define filtro com debounce para performance
      */
     setFiltro(filtro) {
         this.filtroAtivo = filtro;
         this.paginaAtual = 1; // Reset para primeira página
-        this.atualizarTabela();
+
+        // Invalidar cache quando filtro mudar
+        this._cacheHistoricoFiltrado = null;
+
+        // 🚀 Usar versão debounced para evitar re-renderizações excessivas
+        this._atualizarTabelaDebounced();
 
         logger.debug(`Filtro aplicado: ${filtro}`);
     }
@@ -319,11 +358,21 @@ export class TabelaUI extends BaseUI {
     }
 
     /**
-     * Reseta paginação
+     * Reseta paginação e cache
      */
     resetarPaginacao() {
         this.paginaAtual = 1;
+        this._cacheHistoricoFiltrado = null; // Limpar cache
         this.atualizarTabela();
+    }
+
+    /**
+     * Limpa cache manualmente (útil após mudanças no histórico)
+     */
+    limparCache() {
+        this._cacheHistoricoFiltrado = null;
+        this._ultimoFiltro = null;
+        logger.debug('Cache de TabelaUI limpo');
     }
 }
 

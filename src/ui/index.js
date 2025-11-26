@@ -4,14 +4,29 @@
  * @module UI
  */
 
-// Componentes principais
-export { BaseUI } from './BaseUI.js';
-export { DashboardUI } from './DashboardUI.js';
-export { MetasUI } from './MetasUI.js';
-export { TabelaUI } from './TabelaUI.js';
-export { TimelineUI } from './TimelineUI.js';
-export { ModalUI } from './ModalUI.js';
-export { NotificationUI } from './NotificationUI.js';
+// Importar classes para uso interno
+import { BaseUI } from './BaseUI.js';
+import { DashboardUI } from './DashboardUI.js';
+import { MetasUI } from './MetasUI.js';
+import { TabelaUI } from './TabelaUI.js';
+import { TimelineUI } from './TimelineUI.js';
+import { ModalUI } from './ModalUI.js';
+import { NotificationUI } from './NotificationUI.js';
+import { PlanoUI } from './PlanoUI.js';
+import { HistoricoUI } from './HistoricoUI.js';
+
+// Re-exportar para consumidores externos
+export {
+    BaseUI,
+    DashboardUI,
+    MetasUI,
+    TabelaUI,
+    TimelineUI,
+    ModalUI,
+    NotificationUI,
+    PlanoUI,
+    HistoricoUI
+};
 
 /**
  * Cria instâncias de todos os componentes
@@ -24,7 +39,9 @@ export function criarComponentesUI() {
         tabela: new TabelaUI(),
         timeline: new TimelineUI(),
         modal: new ModalUI(),
-        notification: new NotificationUI()
+        notification: new NotificationUI(),
+        plano: new PlanoUI(),
+        historico: new HistoricoUI()
     };
 }
 
@@ -37,7 +54,9 @@ export function inicializarUI() {
 
     // Inicializar cada componente
     Object.values(componentes).forEach(componente => {
-        componente.init();
+        if (componente && typeof componente.init === 'function') {
+            componente.init();
+        }
     });
 
     return componentes;
@@ -51,6 +70,8 @@ export default {
     TimelineUI,
     ModalUI,
     NotificationUI,
+    PlanoUI,
+    HistoricoUI,
     criarComponentesUI,
     inicializarUI
 };

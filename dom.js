@@ -1,19 +1,21 @@
 // Módulo responsável por mapear e armazenar referências a elementos do DOM.
 export const dom = {};
 
+// 🛡️ Configuração de logging
+const DOM_MAPPING_DEBUG = false; // Mudar para true para debug detalhado
+
 /**
  * 🛡️ FUNÇÃO SEGURA PARA MAPEAR DOM
  * Verifica se elemento existe antes de adicionar ao dom object
+ * @param {string} id - ID do elemento
+ * @param {boolean} isRequired - Se true, loga warning se não encontrado
+ * @returns {Element|null} Elemento encontrado ou null
  */
-function safeGetElement(id, required = false) {
-    const element = document.getElementById(id); // 🔧 CORRIGIDO: usar document.getElementById
-    if (!element) {
-        const message = `⚠️ Elemento '${id}' não encontrado`;
-        if (required) {
-            console.error(`❌ ${message} (OBRIGATÓRIO)`);
-        } else {
-            console.warn(message);
-        }
+function safeGetElement(id, isRequired = false) {
+    const element = document.getElementById(id);
+    if (!element && (isRequired || DOM_MAPPING_DEBUG)) {
+        const level = isRequired ? 'error' : 'warn';
+        console[level](`⚠️ Elemento '${id}' não encontrado${isRequired ? ' (OBRIGATÓRIO)' : ''}`);
     }
     return element;
 }
@@ -52,15 +54,15 @@ export function mapDOM() {
     dom.mainTabButtons = safeQuerySelectorAll('.tabs .tab-button');
     dom.mainTabContents = safeQuerySelectorAll('.tab-content');
 
-    // Painel de Inputs
-    dom.inputPanel = safeGetElement('input-panel');
-    dom.capitalInicial = safeGetElement('capital-inicial');
-    dom.sidebarCapitalInicial = safeGetElement('sidebar-capital-inicial'); // 🆕 main.js
-    dom.percentualEntrada = safeGetElement('percentual-entrada');
-    dom.stopWinPerc = safeGetElement('stop-win-perc');
-    dom.stopLossPerc = safeGetElement('stop-loss-perc');
-    dom.estrategiaSelect = safeGetElement('estrategia-select');
-    dom.strategyRecommendation = safeGetElement('strategy-recommendation');
+    // Painel de Inputs (opcionais - podem estar em modals/sidebar)
+    dom.inputPanel = safeGetElement('input-panel', false);
+    dom.capitalInicial = safeGetElement('capital-inicial', false);
+    dom.sidebarCapitalInicial = safeGetElement('sidebar-capital-inicial', false);
+    dom.percentualEntrada = safeGetElement('percentual-entrada', false);
+    dom.stopWinPerc = safeGetElement('stop-win-perc', false);
+    dom.stopLossPerc = safeGetElement('stop-loss-perc', false);
+    dom.estrategiaSelect = safeGetElement('estrategia-select', false);
+    dom.strategyRecommendation = safeGetElement('strategy-recommendation', false);
     dom.payoutButtonsContainer = document.querySelector('.payout-buttons');
 
     // Tabela de Plano
@@ -77,7 +79,7 @@ export function mapDOM() {
     dom.undoBtn = safeGetElement('undo-btn');
     dom.finishSessionBtn = safeGetElement('finish-session-btn');
     dom.newSessionBtn = safeGetElement('new-session-btn');
-    dom.sidebarNewSessionBtn = safeGetElement('sidebar-new-session-btn'); // 🆕 ui.js
+    dom.sidebarNewSessionBtn = safeGetElement('sidebar-new-session-btn', false); // Opcional // 🆕 ui.js
 
     // Timeline
     dom.timelineContainer = safeGetElement('timeline-container');
@@ -97,14 +99,14 @@ export function mapDOM() {
      * Estrutura melhorada com legenda personalizada
      */
     dom.progressPieChart = safeGetElement('progress-pie-chart', true); // Obrigatório
-    dom.totalOperationsDisplay = safeGetElement('total-operations-display');
+    dom.totalOperationsDisplay = safeGetElement('total-operations-display', false); // Opcional
 
     /**
      * 📊 Elementos das barras de progresso horizontais
      * Separados por Win e Loss com nova estrutura
      */
     // Win Rate Progress Bar
-    dom.winRateDisplay = safeGetElement('win-rate-display', false);
+    dom.winRateDisplay = safeGetElement('win-rate-display', false); // Opcional, false);
     dom.winTargetBar = safeGetElement('win-target-bar', true); // Obrigatório
     dom.winCurrentBar = safeGetElement('win-current-bar', true); // Obrigatório
     dom.winTargetValue = safeGetElement('win-target-value');
@@ -112,7 +114,7 @@ export function mapDOM() {
     dom.winTargetAmount = safeGetElement('win-target-amount');
     dom.winRemainingAmount = safeGetElement('win-remaining-amount');
     dom.statusMargin = safeGetElement('status-margin');
-    dom.lossMarginAmount = safeGetElement('loss-margin-amount'); // 🆕 main.js
+    dom.lossMarginAmount = safeGetElement('loss-margin-amount', false); // Opcional
 
     // Loss Rate Progress Bar
     dom.lossRateDisplay = safeGetElement('loss-rate-display', false);
@@ -126,7 +128,7 @@ export function mapDOM() {
     dom.metaCurrentPercent = safeGetElement('meta-current-percent');
     dom.metaTargetAmount = safeGetElement('meta-target-amount');
     dom.metaAchievedAmount = safeGetElement('meta-achieved-amount');
-    dom.metaProgressValue = safeGetElement('meta-progress-value');
+    dom.metaProgressValue = safeGetElement('meta-progress-value', false); // Opcional
     dom.metaProgressFill = safeGetElement('meta-progress-fill'); // 🆕 charts.js
     dom.metaProgressDisplay = safeGetElement('meta-progress-display'); // 🆕 charts.js
     dom.metaTrendBadge = safeGetElement('meta-trend-badge'); // 🆕 charts.js
@@ -137,6 +139,7 @@ export function mapDOM() {
     dom.lossLimitAmount = safeGetElement('loss-limit-amount');
     dom.lossSessionResult = safeGetElement('loss-session-result');
     dom.riskUsedValue = safeGetElement('risk-used-value');
+    dom.lossPercentDisplay = safeGetElement('loss-percent-display', false);
     dom.riskUsedFill = safeGetElement('risk-used-fill'); // 🆕 charts.js
     dom.riskUsedDisplay = safeGetElement('risk-used-display'); // 🆕 charts.js
     dom.lossTrendBadge = safeGetElement('loss-trend-badge'); // 🆕 charts.js
@@ -148,7 +151,7 @@ export function mapDOM() {
     dom.statusRiskUsed = safeGetElement('status-risk-used'); // 🆕 charts.js
 
     // Outros elementos do charts.js
-    dom.payoutAtivo = safeGetElement('payout-ativo'); // 🆕 charts.js
+    dom.payoutAtivo = safeGetElement('payout-ativo', false); // Opcional // 🆕 charts.js
     dom.progressSoftLockBadge = safeGetElement('progress-soft-lock-badge'); // 🆕 charts.js
 
     /**

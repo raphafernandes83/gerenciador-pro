@@ -367,6 +367,8 @@ import {
 import { events } from './events.js';
 import { ui } from './ui.js';
 import { charts } from './charts.js';
+// 🚀 CORREÇÃO CRÍTICA: Componentes UI avançados (Modal, Timeline, Tabela)
+import { initComponents } from './src/init-components.js';
 import { renderParametersCardIn } from './src/ui/templates/ParametersCardTemplate.js';
 import { generateParametersCardHTML } from './src/ui/templates/ParametersCardTemplate.js';
 import { ParametersCardController } from './src/ui/templates/ParametersCardController.js';
@@ -789,6 +791,12 @@ class App {
             // 1. Mapeia os elementos do DOM primeiro
             mapDOM();
             this.initializationSteps.push('dom_mapped');
+
+            // 🚀 CORREÇÃO CRÍTICA: Inicializa componentes UI avançados (Modal, Timeline, Tabela)
+            // DEVE ser chamado APÓS mapDOM() mas ANTES de qualquer código que use os componentes
+            initComponents();
+            this.initializationSteps.push('ui_components_initialized');
+            logger.debug('✅ Componentes UI avançados inicializados!');
 
             // 2. Inicia os módulos que não dependem do estado do utilizador
             await dbManager.init();
@@ -1375,7 +1383,7 @@ window.testPayoutAndFocus = function () {
         // Teste 2: Verificar sincronização no sidebar
         () => {
             logger.debug('📝 Teste 2: Verificando sincronização no sidebar');
-            const sidebarBtn = dom.sidebarPayout-90;
+            const sidebarBtn = dom.sidebarPayout - 90;
             if (sidebarBtn && sidebarBtn.classList.contains('active-payout')) {
                 logger.debug('✅ Sidebar sincronizado corretamente');
             } else if (!sidebarBtn) {
@@ -1445,7 +1453,7 @@ window.testPayoutAndFocus = function () {
         // Teste 5: Payout Sidebar → Main (se sidebar estiver aberto)
         () => {
             logger.debug('📝 Teste 5: Payout 92% no sidebar');
-            const sidebarBtn = dom.sidebarPayout-92;
+            const sidebarBtn = dom.sidebarPayout - 92;
             if (sidebarBtn) {
                 sidebarBtn.click();
                 logger.debug('✅ Clique executado no sidebar');

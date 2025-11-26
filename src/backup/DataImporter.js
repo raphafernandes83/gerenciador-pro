@@ -154,7 +154,7 @@ export class DataImporter {
                     }
 
                     // Importar sessão
-                    await dbManager.saveSession({
+                    await dbManager.addSession({
                         id: session.id,
                         data: session.data,
                         modo: session.modo,

@@ -2770,41 +2770,6 @@ const ui = {
             el.textContent = displayName;
         });
     },
-
-    /**
-     * 🔄 Renderiza histórico de sessões
-     * Alias de compatibilidade para SessionsTrashHandler
-     * Atualiza toda a UI quando uma sessão é restaurada
-     */
-    renderizarHistorico() {
-        console.log('🔄 Renderizando histórico de sessões...');
-
-        try {
-            // Atualiza tabela
-            if (this.renderizarTabela) {
-                this.renderizarTabela();
-            }
-
-            // Atualiza dashboard
-            if (this.atualizarDashboardSessao) {
-                this.atualizarDashboardSessao();
-            }
-
-            // Atualiza timeline
-            if (this.renderizarTimelineCompleta) {
-                this.renderizarTimelineCompleta();
-            }
-
-            // Atualiza UI geral
-            if (this.atualizarTudo) {
-                this.atualizarTudo();
-            }
-
-            console.log('✅ Histórico renderizado com sucesso');
-        } catch (error) {
-            console.error('❌ Erro ao renderizar histórico:', error);
-        }
-    },
 };
 
 /**
@@ -2914,6 +2879,10 @@ function testUIComponents() {
         console.error('❌ Erro crítico nos testes UI:', error);
         return { ...results, overall: false };
     }
+
+    // Listener opcional para atualizações imediatas de capital
+    // Ativa repintura do dashboard quando o card lateral emitir o evento
+
 }
 
 // Exposição global

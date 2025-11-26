@@ -6,6 +6,7 @@
 
 import { BaseUI } from './BaseUI.js';
 import { logger } from '../utils/Logger.js';
+import { dom } from '../../dom.js';
 
 /**
  * Componente responsável pelos modais
@@ -317,6 +318,67 @@ export class ModalUI extends BaseUI {
      */
     temModaisAbertos() {
         return this.modaisAbertos.length > 0;
+    }
+
+    /**
+     * 🔄 Método de compatibilidade com ui.js
+     * Usa o modal de confirmação existente no DOM
+     * @param {Object} options - Opções do modal
+     */
+    show(options) {
+        const {
+            title,
+            message,
+            confirmText = 'OK',
+            cancelText = null,
+            onConfirm,
+            onCancel,
+        } = options;
+
+        // Usar elementos DOM existentes
+        if (dom.modalTitle) dom.modalTitle.textContent = title;
+        if (dom.modalMessage) dom.modalMessage.textContent = message;
+        if (dom.modalConfirmBtn) dom.modalConfirmBtn.textContent = confirmText;
+
+        if (dom.modalCancelBtn) {
+            dom.modalCancelBtn.classList.toggle('hidden', !cancelText);
+            if (cancelText) dom.modalCancelBtn.textContent = cancelText;
+        }
+
+        // Mostrar modal
+        if (dom.confirmationModal) {
+            dom.confirmationModal.classList.add('show');
+        }
+
+        // Event listeners para botões
+        if (dom.modalConfirmBtn) {
+            dom.modalConfirmBtn.onclick = () => {
+                if (onConfirm) onConfirm();
+                if (dom.confirmationModal) {
+                    dom.confirmationModal.classList.remove('show');
+                }
+            };
+        }
+
+        if (dom.modalCancelBtn) {
+            dom.modalCancelBtn.onclick = () => {
+                if (onCancel) onCancel();
+                if (dom.confirmationModal) {
+                    dom.confirmationModal.classList.remove('show');
+                }
+            };
+        }
+
+        // Fechar ao clicar no overlay
+        if (dom.confirmationModal) {
+            dom.confirmationModal.onclick = (e) => {
+                if (e.target === dom.confirmationModal) {
+                    dom.confirmationModal.classList.remove('show');
+                }
+            };
+        }
+
+        logger.debug(`Modal exibido: ${title}`);
     }
 }
 

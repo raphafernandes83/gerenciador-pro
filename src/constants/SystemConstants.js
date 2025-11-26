@@ -124,6 +124,20 @@ export const TIMING_CONFIG = {
 };
 
 /**
+ * 💰 Formatação de Moeda
+ * @readonly
+ */
+export const CURRENCY_FORMAT = {
+    LOCALE: 'pt-BR',
+    OPTIONS: {
+        style: 'currency',
+        currency: 'BRL',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }
+};
+
+/**
  * 📊 Thresholds de performance
  * @readonly
  */

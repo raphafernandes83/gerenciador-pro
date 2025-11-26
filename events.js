@@ -28,6 +28,7 @@ import {
 // ============================================================================
 // Importa domHelper centralizado (anteriormente duplicado em 3 arquivos)
 import { domHelper } from './src/dom-helper.js';
+import { simulation } from './src/modules/SimulationModule.js';
 
 // Cache leve para dados agregados do Dashboard, invalidado em mudanças de sessões
 const dashboardAggregateCache = new Map();

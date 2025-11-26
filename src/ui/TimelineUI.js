@@ -5,9 +5,10 @@
  */
 
 import { BaseUI } from './BaseUI.js';
-import { state } from '../../state.js';
+import { state, config } from '../../state.js';
 import { dom } from '../../dom.js';
 import { logger } from '../utils/Logger.js';
+import { calcularSequencias } from '../../logic.js';
 
 /**
  * Componente responsável pela timeline de operações
@@ -270,6 +271,185 @@ export class TimelineUI extends BaseUI {
                 item.classList.remove('destacado');
             }
         });
+    }
+
+    /**
+     * 🚀 Renderiza timeline completa (versão avançada vinda de ui.js)
+     * Com validações robustas, fallback para dados persistidos e filtros de sequências
+     */
+    renderizarCompleta(historico = state.historicoCombinado, container = dom.timelineContainer) {
+        // Garantir array válido
+        if (typeof historico === 'string') {
+            try {
+                historico = JSON.parse(historico);
+            } catch (e) {
+                historico = [];
+            }
+        }
+        if (!Array.isArray(historico)) {
+            historico = [];
+        }
+
+        // Validação container
+        if (!container) {
+            logger.warn('[TIMELINE] Container não fornecido, usando padrão');
+            container = dom.timelineContainer;
+            if (!container) {
+                logger.error('[TIMELINE] Timeline container não encontrado!');
+                return;
+            }
+        }
+
+        // Remover qualquer estilo forçado previamente
+        try {
+            container.style.border = '';
+            container.style.borderRadius = '';
+            container.style.padding = '';
+            container.style.minHeight = '';
+            container.style.background = '';
+            container.style.boxShadow = '';
+        } catch (_) { }
+
+        // Fallback: Se histórico vazio, tentar carregar dados persistidos
+        if (historico.length === 0 && !state.isSessionActive && !window.__suppressPersistedTimeline) {
+            logger.warn('[TIMELINE] Histórico vazio - buscando dados persistidos');
+            try {
+                const savedSession = localStorage.getItem('gerenciadorProActiveSession');
+                if (savedSession) {
+                    const sessionData = JSON.parse(savedSession);
+                    if (sessionData.historicoCombinado && Array.isArray(sessionData.historicoCombinado)) {
+                        logger.info(`[TIMELINE] Dados persistidos encontrados: ${sessionData.historicoCombinado.length} ops`);
+                        historico = sessionData.historicoCombinado;
+                    }
+                }
+            } catch (error) {
+                logger.warn('[TIMELINE] Erro ao carregar dados persistidos:', error);
+            }
+        }
+
+        // Aplicar filtros de sequência
+        let operacoesParaRenderizar = historico;
+        if (historico.length > 0) {
+            const sequencias = calcularSequencias(historico);
+            if (state.filtroTimeline === 'win_streak' && container === dom.timelineContainer) {
+                operacoesParaRenderizar = sequencias.maxWinStreak;
+            }
+            if (state.filtroTimeline === 'loss_streak' && container === dom.timelineContainer) {
+                operacoesParaRenderizar = sequencias.maxLossStreak;
+            }
+        }
+
+        // Se vazio, renderizar mensagem
+        if (operacoesParaRenderizar.length === 0) {
+            const mutedColor = getComputedStyle(document.documentElement)
+                .getPropertyValue('--text-muted')
+                .trim() || '#888888';
+            container.innerHTML = `<p style="text-align:center; color: ${mutedColor}; padding: 1rem;">${state.isSessionActive ? 'Nenhuma operação registada.' : 'Sessão inativa.'}</p><div class="timeline-line"></div>`;
+            return;
+        }
+
+        // Renderizar operações
+        container.innerHTML = '<div class="timeline-line"></div>';
+        operacoesParaRenderizar.forEach((op, index) => {
+            this.adicionarItem(op, index, false, container);
+        });
+    }
+
+    /**
+     * 🚀 Adiciona item individual à timeline (versão avançada vinda de ui.js)
+     * Com ícones contextuais, suporte a Zen Mode e validações robustas
+     */
+    adicionarItem(op, index, scrollToView = true, customContainer = null) {
+        const container = customContainer || dom.timelineContainer;
+        if (!container || !op) return;
+
+        // Suportar tanto isWin boolean quanto resultado string
+        let isWin;
+        if (typeof op.isWin === 'boolean') {
+            isWin = op.isWin;
+        } else if (typeof op.resultado === 'string') {
+            isWin = op.resultado === 'WIN';
+        } else {
+            logger.warn('Operação sem isWin ou resultado válido:', op);
+            return;
+        }
+
+        // Normalizar
+        op.isWin = isWin;
+
+        // Ícone contextual baseado em tag
+        const getIconForOperation = (op) => {
+            const tag = op.tag || '';
+            if (op.isWin) {
+                if (tag.includes('Plano')) return '✅';
+                if (tag.includes('Perfeita')) return '🎯';
+                if (tag.includes('Tendência')) return '📈';
+                if (tag.includes('Paciência')) return '😌';
+                return '👍';
+            } else {
+                if (tag.includes('Plano')) return '❌';
+                if (tag.includes('Impaciência')) return '😡';
+                if (tag.includes('Hesitação') || tag.includes('Medo')) return '😰';
+                if (tag.includes('Tendência')) return '📉';
+                return '👎';
+            }
+        };
+
+        const itemClass = op.isWin ? 'win' : 'loss';
+
+        // Valor canônico
+        const valorCanonico = typeof op.valor === 'number' && !isNaN(op.valor)
+            ? op.valor
+            : typeof op.resultado === 'number' && !isNaN(op.resultado)
+                ? op.resultado
+                : 0;
+
+        const valorDisplay = config.zenMode
+            ? '---'
+            : valorCanonico >= 0
+                ? `+ ${this.formatarMoeda(valorCanonico)}`
+                : `- ${this.formatarMoeda(Math.abs(valorCanonico))}`;
+
+        const notaHTML = op.nota ? `<p class="timeline-note">${op.nota}</p>` : '';
+
+        // CSS variable para timestamp
+        const mutedColor = getComputedStyle(document.documentElement)
+            .getPropertyValue('--text-muted')
+            .trim() || '#888888';
+
+        const itemDiv = document.createElement('div');
+        itemDiv.className = `timeline-item ${itemClass}`;
+        itemDiv.dataset.opIndex = index;
+        itemDiv.innerHTML = `
+            <div class="timeline-marker">${getIconForOperation(op)}</div>
+            <div class="timeline-content">
+                <button class="edit-op-btn" title="Editar Operação">✏️</button>
+                <div class="timeline-header">
+                    <span class="timeline-tag">${op.tag || 'Sem Tag'}</span>
+                    <span class="timeline-value ${itemClass}">${valorDisplay}</span>
+                </div>
+                <span style="font-size: 0.8rem; color: ${mutedColor};">${op.timestamp}</span>
+                ${notaHTML}
+            </div>`;
+
+        // Remover mensagem vazia se existir
+        const p = container.querySelector('p');
+        if (p) p.remove();
+
+        container.appendChild(itemDiv);
+        if (scrollToView) {
+            itemDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+    }
+
+    /**
+     * Remove último item da timeline
+     */
+    removerUltimoItem() {
+        const container = dom.timelineContainer;
+        if (container && container.lastChild && container.lastChild.classList?.contains('timeline-item')) {
+            container.removeChild(container.lastChild);
+        }
     }
 }
 

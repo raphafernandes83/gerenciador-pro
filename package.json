@@ -37,7 +37,7 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
-    "@playwright/test": "^1.54.2",
+    "@playwright/test": "^1.57.0",
     "concurrently": "^9.2.1",
     "eslint": "^9.33.0",
     "husky": "^9.1.7",
@@ -45,11 +45,11 @@
     "live-server": "^1.2.2",
     "nodemon": "^3.1.11",
     "npm-check-updates": "^19.1.2",
-    "playwright": "^1.54.2",
+    "playwright": "^1.57.0",
     "prettier": "^3.6.2",
     "stylelint": "^16.23.1",
     "stylelint-config-standard": "^39.0.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   },
   "lint-staged": {
     "*.{js,ts,tsx,jsx}": [
