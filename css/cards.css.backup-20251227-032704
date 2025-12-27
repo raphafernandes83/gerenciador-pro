@@ -1,0 +1,273 @@
+/**
+ * =============================================================================
+ * CARDS.CSS - Estilos de Cards e Painéis
+ * =============================================================================
+ * 
+ * Projeto: Gerenciador PRO v9.3
+ * Criado: 25/12/2025
+ * Origem: Extraído de style.css
+ * 
+ * REGRA: Este arquivo contém SOMENTE estilos relacionados a cards/painéis.
+ *        Não adicionar estilos de outros componentes aqui.
+ * 
+ * Blocos migrados:
+ * - Bloco 1 (style.css 857-897): .theme-card[data-theme=...] prévias de cor
+ * - Bloco 2 (style.css 2381-2416): .theme-card, .theme-selector, .theme-preview
+ * - Bloco 3 (style.css 3216-3355): .progress-status-card + estados + keyframes
+ * 
+ * Variáveis CSS NÃO incluídas (permanecem em style.css :root):
+ * --card-text-primary, --card-text-secondary, --card-accent-positive, etc.
+ * 
+ * =============================================================================
+ */
+
+/* ============================================= */
+/* BLOCO 1: THEME-CARD - PRÉVIAS DE COR         */
+/* Origem: style.css linhas 857-897              */
+/* Copiado: 25/12/2025                           */
+/* ============================================= */
+
+/* Cores das prévias de tema (remove inline nos cards de tema) */
+.theme-card[data-theme='moderno'] .theme-preview-col:nth-child(1) {
+    background-color: #1a1c20;
+}
+
+.theme-card[data-theme='moderno'] .theme-preview-col:nth-child(2) {
+    background-color: #2b2e34;
+}
+
+.theme-card[data-theme='moderno'] .theme-preview-col:nth-child(3) {
+    background-color: #00e676;
+}
+
+.theme-card[data-theme='claro'] .theme-preview-col:nth-child(1) {
+    background-color: #f0f2f5;
+}
+
+.theme-card[data-theme='claro'] .theme-preview-col:nth-child(2) {
+    background-color: #ffffff;
+}
+
+.theme-card[data-theme='claro'] .theme-preview-col:nth-child(3) {
+    background-color: #16a34a;
+}
+
+.theme-card[data-theme='matrix'] .theme-preview-col:nth-child(1) {
+    background-color: #020b03;
+}
+
+.theme-card[data-theme='matrix'] .theme-preview-col:nth-child(2) {
+    background-color: #0a1f0c;
+}
+
+.theme-card[data-theme='matrix'] .theme-preview-col:nth-child(3) {
+    background-color: #00ff41;
+}
+
+.theme-card[data-theme='daltonismo'] .theme-preview-col:nth-child(1) {
+    background-color: #f5f5f5;
+}
+
+.theme-card[data-theme='daltonismo'] .theme-preview-col:nth-child(2) {
+    background-color: #0072b2;
+}
+
+.theme-card[data-theme='daltonismo'] .theme-preview-col:nth-child(3) {
+    background-color: #d55e00;
+}
+
+/* ============================================= */
+/* BLOCO 2: THEME-CARD - ESTRUTURA E SELETOR    */
+/* Origem: style.css linhas 2381-2416            */
+/* Copiado: 25/12/2025                           */
+/* ============================================= */
+
+/* == SEÇÃO DE APARÊNCIA ATUALIZADA == */
+.theme-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.theme-card {
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    text-align: center;
+}
+
+.theme-card:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-4px);
+}
+
+.theme-card.active {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px var(--primary-color);
+}
+
+.theme-preview {
+    display: flex;
+    height: 60px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--border-color);
+}
+
+.theme-preview-col {
+    flex: 1;
+}
+
+.theme-card p {
+    font-weight: 600;
+}
+
+/* ============================================= */
+/* BLOCO 3: PROGRESS-STATUS-CARD + ESTADOS      */
+/* Origem: style.css linhas 3216-3355            */
+/* Copiado: 25/12/2025                           */
+/* ============================================= */
+
+.progress-status-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: linear-gradient(135deg,
+            rgba(var(--panel-color-rgb), 0.6) 0%,
+            rgba(var(--panel-color-rgb), 0.8) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-status-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.status-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.status-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.status-text {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+.status-subtext {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/**
+ * ESTADOS DOS INDICADORES
+ */
+.progress-status-card.excellent {
+    /* Padronização visual com o restante do painel: base neutra, acento discreto */
+    background: linear-gradient(135deg,
+            rgba(var(--panel-color-rgb), 0.6) 0%,
+            rgba(var(--panel-color-rgb), 0.4) 100%);
+    border-color: var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Remove a linha/halo verde no estado "excelente" para manter consistência */
+.progress-status-card.excellent::before {
+    display: none;
+}
+
+/* Acento lateral sutil usando a cor primária do tema */
+.progress-status-card.excellent::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 3px;
+    background: var(--primary-color);
+    opacity: 0.6;
+}
+
+.progress-status-card.good {
+    background: linear-gradient(135deg, rgba(255, 171, 0, 0.1) 0%, rgba(255, 171, 0, 0.05) 100%);
+    border-color: var(--accent-color);
+}
+
+.progress-status-card.warning {
+    background: linear-gradient(135deg, rgba(255, 61, 0, 0.1) 0%, rgba(255, 61, 0, 0.05) 100%);
+    border-color: var(--secondary-color);
+    animation: warning-pulse 2s ease-in-out infinite;
+}
+
+.progress-status-card.neutral {
+    background: linear-gradient(135deg,
+            rgba(var(--panel-color-rgb), 0.6) 0%,
+            rgba(var(--panel-color-rgb), 0.4) 100%);
+    /* "Respirar" enquanto aguarda ação do usuário */
+    animation: neutral-breathe 2.6s ease-in-out infinite;
+}
+
+/**
+ * ANIMAÇÕES
+ */
+@keyframes progress-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+
+    50% {
+        opacity: 0.7;
+        transform: scaleX(0.95);
+    }
+}
+
+@keyframes warning-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(255, 61, 0, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 30px rgba(255, 61, 0, 0.4);
+    }
+}
+
+/* Animação suave de "respirar" para estado neutro (Vamos começar!) */
+@keyframes neutral-breathe {
+
+    0%,
+    100% {
+        transform: translateY(0);
+        box-shadow:
+            inset 0 0 0 rgba(0, 0, 0, 0),
+            0 0 0 rgba(0, 0, 0, 0);
+        border-color: var(--border-color);
+    }
+
+    50% {
+        transform: translateY(-1px);
+        box-shadow: inset 0 0 14px rgba(0, 230, 118, 0.06);
+        border-color: rgba(0, 230, 118, 0.25);
+    }
+}

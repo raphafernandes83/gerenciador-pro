@@ -44,6 +44,9 @@ function ensureRequestId(requestId, prefix) {
 }
 
 export const dbManager = {
+    // 🛡️ Flag para evitar loop infinito de recovery
+    _recoveryAttempted: false,
+
     init() {
         return new Promise((resolve, reject) => {
             try {
@@ -73,21 +76,142 @@ export const dbManager = {
 
                 request.onsuccess = (event) => {
                     db = event.target.result;
+                    this._recoveryAttempted = false; // Reset flag on success
                     console.log('Base de dados IndexedDB iniciada com sucesso.');
                     resolve(true);
                 };
 
                 request.onerror = (event) => {
+                    const errorName = event.target.error?.name || '';
+                    const errorMsg = String(event.target.error);
+
+                    // 🛡️ Detecta erros de corrupção específicos do Chrome
+                    const isCorruptionError =
+                        errorName === 'QuotaExceededError' ||
+                        errorName === 'UnknownError' ||
+                        errorMsg.includes('Internal error') ||
+                        errorMsg.includes('corrupted');
+
+                    if (isCorruptionError && !this._recoveryAttempted) {
+                        logger.warn('⚠️ [RECOVERY] IndexedDB corrompida detectada, iniciando recuperação...', {
+                            errorName,
+                            errorMsg
+                        });
+                        this._attemptRecovery().then(resolve).catch(reject);
+                        return;
+                    }
+
                     logger.error('Erro ao iniciar IndexedDB', {
-                        error: String(event.target.error),
+                        error: errorMsg,
                     });
                     reject(event.target.error);
                 };
             } catch (error) {
-                logger.error('Erro crítico ao inicializar IndexedDB', { error: String(error) });
+                const errorMsg = String(error);
+
+                // 🛡️ Erro síncrono na abertura - também tenta recovery
+                if (errorMsg.includes('Internal error') && !this._recoveryAttempted) {
+                    logger.warn('⚠️ [RECOVERY] Erro síncrono detectado, tentando recuperação...');
+                    this._attemptRecovery().then(resolve).catch(reject);
+                    return;
+                }
+
+                logger.error('Erro crítico ao inicializar IndexedDB', { error: errorMsg });
                 reject(error);
             }
         });
+    },
+
+    /**
+     * 🔄 Tenta recuperar IndexedDB corrompida
+     * Deleta o banco corrompido e reinicializa com estrutura limpa
+     * @private
+     */
+    async _attemptRecovery() {
+        this._recoveryAttempted = true;
+        logger.warn('🔄 [RECOVERY] Tentando recuperar IndexedDB corrompida...');
+
+        try {
+            // 1. Deleta banco corrompido
+            await this._deleteDatabase();
+
+            // 2. Aguarda brevemente para garantir limpeza
+            await new Promise(r => setTimeout(r, 150));
+
+            // 3. Reinicializa com banco limpo
+            await this.init();
+
+            // 4. Notifica usuário sobre recuperação
+            this._notifyRecovery();
+
+            logger.info('✅ [RECOVERY] IndexedDB recuperada com sucesso!');
+            return true;
+        } catch (error) {
+            logger.error('❌ [RECOVERY] Falha na recuperação do IndexedDB:', {
+                error: String(error)
+            });
+            this._recoveryAttempted = false; // Allow retry on next app load
+            throw new Error(`Falha crítica na recuperação do IndexedDB: ${error.message}`);
+        }
+    },
+
+    /**
+     * 🗑️ Deleta o banco de dados IndexedDB
+     * @private
+     */
+    _deleteDatabase() {
+        return new Promise((resolve, reject) => {
+            logger.warn('🗑️ [RECOVERY] Deletando banco corrompido...');
+            const deleteRequest = indexedDB.deleteDatabase(CONSTANTS.DB_NAME);
+
+            deleteRequest.onsuccess = () => {
+                logger.info('✅ [RECOVERY] Banco deletado com sucesso');
+                db = null;
+                resolve(true);
+            };
+
+            deleteRequest.onerror = (event) => {
+                logger.error('❌ [RECOVERY] Erro ao deletar banco:', {
+                    error: String(event.target.error)
+                });
+                reject(event.target.error);
+            };
+
+            deleteRequest.onblocked = () => {
+                logger.warn('⚠️ [RECOVERY] Deleção bloqueada - conexões ativas');
+                // Força resolução após timeout
+                setTimeout(() => {
+                    db = null;
+                    resolve(true);
+                }, 500);
+            };
+        });
+    },
+
+    /**
+     * 📢 Notifica o usuário sobre recuperação automática
+     * @private
+     */
+    _notifyRecovery() {
+        // Usa o sistema de notificação do app se disponível
+        if (typeof window !== 'undefined') {
+            // Toast notification
+            if (window.ui?.showNotification) {
+                window.ui.showNotification(
+                    'warning',
+                    '🔄 Dados locais foram recuperados automaticamente. Sessões anteriores podem ter sido perdidas.'
+                );
+            }
+
+            // Log no console para debug
+            console.warn(
+                '%c🔄 RECUPERAÇÃO AUTOMÁTICA',
+                'background: #ff9800; color: white; padding: 4px 8px; border-radius: 4px;',
+                '\nO IndexedDB estava corrompido e foi recriado.',
+                '\nSessões salvas localmente podem ter sido perdidas.',
+                '\nDados sincronizados com Supabase permanecem intactos.'
+            );
+        }
     },
 
     addSession(sessionData) {
@@ -413,7 +537,7 @@ export const dbManager = {
                         try {
                             await this.deleteSession(id);
                             removedCount++;
-                        } catch (_) {}
+                        } catch (_) { }
                     }
                 }
             }
@@ -481,7 +605,7 @@ export const dbManager = {
                         try {
                             await this.updateSession(s);
                             repairedCount++;
-                        } catch (_) {}
+                        } catch (_) { }
                     }
                 }
             }

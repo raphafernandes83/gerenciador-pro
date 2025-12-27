@@ -1,0 +1,99 @@
+/**
+ * 🎨 Icons CSS - Padronização de Ícones SVG
+ * Gerenciador PRO v9.3
+ * Criado: 25/12/2025
+ */
+
+/* ===== ÍCONES BASE ===== */
+.icon-svg {
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Tamanhos variados */
+.icon-svg.icon-sm {
+    width: 14px;
+    height: 14px;
+}
+
+.icon-svg.icon-lg {
+    width: 22px;
+    height: 22px;
+}
+
+.icon-svg.icon-xl {
+    width: 26px;
+    height: 26px;
+}
+
+/* ===== CORES DOS ÍCONES ===== */
+.icon-svg.icon-primary {
+    color: var(--primary-color, #00e676);
+}
+
+.icon-svg.icon-secondary {
+    color: var(--secondary-color, #ff3d00);
+}
+
+.icon-svg.icon-accent {
+    color: var(--accent-color, #ffab00);
+}
+
+.icon-svg.icon-muted {
+    color: var(--text-secondary, rgba(255, 255, 255, 0.6));
+}
+
+/* ===== ÍCONES DO HEADER ===== */
+#status-indicators .icon-svg {
+    width: 16px;
+    height: 16px;
+}
+
+#session-mode-icon .icon-svg {
+    color: var(--accent-color, #ffab00);
+}
+
+#strategy-indicator-icon .icon-svg {
+    color: var(--primary-color, #00e676);
+}
+
+#guided-mode-indicator .icon-svg {
+    color: var(--accent-color, #ffab00);
+}
+
+#compounding-indicator .icon-svg {
+    color: var(--primary-color, #00e676);
+}
+
+/* ===== BOTÕES DO HEADER ===== */
+.header-actions button .icon-svg {
+    width: 20px;
+    height: 20px;
+    color: var(--text-primary, #fff);
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.header-actions button:hover .icon-svg {
+    color: var(--primary-color, #00e676);
+    transform: scale(1.1);
+}
+
+/* ===== ÍCONE DE AJUDA ===== */
+.help-icon .icon-svg {
+    width: 14px;
+    height: 14px;
+    color: var(--text-secondary, rgba(255, 255, 255, 0.6));
+}
+
+.help-icon:hover .icon-svg {
+    color: var(--primary-color, #00e676);
+}

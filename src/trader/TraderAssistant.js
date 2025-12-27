@@ -449,8 +449,8 @@ class TraderAssistant {
                     <span>Não mostrar mais nesta sessão</span>
                 </label>
                 <div class="trader-alert-buttons">
-                    <button class="trader-alert-btn trader-alert-config" onclick="window.traderAssistant.openSettings()">⚙️</button>
-                    <button class="trader-alert-btn trader-alert-close" onclick="window.traderAssistant.closeAlert('${alertId}', '${alert.type}')">×</button>
+                    <button class="trader-alert-btn trader-alert-config" type="button">⚙️</button>
+                    <button class="trader-alert-btn trader-alert-close" type="button">×</button>
                 </div>
             </div>
         `;
@@ -461,6 +461,10 @@ class TraderAssistant {
 
         // Adicionar ao DOM (no root de alertas, garante z-index máximo)
         alertsRoot.appendChild(alertElement);
+
+        // 🔧 CSP FIX: Adicionar event listeners após inserir no DOM
+        alertElement.querySelector('.trader-alert-config').addEventListener('click', () => this.openSettings());
+        alertElement.querySelector('.trader-alert-close').addEventListener('click', () => this.closeAlert(alertId, alert.type));
 
         // Tocar som do alerta (se habilitado)
         this._playAlertSound(alert.level);
@@ -504,7 +508,7 @@ class TraderAssistant {
             <div class="trader-settings-content">
                 <div class="trader-settings-header">
                     <h3>⚙️ Configurações do Assistente</h3>
-                    <button class="trader-settings-close" onclick="document.getElementById('trader-settings-panel').remove()">×</button>
+                    <button class="trader-settings-close" type="button">×</button>
                 </div>
                 
                 <div class="trader-settings-body">
@@ -557,8 +561,8 @@ class TraderAssistant {
                 </div>
 
                 <div class="trader-settings-footer">
-                    <button class="trader-settings-btn trader-settings-save" onclick="window.traderAssistant.saveSettings()">💾 Salvar</button>
-                    <button class="trader-settings-btn trader-settings-reset" onclick="window.traderAssistant.resetSettings()">🔄 Restaurar Padrão</button>
+                    <button class="trader-settings-btn trader-settings-save" type="button">💾 Salvar</button>
+                    <button class="trader-settings-btn trader-settings-reset" type="button">🔄 Restaurar Padrão</button>
                 </div>
             </div>
         `;
@@ -568,6 +572,11 @@ class TraderAssistant {
 
         // Adicionar ao DOM
         document.body.appendChild(settingsPanel);
+
+        // 🔧 CSP FIX: Adicionar event listeners após inserir no DOM
+        settingsPanel.querySelector('.trader-settings-close').addEventListener('click', () => settingsPanel.remove());
+        settingsPanel.querySelector('.trader-settings-save').addEventListener('click', () => this.saveSettings());
+        settingsPanel.querySelector('.trader-settings-reset').addEventListener('click', () => this.resetSettings());
 
         // Configurar listeners para os sliders
         this._setupSettingsListeners();
@@ -778,8 +787,8 @@ class TraderAssistant {
             Array.isArray(store.historicoCombinado) && store.historicoCombinado.length > 0
                 ? store.historicoCombinado
                 : Array.isArray(legacyState.historicoCombinado)
-                  ? legacyState.historicoCombinado
-                  : [];
+                    ? legacyState.historicoCombinado
+                    : [];
 
         return {
             capitalAtual,
@@ -1748,17 +1757,17 @@ class TraderAssistant {
         styles.textContent = `
             .trader-settings-floating-btn {
                 position: fixed;
-                bottom: 20px;
+                bottom: 200px;
                 left: 20px;
                 width: 50px;
                 height: 50px;
-                background: #17a2b8;
-                border: none;
-                border-radius: 50%;
+                background: rgba(23, 162, 184, 0.9);
+                border: 2px solid rgba(255, 255, 255, 0.2);
+                border-radius: 12px;
                 color: #fff;
                 font-size: 20px;
                 cursor: pointer;
-                box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
                 z-index: 9999;
                 transition: all 0.3s ease;
                 display: flex;
@@ -1840,7 +1849,7 @@ class TraderAssistant {
                         g2.gain.setValueAtTime(volume, t);
                         g2.gain.exponentialRampToValueAtTime(0.0001, t + duration * 0.9);
                         osc2.stop(t + duration + 0.02);
-                    } catch {}
+                    } catch { }
                 }, 120);
             }
         } catch (e) {

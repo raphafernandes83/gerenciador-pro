@@ -1,0 +1,14 @@
+    'header-strategy-type': {
+        icon: '\u2699\uFE0F', // ⚙️
+        label: 'Tipo de Estratégia',
+        description: 'Indica qual estratégia de gerenciamento está ativa para esta sessão',
+        formula: 'Definida nas configurações de cada sessão',
+        example: {
+            good: 'Ciclos de Recuperação = Martingale controlado em 2 etapas',
+            calculation: 'Entradas Fixas = mesmo valor em todas as operações'
+        },
+        thresholds: {},
+        ideal: 'Escolha baseada no seu perfil de risco',
+        tip: 'Ciclos de Recuperação: maior risco mas recupera losses. Entradas Fixas: mais seguro mas sem recuperação automática'
+    },
+

@@ -1,0 +1,84 @@
+﻿        // ðŸ—‘ï¸ InicializaÃ§Ã£o do Sistema de Lixeira
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                try {
+                    console.log('ðŸ—‘ï¸ Inicializando Sistema de Lixeira...');
+
+                    // Inicializa TrashManager (jÃ¡ inicializado automaticamente)
+                    if (window.trashManager && window.trashManager.isInitialized) {
+                        console.log('âœ… TrashManager inicializado');
+                    }
+
+                    // Inicializa TrashFAB
+                    if (window.getTrashFAB) {
+                        window.trashFAB = window.getTrashFAB();
+                        console.log('âœ… TrashFAB inicializado');
+                    }
+
+                    // Inicializa TrashModal
+                    if (window.getTrashModal) {
+                        window.trashModal = window.getTrashModal();
+                        console.log('âœ… TrashModal inicializado');
+                    }
+
+                    // Inicializa TagsTrashHandler
+                    if (window.getTagsTrashHandler) {
+                        window.tagsTrashHandler = window.getTagsTrashHandler();
+                        console.log('âœ… TagsTrashHandler inicializado');
+                    }
+
+                    // Inicializa OperationsTrashHandler
+                    if (window.getOperationsTrashHandler) {
+                        window.operationsTrashHandler = window.getOperationsTrashHandler();
+                        console.log('âœ… OperationsTrashHandler inicializado');
+                    }
+
+                    // Inicializa SessionsTrashHandler
+                    if (window.getSessionsTrashHandler) {
+                        window.sessionsTrashHandler = window.getSessionsTrashHandler();
+                        console.log('âœ… SessionsTrashHandler inicializado');
+                    }
+
+                    // FunÃ§Ã£o de teste global para a lixeira
+                    window.testTrashSystem = function () {
+                        console.log('ðŸ§ª Testando Sistema de Lixeira Completo...');
+
+                        const managerTest = window.trashManager ? window.trashManager.test() : { allTestsPass: false };
+                        const fabTest = window.trashFAB ? window.trashFAB.test() : { allTestsPass: false };
+                        const modalTest = window.trashModal ? window.trashModal.test() : { allTestsPass: false };
+                        const tagsTest = window.tagsTrashHandler ? window.tagsTrashHandler.test() : { allTestsPass: false };
+                        const operationsTest = window.operationsTrashHandler ? window.operationsTrashHandler.test() : { allTestsPass: false };
+                        const sessionsTest = window.sessionsTrashHandler ? window.sessionsTrashHandler.test() : { allTestsPass: false };
+
+                        const systemTest = {
+                            manager: managerTest.allTestsPass,
+                            fab: fabTest.allTestsPass,
+                            modal: modalTest.allTestsPass,
+                            tags: tagsTest.allTestsPass,
+                            operations: operationsTest.allTestsPass,
+                            sessions: sessionsTest.allTestsPass,
+                            integration: !!(window.trashManager && window.trashFAB && window.trashModal && window.tagsTrashHandler && window.operationsTrashHandler && window.sessionsTrashHandler)
+                        };
+
+                        const allSystemTestsPass = Object.values(systemTest).every(Boolean);
+
+                        console.log(allSystemTestsPass ? 'âœ… Sistema de Lixeira funcionando perfeitamente!' : 'âŒ Problemas detectados no sistema:', systemTest);
+
+                        return {
+                            system: systemTest,
+                            manager: managerTest,
+                            fab: fabTest,
+                            modal: modalTest,
+                            tags: tagsTest,
+                            operations: operationsTest,
+                            sessions: sessionsTest,
+                            allTestsPass: allSystemTestsPass
+                        };
+                    };
+
+                    // FunÃ§Ã£o para testar abertura do modal
+                    window.openTrashModal = function () {
+                        if (window.trashModal) {
+                            window.trashModal.open();
+                            console.log('ðŸ—‘ï¸ Modal da lixeira aberto via comando');
+                        } else {

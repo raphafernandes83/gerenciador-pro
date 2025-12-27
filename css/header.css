@@ -1,0 +1,300 @@
+/**
+ * Header CSS Module - Design System "Tech-Stealth / Unified Pro"
+ * Gerenciador PRO v9.3
+ * Criado: 25/12/2025
+ * 
+ * Este arquivo contém estilos isolados para o header toolbar,
+ * facilitando modificacoes futuras sem afetar outros componentes.
+ */
+
+/* ===== VARIAVEIS DO DESIGN SYSTEM ===== */
+:root {
+    /* Cores de Fundo */
+    --header-bg-active: #1E232E;
+    --header-bg-hover: rgba(30, 35, 46, 0.5);
+    --header-border: #2A2E39;
+
+    /* Cores Semanticas (apenas para icones) */
+    --color-system: #38bdf8;
+    /* sky-400 - Simulacao, Guiado, Compactar */
+    --color-alert: #fbbf24;
+    /* amber-400 - Recovery */
+    --color-financial: #34d399;
+    /* emerald-400 - Sessao Oficial, Juros */
+
+    /* Texto */
+    --text-inactive: #94a3b8;
+    /* slate-400 */
+    --text-active: #ffffff;
+    /* white */
+}
+
+/* ===== RESET: Desabilitar estilos antigos de status-indicator ===== */
+/* Esses botões agora são status-chip, não status-indicator */
+#status-indicators button.status-chip,
+#guided-mode-indicator.status-chip,
+#compounding-indicator.status-chip {
+    /* Reset dos estilos de .status-indicator do style.css */
+    font-size: 10px !important;
+    opacity: 1 !important;
+    transform: none !important;
+    border-radius: 4px !important;
+    padding: 5px 10px !important;
+    min-width: auto !important;
+    width: auto !important;
+    overflow: visible !important;
+}
+
+/* ===== STATUS CHIPS (Tipo A) ===== */
+/* IMPORTANTE: !important usado para sobrescrever conflitos do style.css */
+#status-indicators .status-chip,
+.header-actions .status-chip,
+button.status-chip {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    padding: 5px 10px !important;
+    height: 28px !important;
+    border-radius: 4px !important;
+    border: 1px solid transparent;
+    background: #212631;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #ffffff !important;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    margin: 0 2px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.status-chip:hover {
+    background: #2A303C;
+}
+
+/* Session Toggle - Estado SIMULACAO (padrao) */
+.status-chip.session-simulation {
+    background: #212631;
+    border-color: transparent;
+}
+
+.status-chip.session-simulation .chip-icon {
+    color: #38bdf8;
+    /* sky-400 - azul */
+}
+
+/* Session Toggle - Estado OFICIAL */
+.status-chip.session-official {
+    background: rgba(16, 185, 129, 0.1);
+    /* emerald-500/10 */
+    border-color: rgba(16, 185, 129, 0.2);
+    /* emerald-500/20 */
+}
+
+.status-chip.session-official:hover {
+    background: rgba(16, 185, 129, 0.2);
+}
+
+.status-chip.session-official .chip-icon {
+    color: #34d399;
+    /* emerald-400 - verde */
+}
+
+/* Strategy Toggle - Estado NORMAL (padrao) */
+.status-chip.strategy-normal {
+    background: #212631;
+    border-color: transparent;
+}
+
+.status-chip.strategy-normal .chip-icon {
+    color: #94a3b8;
+    /* slate-400 - cinza neutro */
+}
+
+/* Strategy Toggle - Estado RECUPERACAO */
+.status-chip.strategy-recovery {
+    background: rgba(251, 191, 36, 0.1);
+    /* amber-400/10 */
+    border-color: rgba(251, 191, 36, 0.2);
+    /* amber-400/20 */
+}
+
+.status-chip.strategy-recovery:hover {
+    background: rgba(251, 191, 36, 0.2);
+}
+
+.status-chip.strategy-recovery .chip-icon {
+    color: #fbbf24;
+    /* amber-400 - amarelo alerta */
+}
+
+/* Guided Mode - Estado ATIVO (GUIADO) */
+.status-chip.guided-active {
+    background: rgba(56, 189, 248, 0.1);
+    /* sky-400/10 */
+    border-color: rgba(56, 189, 248, 0.2);
+    /* sky-400/20 */
+}
+
+.status-chip.guided-active:hover {
+    background: rgba(56, 189, 248, 0.2);
+}
+
+.status-chip.guided-active .chip-icon {
+    color: #38bdf8;
+    /* sky-400 - azul sistema */
+}
+
+/* Guided Mode - Estado INATIVO (LIVRE) */
+.status-chip.guided-inactive {
+    background: #212631;
+    border-color: transparent;
+}
+
+.status-chip.guided-inactive .chip-icon {
+    color: #94a3b8;
+    /* slate-400 - cinza neutro */
+}
+
+/* Compound Mode - Estado ATIVO */
+.status-chip.compound-active {
+    background: rgba(16, 185, 129, 0.1);
+    /* emerald-500/10 */
+    border-color: rgba(16, 185, 129, 0.2);
+    /* emerald-500/20 */
+}
+
+.status-chip.compound-active:hover {
+    background: rgba(16, 185, 129, 0.2);
+}
+
+.status-chip.compound-active .chip-icon {
+    color: #34d399;
+    /* emerald-400 - verde financeiro */
+}
+
+/* Compound Mode - Estado INATIVO */
+.status-chip.compound-inactive {
+    background: #212631;
+    border-color: transparent;
+}
+
+.status-chip.compound-inactive .chip-icon {
+    color: #94a3b8;
+    /* slate-400 - cinza neutro */
+}
+
+/* Labels dentro dos Status Chips - garantir visibilidade */
+#status-indicators .status-chip span,
+.header-actions .status-chip span,
+button.status-chip span {
+    display: inline !important;
+    visibility: visible !important;
+    width: auto !important;
+    height: auto !important;
+    font-size: 10px !important;
+    color: #ffffff !important;
+}
+
+/* Icone dentro do Status Chip */
+.status-chip .chip-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+/* Cores Semanticas por tipo */
+.status-chip.type-system .chip-icon,
+.status-chip.type-system .led-dot {
+    color: var(--color-system);
+}
+
+.status-chip.type-alert .chip-icon,
+.status-chip.type-alert .led-dot {
+    color: var(--color-alert);
+}
+
+.status-chip.type-financial .chip-icon,
+.status-chip.type-financial .led-dot {
+    color: var(--color-financial);
+}
+
+/* ===== TOOL ICONS (Tipo B) ===== */
+.tool-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-inactive);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.tool-icon:hover {
+    color: var(--text-active);
+    background: var(--header-bg-hover);
+}
+
+.tool-icon.active {
+    color: var(--text-active);
+    background: rgba(100, 116, 139, 0.3);
+    /* slate-500/30 */
+}
+
+.tool-icon svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* ===== HEADER TOOLBAR CONTAINER (Tech-Stealth) ===== */
+
+/* Container principal das acoes do header */
+.header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    background: #161A22;
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+
+/* Container dos status indicators (chips) */
+#status-indicators {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+}
+
+/* Divisor vertical entre grupos */
+.header-divider {
+    width: 1px;
+    height: 20px;
+    background: #2A2E39;
+    margin: 0 8px;
+    flex-shrink: 0;
+}
+
+/* Esconde scrollbar mas permite scroll */
+#status-indicators::-webkit-scrollbar {
+    display: none;
+}
+
+#status-indicators {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

@@ -28,3 +28,22 @@ package-lock.json
 *.min.*
 debug-operacao.js
 universal_webapp_stack_com_guia/**
+
+# Arquivos legados (muitos para formatar de uma vez)
+deprecated/**
+backup_old_files/**
+tools/**
+*.backup*
+TrashFAB_BACKUP_FUNCIONANDO.js
+
+# Arquivos grandes que causam problemas
+ui.js
+ui.dom-analysis.json
+main.dom-analysis.json
+events.dom-analysis.json
+charts.js
+sidebar.js
+main.js
+events.js
+style.css
+sidebar.css

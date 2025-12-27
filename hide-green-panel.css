@@ -1,0 +1,17 @@
+/* ========================================
+   OCULTA PAINEL VERDE ANTIGO
+   Garante que o painel verde não apareça
+   ======================================== */
+
+.parameters-card {
+    display: none !important;
+}
+
+.sidebar-header-card {
+    display: none !important;
+}
+
+/* Garante que apenas o info-panel apareça */
+.info-panel {
+    display: block !important;
+}

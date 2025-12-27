@@ -1,0 +1,349 @@
+/**
+ * 🔔 NOTIFICATIONS - Modern Toast System
+ * Estilo Toastify/Sonner com animações suaves
+ * @version 1.0.0
+ */
+
+/* ========================================
+   CONTAINER
+   ======================================== */
+
+.notifications-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    /* Acima de tudo */
+    pointer-events: none;
+    /* Permite cliques através do container */
+    max-width: 400px;
+    width: 100%;
+}
+
+/* ========================================
+   NOTIFICATION BASE
+   ======================================== */
+
+.notification {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    backdrop-filter: blur(10px);
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    pointer-events: all;
+    /* Notificação em si recebe cliques */
+
+    /* Animação inicial - escondido */
+    transform: translateX(100%);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Estado visível */
+.notification.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* Hover effect */
+.notification:hover {
+    transform: translateX(0) scale(1.02);
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+}
+
+/* ========================================
+   TIPOS DE NOTIFICAÇÃO (Gradients)
+   ======================================== */
+
+/* SUCCESS - Verde vibrante */
+.notification-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.notification-success::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.2), transparent 60%);
+    pointer-events: none;
+}
+
+/* ERROR - Vermelho vibrante */
+.notification-error {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.notification-error::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.2), transparent 60%);
+    pointer-events: none;
+}
+
+/* WARNING - Amarelo/Laranja */
+.notification-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.notification-warning::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.2), transparent 60%);
+    pointer-events: none;
+}
+
+/* INFO - Azul vibrante */
+.notification-info {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.notification-info::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.2), transparent 60%);
+    pointer-events: none;
+}
+
+/* ========================================
+   ELEMENTOS INTERNOS
+   ======================================== */
+
+.notification-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    font-weight: bold;
+}
+
+.notification-message {
+    flex: 1;
+    color: white;
+    font-size: 14px;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+.notification-close {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 18px;
+    line-height: 1;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.notification-close:active {
+    transform: rotate(90deg) scale(0.9);
+}
+
+/* ========================================
+   INSIGHT POPUP (Popup Especial)
+   ======================================== */
+
+.insight-popup {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    margin-bottom: 12px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    box-shadow:
+        0 8px 24px rgba(139, 92, 246, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    color: white;
+    pointer-events: all;
+
+    /* Animação */
+    transform: translateX(100%) scale(0.9);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.insight-popup.show {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+}
+
+.insight-icon {
+    font-size: 32px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.insight-message {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 640px) {
+    .notifications-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+
+    .notification {
+        padding: 14px 16px;
+        font-size: 13px;
+    }
+
+    .insight-popup {
+        padding: 16px 20px;
+    }
+}
+
+/* ========================================
+   DARK MODE SUPPORT
+   ======================================== */
+
+@media (prefers-color-scheme: dark) {
+    .notification {
+        box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.3),
+            0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+    }
+
+    .notification:hover {
+        box-shadow:
+            0 8px 20px rgba(0, 0, 0, 0.4),
+            0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+    }
+}
+
+/* ========================================
+   ANIMAÇÕES ADICIONAIS
+   ======================================== */
+
+/* Slide in from right */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Slide out to right */
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Progress bar (opcional - para futuras melhorias) */
+.notification-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 0 0 12px 12px;
+    overflow: hidden;
+}
+
+.notification-progress::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background: white;
+    transform: translateX(-100%);
+    animation: progress linear forwards;
+}
+
+@keyframes progress {
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* ========================================
+   ACCESSIBILITY
+   ======================================== */
+
+.notification:focus-within {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+    .notification,
+    .insight-popup,
+    .notification-close {
+        transition: none;
+        animation: none;
+    }
+}

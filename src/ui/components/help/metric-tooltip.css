@@ -1,0 +1,452 @@
+/**
+ * 🎨 ESTILOS DOS TOOLTIPS DE MÉTRICAS
+ * Design System para tooltips interativos de ajuda
+ */
+
+/* ============================================================================
+   ÍCONE DE AJUDA (?)
+   ============================================================================/* Ícone de ajuda */
+.help-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-left: 6px;
+    padding: 0;
+    background: var(--color-info);
+    color: var(--color-bg);
+    border: none;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    vertical-align: middle;
+}
+
+/* Apenas botões que TÊM help icon */
+button:has(.help-icon) {
+    position: relative;
+    padding-right: 32px;
+    /* Espaço para o ícone */
+}
+
+button .help-icon {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+}
+
+.help-icon:hover {
+    background: var(--color-highlight);
+    transform: scale(1.15);
+}
+
+button .help-icon:hover {
+    transform: translateY(-50%) scale(1.15);
+}
+
+.help-icon .icon {
+    display: block;
+    line-height: 16px;
+}
+
+.help-icon:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #00d4ff;
+    color: #00d4ff;
+    transform: scale(1.15);
+}
+
+.help-icon:active {
+    transform: scale(0.95);
+}
+
+.help-icon:focus {
+    outline: 2px solid #00d4ff;
+    outline-offset: 2px;
+}
+
+/* ============================================================================
+   TOOLTIP CONTAINER
+   ============================================================================ */
+
+.metric-tooltip {
+    position: fixed;
+    background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
+    border: 1px solid #3a3a3a;
+    border-radius: 12px;
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+    min-width: 320px;
+    max-width: 420px;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.metric-tooltip.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Seta do tooltip */
+.metric-tooltip::before {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #1a1a1a;
+    border: 1px solid #3a3a3a;
+    transform: rotate(45deg);
+    z-index: -1;
+}
+
+/* Posicionamento da seta baseado na posição do tooltip */
+.metric-tooltip.position-bottom::before {
+    top: -7px;
+    left: 20px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.metric-tooltip.position-top::before {
+    bottom: -7px;
+    left: 20px;
+    border-left: none;
+    border-top: none;
+}
+
+.metric-tooltip.position-right::before {
+    left: -7px;
+    top: 20px;
+    border-right: none;
+    border-top: none;
+}
+
+.metric-tooltip.position-left::before {
+    right: -7px;
+    top: 20px;
+    border-left: none;
+    border-bottom: none;
+}
+
+/* ============================================================================
+   HEADER DO TOOLTIP
+   ============================================================================ */
+
+.tooltip-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tooltip-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.tooltip-header h5 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    flex: 1;
+}
+
+.tooltip-close {
+    width: 24px;
+    height: 24px;
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: all 0.2s;
+    border-radius: 4px;
+}
+
+.tooltip-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+/* ============================================================================
+   BODY DO TOOLTIP
+   ============================================================================ */
+
+.tooltip-body {
+    padding: 16px 18px 18px;
+}
+
+.tooltip-description {
+    color: #bbb;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0 0 14px 0;
+}
+
+/* ============================================================================
+   VALOR ATUAL
+   ============================================================================ */
+
+.tooltip-current-value {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    margin-bottom: 14px;
+}
+
+.tooltip-current-value .label {
+    color: #888;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.tooltip-current-value .value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.tooltip-current-value .value.positive {
+    color: #10b981;
+}
+
+.tooltip-current-value .value.negative {
+    color: #ef4444;
+}
+
+.status-badge {
+    margin-left: auto;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-badge.excellent {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-badge.good {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.status-badge.warning {
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.status-badge.bad {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.status-badge.neutral {
+    background: rgba(156, 163, 175, 0.15);
+    color: #9ca3af;
+    border: 1px solid rgba(156, 163, 175, 0.3);
+}
+
+/* ============================================================================
+   EXEMPLO PRÁTICO
+   ============================================================================ */
+
+.tooltip-example {
+    margin-bottom: 14px;
+}
+
+.example-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 8px 0;
+}
+
+.tooltip-example ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tooltip-example li {
+    font-size: 13px;
+    color: #ccc;
+    line-height: 1.6;
+    margin-bottom: 4px;
+    padding-left: 18px;
+    position: relative;
+}
+
+.tooltip-example li::before {
+    content: '•';
+    position: absolute;
+    left: 4px;
+    color: #00d4ff;
+    font-weight: bold;
+}
+
+.tooltip-example strong {
+    color: #00d4ff;
+    font-weight: 600;
+}
+
+/* ============================================================================
+   VALOR IDEAL
+   ============================================================================ */
+
+.tooltip-ideal {
+    padding: 10px 12px;
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.03) 100%);
+    border-left: 3px solid #10b981;
+    border-radius: 6px;
+    margin-bottom: 14px;
+}
+
+.ideal-label {
+    font-size: 12px;
+    color: #10b981;
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+.ideal-value {
+    font-size: 13px;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* ============================================================================
+   TIP (DICA)
+   ============================================================================ */
+
+.tooltip-tip {
+    padding: 10px 12px;
+    background: rgba(59, 130, 246, 0.08);
+    border-left: 3px solid #3b82f6;
+    border-radius: 6px;
+    margin-bottom: 14px;
+}
+
+.tooltip-tip::before {
+    content: '💡 ';
+    margin-right: 4px;
+}
+
+.tooltip-tip {
+    font-size: 12px;
+    color: #bbb;
+    line-height: 1.5;
+}
+
+/* ============================================================================
+   LINK "VER MAIS DETALHES"
+   ============================================================================ */
+
+.tooltip-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #00d4ff;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.tooltip-link:hover {
+    color: #33e0ff;
+    gap: 8px;
+}
+
+.tooltip-link::after {
+    content: '→';
+    font-size: 14px;
+}
+
+/* ============================================================================
+   RESPONSIVIDADE
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    .metric-tooltip {
+        min-width: 280px;
+        max-width: 90vw;
+        left: 5vw !important;
+        right: 5vw !important;
+    }
+
+    .tooltip-header {
+        padding: 14px 16px 10px;
+    }
+
+    .tooltip-body {
+        padding: 14px 16px 16px;
+    }
+
+    .tooltip-current-value {
+        flex-wrap: wrap;
+    }
+
+    .status-badge {
+        margin-left: 0;
+        margin-top: 6px;
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* ============================================================================
+   DARK MODE ESPECÍFICO
+   ============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+    .metric-tooltip {
+        background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+        border-color: #2a2a2a;
+    }
+}
+
+/* ============================================================================
+   ANIMAÇÕES
+   ============================================================================ */
+
+@keyframes tooltipPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    50% {
+        box-shadow: 0 10px 40px rgba(0, 212, 255, 0.2);
+    }
+}
+
+.metric-tooltip.highlight {
+    animation: tooltipPulse 2s ease-in-out;
+}

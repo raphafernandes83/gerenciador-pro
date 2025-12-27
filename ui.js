@@ -33,6 +33,27 @@ import { globalErrorHandler, ERROR_CATEGORIES } from './src/error/ErrorHandlingS
 // Services Facade (substitui múltiplos imports)
 import { uiServicesFacade } from './src/ui/UIServicesFacade.js';
 
+// Formatting functions (modularizadas)
+import { formatarPercent as _formatarPercent, isValidMonetaryValue as _isValidMonetaryValue } from './src/ui/ui-formatting.js';
+import { convertToNumber as _convertToNumberImpl } from './src/ui/ui-converters.js';
+import { formatarMoedaImpl, formatarMoedaInternalImpl } from './src/ui/ui-currency.js';
+
+// [TAREFA 5A] ModalUI - Funcoes de modal extraidas
+import { ModalUI } from './src/ui/ModalUI.js';
+const modalUIInstance = new ModalUI();
+
+// [TAREFA 5B] NotificationUI - Funcoes de notificacao extraidas
+import { NotificationUI } from './src/ui/NotificationUI.js';
+const notificationUIInstance = new NotificationUI();
+
+// [TAREFA 5C] TabelaUI - Funcoes de tabela extraidas
+import { TabelaUI } from './src/ui/TabelaUI.js';
+const tabelaUIInstance = new TabelaUI();
+
+// [TAREFA 5D] TimelineUI - Funcoes de timeline extraidas
+import { TimelineUI } from './src/ui/TimelineUI.js';
+const timelineUIInstance = new TimelineUI();
+
 // ============================================================================
 // 🆕 CHECKPOINT 2.2a: Helper de transição para DOMManager
 // ============================================================================
@@ -683,23 +704,16 @@ const ui = {
      *
      * @param {number} valor - Valor a ser formatado
      * @returns {string} Valor formatado como moeda
+     * @see src/ui/ui-currency.js
      *
      * @example
      * formatarMoeda(1234.56) // "R$ 1.234,56"
      * formatarMoeda(null) // "R$ 0,00"
      */
     formatarMoeda(valor) {
-        try {
-            return this._formatarMoedaInternal(valor);
-        } catch (error) {
-            console.warn('Erro na formatação de moeda, usando fallback:', error.message);
-            // Fallback robusto sem dependências
-            const numericValue = Number(valor) || 0;
-            return `R$ ${numericValue
-                .toFixed(2)
-                .replace('.', ',')
-                .replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
-        }
+        return formatarMoedaImpl(valor, {
+            formatarMoedaInternal: this._formatarMoedaInternal.bind(this)
+        });
     },
 
     /**
@@ -708,63 +722,15 @@ const ui = {
      * @private
      * @param {number} valor - Valor a ser formatado
      * @returns {string} Valor formatado
+     * @see src/ui/ui-currency.js
      */
     _formatarMoedaInternal(valor) {
-        try {
-            // Validação robusta de entrada ANTES do cache
-            if (!this._isValidMonetaryValue(valor)) {
-                return CURRENCY_FORMAT.DEFAULT_VALUE;
-            }
-
-            // Converte para number se necessário
-            const numericValue = this._convertToNumber(valor);
-
-            // Verifica cache usando chave baseada no valor numérico
-            const cacheKey = numericValue.toString();
-            let cache;
-            let cached;
-
-            try {
-                // 🛡️ CORREÇÃO CRÍTICA: Verificar se uiServicesFacade existe
-                if (
-                    typeof uiServicesFacade !== 'undefined' &&
-                    uiServicesFacade.getPerformanceCache
-                ) {
-                    cache = uiServicesFacade.getPerformanceCache('currency');
-                    cached = cache.get(cacheKey);
-
-                    if (cached !== undefined) {
-                        return cached;
-                    }
-                } else {
-                    console.warn('🔧 uiServicesFacade não disponível, prosseguindo sem cache');
-                }
-            } catch (cacheError) {
-                // Se cache falhar, continua sem cache
-                console.warn('Cache de moeda indisponível:', cacheError.message);
-            }
-
-            // Formatação usando locale nativo
-            const formatted = numericValue.toLocaleString(
-                CURRENCY_FORMAT.LOCALE,
-                CURRENCY_FORMAT.OPTIONS
-            );
-
-            // Tenta salvar no cache, mas não falha se der erro
-            try {
-                if (cache && typeof uiServicesFacade !== 'undefined') {
-                    cache.set(cacheKey, formatted);
-                }
-            } catch (cacheError) {
-                console.warn('Erro ao salvar no cache de moeda:', cacheError.message);
-            }
-
-            return formatted;
-        } catch (error) {
-            console.error('Erro na formatação de moeda:', error);
-            // Fallback seguro
-            return `R$ ${(Number(valor) || 0).toFixed(2).replace('.', ',')}`;
-        }
+        return formatarMoedaInternalImpl(valor, {
+            CURRENCY_FORMAT,
+            uiServicesFacade,
+            isValidMonetaryValue: this._isValidMonetaryValue.bind(this),
+            convertToNumber: this._convertToNumber.bind(this)
+        });
     },
 
     /**
@@ -772,13 +738,10 @@ const ui = {
      * @param {any} valor
      * @param {number} precision
      * @returns {string}
+     * @see src/ui/ui-formatting.js
      */
     formatarPercent(valor, precision = 1) {
-        const n = Number(valor);
-        const p = Number(precision) || 0;
-        if (!isFinite(n)) return `${(0).toFixed(Math.max(0, p))}%`;
-        const clamped = Math.max(0, Math.min(100, n));
-        return `${clamped.toFixed(Math.max(0, p))}%`;
+        return _formatarPercent(valor, precision);
     },
 
     /**
@@ -787,14 +750,10 @@ const ui = {
      * @private
      * @param {*} valor - Valor a ser validado
      * @returns {boolean} True se valor é válido
+     * @see src/ui/ui-formatting.js
      */
     _isValidMonetaryValue(valor) {
-        return (
-            valor !== null &&
-            valor !== undefined &&
-            !Number.isNaN(Number(valor)) &&
-            Number.isFinite(Number(valor))
-        );
+        return _isValidMonetaryValue(valor);
     },
 
     /**
@@ -803,19 +762,10 @@ const ui = {
      * @private
      * @param {*} valor - Valor a ser convertido
      * @returns {number} Valor convertido
+     * @see src/ui/ui-converters.js
      */
     _convertToNumber(valor) {
-        if (typeof valor === 'number') {
-            return valor;
-        }
-
-        const converted = Number(valor);
-
-        if (Number.isNaN(converted)) {
-            throw new TypeError(`${VALIDATION_MESSAGES.NAN_VALUE}: ${valor}`);
-        }
-
-        return converted;
+        return _convertToNumberImpl(valor, VALIDATION_MESSAGES);
     },
 
     /**
@@ -1246,21 +1196,13 @@ const ui = {
 
         if (!state.isSessionActive) {
             console.log('🎯 UI: Sessão inativa - mostrando mensagem');
-            // 🎨 Resolve CSS variable dinamicamente
-            const mutedColor =
-                getComputedStyle(document.documentElement)
-                    .getPropertyValue('--text-muted')
-                    .trim() || '#888888';
-            dom.tabelaBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: ${mutedColor};">Nenhuma sessão ativa. Clique em "Nova Sessão" para começar.</td></tr>`;
+            // [TAREFA 7B] Substituido inline style por classes CSS
+            dom.tabelaBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Nenhuma sessão ativa. Clique em "Nova Sessão" para começar.</td></tr>`;
             return;
         }
         if (!Array.isArray(state.planoDeOperacoes)) {
-            // 🎨 Resolve CSS variable dinamicamente
-            const errorColor =
-                getComputedStyle(document.documentElement)
-                    .getPropertyValue('--secondary-color')
-                    .trim() || '#ff3d00';
-            dom.tabelaBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: ${errorColor};">Erro: Plano de operações inválido.</td></tr>`;
+            // [TAREFA 7B] Substituido inline style por classes CSS
+            dom.tabelaBody.innerHTML = `<tr><td colspan="5" class="text-center text-error">Erro: Plano de operações inválido.</td></tr>`;
             return;
         }
         const isZen = config.zenMode;
@@ -2804,6 +2746,81 @@ const ui = {
         } catch (error) {
             console.error('❌ Erro ao renderizar histórico:', error);
         }
+    },
+
+    // =========================================================================
+    // [TAREFA 9A] COMPACT MODE - Toggle de modo compacto
+    // =========================================================================
+
+    /**
+     * Alterna o modo compacto da interface
+     * Reduz padding, margens e altura de elementos para maior densidade
+     */
+    toggleCompactMode() {
+        const body = document.body;
+        const isCompact = body.classList.toggle('compact-mode');
+
+        // Atualiza estado do botão
+        if (dom.compactModeBtn) {
+            dom.compactModeBtn.classList.toggle('active', isCompact);
+            dom.compactModeBtn.setAttribute('aria-pressed', isCompact);
+            dom.compactModeBtn.title = isCompact ? 'Desativar Modo Compacto' : 'Ativar Modo Compacto';
+        }
+
+        // Persiste preferência
+        localStorage.setItem('ui.compactMode', isCompact ? '1' : '0');
+
+        console.log(`🗜️ Compact Mode: ${isCompact ? 'ATIVO' : 'INATIVO'}`);
+    },
+
+    /**
+     * Alterna o modo Zen (esconde elementos não essenciais)
+     */
+    toggleZenMode() {
+        const body = document.body;
+        const isZen = body.classList.toggle('zen-mode');
+
+        // Atualiza estado do botão
+        if (dom.zenModeBtn) {
+            dom.zenModeBtn.classList.toggle('active', isZen);
+            dom.zenModeBtn.setAttribute('aria-pressed', isZen);
+            dom.zenModeBtn.title = isZen ? 'Desativar Modo Zen' : 'Ativar Modo Zen';
+        }
+
+        // Persiste preferência
+        localStorage.setItem('ui.zenMode', isZen ? '1' : '0');
+
+        // Atualiza config para uso em outras partes do código
+        config.zenMode = isZen;
+
+        console.log(`🧘 Zen Mode: ${isZen ? 'ATIVO' : 'INATIVO'}`);
+    },
+
+    /**
+     * Aplica preferências salvas de UI (compactMode, zenMode)
+     * Chamado no boot/init da aplicação
+     */
+    applyUISavedPreferences() {
+        // Compact Mode
+        if (localStorage.getItem('ui.compactMode') === '1') {
+            document.body.classList.add('compact-mode');
+            if (dom.compactModeBtn) {
+                dom.compactModeBtn.classList.add('active');
+                dom.compactModeBtn.setAttribute('aria-pressed', 'true');
+            }
+        }
+
+        // Zen Mode
+        if (localStorage.getItem('ui.zenMode') === '1') {
+            document.body.classList.add('zen-mode');
+            if (dom.zenModeBtn) {
+                dom.zenModeBtn.classList.add('active');
+                dom.zenModeBtn.setAttribute('aria-pressed', 'true');
+            }
+            config.zenMode = true;
+        }
+
+        console.log('🎨 Preferências de UI aplicadas');
     },
 };
 

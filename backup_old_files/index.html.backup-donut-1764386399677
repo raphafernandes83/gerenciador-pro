@@ -1,0 +1,2084 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerenciador de OperaÃ§Ãµes PRO v9.3</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="sidebar.css" />
+    <link rel="stylesheet" href="animations.css" />
+    <link rel="stylesheet" href="src/validation/validation-styles.css" />
+    <link rel="manifest" href="manifest.json" />
+</head>
+
+<body data-theme="moderno">
+    <div id="container" class="container hidden">
+        <header class="app-header">
+            <div class="app-title-group">
+                <div>
+                    <p id="trader-name">Nome do Trader</p>
+                    <h1>Gerenciador <span class="pro-version">PRO v9.3</span></h1>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div id="status-indicators">
+                    <span id="session-mode-indicator" class="status-indicator tooltip-container">
+                        <span id="session-mode-icon">ðŸ“ˆ</span>
+                        <span class="tooltip-text">Modo da SessÃ£o: Oficial</span>
+                    </span>
+                    <span id="strategy-indicator" class="status-indicator tooltip-container">
+                        <span id="strategy-indicator-icon">ðŸ”„</span>
+                        <span class="tooltip-text">EstratÃ©gia Ativa: Ciclos de RecuperaÃ§Ã£o</span>
+                    </span>
+                    <span id="guided-mode-indicator" class="status-indicator tooltip-container" role="img"
+                        aria-label="Modo Guiado Ativo">
+                        ðŸ”’
+                        <span class="tooltip-text">Modo Guiado estÃ¡ ativo. Apenas a prÃ³xima etapa do plano pode ser
+                            executada.</span>
+                    </span>
+                    <span id="compounding-indicator" class="status-indicator tooltip-container" role="img"
+                        aria-label="Juros Compostos Ativos">
+                        ðŸ’¹
+                        <span class="tooltip-text">Incorporar Lucros estÃ¡ ativo. Os ganhos sÃ£o somados ao capital para
+                            juros compostos.</span>
+                    </span>
+                </div>
+                <button id="zen-mode-btn" title="Modo Zen" aria-label="Ativar Modo Zen">
+                    ðŸ‘ï¸
+                </button>
+                <button id="compact-mode-btn" title="Modo Compacto" aria-label="Ativar Modo Compacto">
+                    â¤¡
+                </button>
+                <button id="settings-btn" title="ConfiguraÃƒÂ§ÃƒÂµes" aria-label="Abrir ConfiguraÃƒÂ§ÃƒÂµes">
+                    Ã¢Å¡â„¢Ã¯Â¸Â
+                </button>
+                <button id="install-app-btn" class="hidden" title="Instalar App" aria-label="Instalar como aplicativo">
+                    Ã°Å¸â€œÂ±
+                </button>
+                <button id="install-app-btn" class="hidden" title="Instalar App" aria-label="Instalar como aplicativo">
+                    Ã°Å¸â€œÂ±
+                </button>
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-button" data-tab="plano">Plano de OperaÃ§Ãµes</button>
+            <button class="tab-button" data-tab="dashboard">Dashboard</button>
+            <button class="tab-button" data-tab="diario">DiÃ¡rio</button>
+            <button class="tab-button" data-tab="analise">AnÃ¡lise EstratÃ©gica</button>
+            <button class="tab-button" data-tab="testes">ðŸ§ª Testes</button>
+        </nav>
+
+        <div id="meta-aviso"></div>
+
+        <div id="plano-content" class="tab-content">
+            <main>
+                <section id="main-area">
+                    <div id="input-panel" class="input-panel panel"></div>
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>Plano de OperaÃ§Ãµes</h2>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table id="tabela-resultados">
+                                <thead>
+                                    <tr>
+                                        <th>Etapa</th>
+                                        <th>Aporte</th>
+                                        <th>Valor (R$)</th>
+                                        <th>Retorno (R$)</th>
+                                        <th>AÃ§Ãµes</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabela-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+
+                    <div class="results-panel panel">
+                        <div class="panel-header">
+                            <h2>HistÃ³rico Visual do Dia</h2>
+                            <div id="timeline-filters" class="filter-buttons">
+                                <button data-filter="all" class="active" aria-label="Mostrar todas as operaÃ§Ãµes">
+                                    Tudo
+                                </button>
+                                <button data-filter="win_streak" aria-label="Mostrar maior sequÃªncia de vitÃ³rias">
+                                    ðŸ”¥
+                                </button>
+                                <button data-filter="loss_streak" aria-label="Mostrar maior sequÃªncia de derrotas">
+                                    ðŸ’€
+                                </button>
+                            </div>
+                        </div>
+                        <div id="timeline-container" class="timeline-container"></div>
+                    </div>
+                </section>
+                <aside id="right-sidebar">
+                    <div id="dashboard-area">
+                        <div id="performance-panel" class="panel">
+                            <h3 id="capital-atual-label">Capital Atual</h3>
+                            <p id="capital-atual" class="value"></p>
+                            <p id="display-capital-calculo">(Base: R$ 0,00)</p>
+                            <hr class="my-15 border-muted" />
+                            <h3 id="lucro-prejuizo-label">Resultado do Dia</h3>
+                            <p id="lucro-prejuizo" class="value"></p>
+                        </div>
+
+                        <!-- ===== PROGRESSO DAS METAS (MOVIDO PARA SIDEBAR) ===== -->
+                        <div class="panel progress-metas-panel" id="progress-metas-panel">
+                            <div class="panel-header">
+                                <h2>ðŸ“Š Progresso das Metas</h2>
+                                <div class="progress-metas-subtitle">
+                                    <span>Meta Win/Loss vs. Realizado</span>
+                                    <span class="progress-session-info" id="progress-session-info">SessÃ£o Inativa</span>
+                                </div>
+                            </div>
+
+                            <!-- Container Principal dos GrÃ¡ficos (layout com separador central do preview) -->
+                            <div class="progress-charts-grid">
+                                <!-- GrÃ¡fico de Pizza + legenda -->
+                                <div class="progress-chart-section progress-pie-section preview-left">
+                                    <h3 class="progress-chart-title">DistribuiÃ§Ã£o da SessÃ£o</h3>
+                                    <div class="progress-pie-wrapper">
+                                        <canvas id="progress-pie-chart" width="220" height="220"
+                                            aria-label="GrÃ¡fico de distribuiÃ§Ã£o Win/Loss"></canvas>
+                                    </div>
+
+                                    <!-- Contadores de VitÃ³rias e Derrotas -->
+                                    <div class="win-loss-counters">
+                                        <div class="counter-item counter-wins">
+                                            <span class="counter-icon">ðŸŸ¢</span>
+                                            <span class="counter-value" id="wins-counter">0</span>
+                                            <span class="counter-label">VitÃ³rias</span>
+                                        </div>
+                                        <div class="counter-item counter-losses">
+                                            <span class="counter-icon">ðŸ”´</span>
+                                            <span class="counter-value" id="losses-counter">0</span>
+                                            <span class="counter-label">Derrotas</span>
+                                        </div>
+                                    </div>
+                                    <!-- Blocos textuais do preview (lado esquerdo) -->
+                                    <div class="grid grid-cols-2 gap-15 mt-10">
+                                        <div>
+                                            <h4 class="section-title">Meta (R$)</h4>
+                                            <div class="text-09 text-muted no-wrap">Alvo: <span
+                                                    id="win-target-amount">R$ 0,00</span></div>
+                                            <div class="text-09 text-muted no-wrap">Atingido: <span
+                                                    id="meta-achieved-amount">R$ 0,00</span></div>
+                                        </div>
+                                        <div>
+                                            <h4 class="section-title">Risco</h4>
+                                            <div class="text-09 text-muted no-wrap">Margem: <span id="status-margin">R$
+                                                    0,00</span></div>
+                                            <div class="text-09 text-muted no-wrap">Risco usado: <span
+                                                    id="risk-used-display">0%</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Separador vertical refinado -->
+                                <div class="preview-separator" aria-hidden="true"></div>
+
+                                <!-- Barras de Progresso Melhoradas -->
+                                <div class="progress-chart-section progress-bars-section">
+                                    <h3 class="progress-chart-title">Metas vs. Performance</h3>
+                                    <div class="progress-bars-grid">
+                                        <!-- Win Rate Bar -->
+                                        <div class="progress-bar-container">
+
+                                            <div class="progress-bar-track" id="win-main-track">
+                                                <div class="progress-bar-background"></div>
+                                                <div class="progress-bar-target" id="win-target-bar"
+                                                    title="Meta Win Rate"></div>
+                                                <div class="progress-bar-current progress-bar-win" id="win-current-bar"
+                                                    title="Win Rate Atual"></div>
+                                            </div>
+                                            <div class="progress-bar-info">
+                                                <span class="progress-target">Meta (WR):
+                                                    <span id="win-target-value">60%</span><span id="meta-target-percent"
+                                                        class="hidden"></span></span>
+                                                <span class="progress-current">WR Atual:
+                                                    <span id="win-current-value">0%</span><span
+                                                        id="meta-current-percent" class="hidden"></span>
+                                                    <span id="meta-trend-badge" class="trend-badge"></span></span>
+                                            </div>
+                                            <div class="progress-amount-info">
+                                                <span class="progress-target-amount">Meta:
+                                                    <span id="win-target-amount">R$ 0,00</span><span
+                                                        id="meta-target-amount" class="hidden"></span></span>
+                                                <span class="progress-remaining-amount">Atingido:
+                                                    <span id="win-remaining-amount">R$ 0,00</span><span
+                                                        id="meta-achieved-amount" class="hidden">R$ 0,00</span></span>
+                                            </div>
+                                            <!-- Mini barra: Progresso da Meta -->
+                                            <div class="mini-progress" id="meta-progress-area">
+                                                <div class="progress-bar-track" id="meta-progress-track">
+                                                    <div class="progress-bar-current progress-bar-win"
+                                                        id="meta-progress-fill" title="Progresso da Meta"></div>
+                                                </div>
+                                                <div class="progress-bar-info">
+                                                    <span>Progresso da Meta:
+                                                        <span id="meta-progress-display">0%</span></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Loss Rate Bar -->
+                                        <div class="progress-bar-container">
+
+                                            <div class="progress-bar-track" id="loss-main-track">
+                                                <div class="progress-bar-background"></div>
+                                                <div class="progress-bar-target" id="loss-target-bar"
+                                                    title="Meta Loss Rate"></div>
+                                                <div class="progress-bar-current progress-bar-loss"
+                                                    id="loss-current-bar" title="Loss Rate Atual"></div>
+                                            </div>
+                                            <div class="progress-bar-info">
+                                                <span class="progress-target">Limite (%):
+                                                    <span id="loss-target-value">40%</span><span
+                                                        id="loss-target-percent" class="hidden"></span></span>
+                                                <span class="progress-current">Loss Atual:
+                                                    <span id="loss-current-value">0%</span><span
+                                                        id="loss-current-percent" class="hidden"></span>
+                                                    <span id="loss-trend-badge" class="trend-badge"></span></span>
+                                            </div>
+                                            <div class="progress-amount-info">
+                                                <span class="progress-limit-amount">Limite (R$):
+                                                    <span id="loss-limit-amount">R$ 0,00</span></span>
+                                                <span class="progress-session-result">P/L SessÃ£o (R$):
+                                                    <span id="loss-session-result">R$ 0,00</span></span>
+                                            </div>
+                                            <!-- Mini barra: Risco Utilizado -->
+                                            <div class="mini-progress" id="risk-used-area">
+                                                <div class="progress-bar-track" id="risk-used-track">
+                                                    <div class="progress-bar-current progress-bar-loss"
+                                                        id="risk-used-fill" title="Risco Utilizado"></div>
+                                                </div>
+                                                <div class="progress-bar-info">
+                                                    <span>Risco Usado: <span class="risk-used-secondary">0%</span> <span
+                                                            id="risk-used-value" class="hidden">0%</span></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Bloco de mÃ©tricas no formato do preview -->
+                                    <div class="preview-metrics">
+                                        <h3 class="section-title">Performance</h3>
+                                        <ul class="metric-list" role="list">
+                                            <li class="metric-row"><span class="metric-label">Meta</span><span
+                                                    class="metric-value" id="meta-target-amount-panel">R$
+                                                    1.000,00</span></li>
+                                            <li class="metric-row"><span class="metric-label">Atingido</span><span
+                                                    class="metric-value" id="meta-achieved-amount-panel">R$ 0,00</span>
+                                            </li>
+                                            <li class="metric-row"><span class="metric-label">Progresso da
+                                                    Meta</span><span class="metric-value"
+                                                    id="meta-progress-value-panel">0%</span></li>
+                                        </ul>
+
+                                        <h3 class="section-title mt-15">Risco</h3>
+                                        <ul class="metric-list" role="list">
+                                            <li class="metric-row"><span class="metric-label">Limite (R$)</span><span
+                                                    class="metric-value" id="loss-limit-amount-panel">R$ 0,00</span>
+                                            </li>
+                                            <li class="metric-row"><span class="metric-label">P/L SessÃ£o
+                                                    (R$)</span><span class="metric-value"
+                                                    id="loss-session-result-panel">R$ 0,00</span></li>
+                                            <li class="metric-row"><span class="metric-label">Risco Usado</span><span
+                                                    class="metric-value" id="risk-used-value-panel">0%</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Indicadores de Status Melhorados -->
+                            <div class="progress-status-grid">
+                                <div class="progress-status-card" id="win-status-indicator">
+                                    <div class="status-icon">
+                                        <span class="status-emoji">ðŸŽ¯</span>
+                                    </div>
+                                    <div class="status-content">
+                                        <span class="status-text">Vamos comeÃ§ar!</span>
+                                        <small class="status-subtext">Win Rate</small>
+                                    </div>
+                                </div>
+                                <div class="progress-status-card" id="loss-status-indicator">
+                                    <div class="status-icon">
+                                        <span class="status-emoji">âœ…</span>
+                                    </div>
+                                    <div class="status-content">
+                                        <span class="status-text">Controle total</span>
+                                        <small class="status-subtext">Loss Rate</small>
+                                    </div>
+                                </div>
+                                <!-- Badge opcional para lock suave (visÃ­vel apenas quando sinalizado) -->
+                                <span id="progress-soft-lock-badge" class="badge muted hidden"
+                                    aria-live="polite"></span>
+                                <!-- Linhas de status financeiras (compatÃ­veis com preview) -->
+                                <span id="status-target-amount" class="hidden">R$ 0,00</span>
+                                <span id="status-achieved" class="hidden">R$ 0,00</span>
+                                <span id="status-exceed" class="hidden">R$ 0,00</span>
+                                <span id="status-margin" class="hidden">R$ 0,00</span>
+                                <span id="status-risk-used" class="hidden">0%</span>
+                            </div>
+                        </div>
+
+                        <div id="mental-note-panel" class="panel insight-panel hidden">
+                            <div class="panel-header mb-05">
+                                <h3 id="mental-note-title">DiagnÃ³stico do Dia</h3>
+                            </div>
+                            <p id="mental-note-text"></p>
+                        </div>
+                        <div id="session-controls" class="action-buttons">
+                            <button id="undo-btn" title="Desfaz a Ãºltima operaÃ§Ã£o registrada">
+                                Desfazer
+                            </button>
+                            <button id="finish-session-btn">Finalizar SessÃ£o</button>
+                            <button id="new-session-btn" class="hidden">Nova SessÃ£o</button>
+                        </div>
+                    </div>
+                </aside>
+
+            </main>
+        </div>
+
+        <div id="dashboard-content" class="tab-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>Filtros de Performance</h3>
+                </div>
+                <div class="filter-controls">
+                    <div class="filter-group">
+                        <label>PerÃ­odo de AnÃ¡lise</label>
+                        <div id="dashboard-period-filters" class="filter-buttons">
+                            <button data-period="7">Ãšltimos 7 Dias</button>
+                            <button data-period="30">Ãšltimos 30 Dias</button>
+                            <button data-period="month">Este MÃªs</button>
+                            <button data-period="all" class="active">Todo o PerÃ­odo</button>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label>Modo de SessÃ£o</label>
+                        <div id="dashboard-mode-filters" class="filter-buttons">
+                            <button data-mode="all" class="active">Todas</button>
+                            <button data-mode="oficial">Oficial</button>
+                            <button data-mode="simulacao">SimulaÃ§Ã£o</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <main>
+                <section id="dashboard-main-grid">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 id="dashboard-stats-title">EstatÃ­sticas (Todo o PerÃ­odo)</h3>
+                            <div id="dashboard-summary"></div>
+                        </div>
+                        <div id="dashboard-stats-grid" class="stats-grid"></div>
+                        <div class="action-buttons mt-15 grid-cols-2">
+                            <button id="open-lab-btn">LaboratÃ³rio de Risco</button>
+                            <button id="generate-pdf-btn">Gerar RelatÃ³rio PDF</button>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>DiagnÃ³stico por Tag (PerÃ­odo)</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table id="dashboard-tag-diagnostics-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tag</th>
+                                        <th>NÂº Ops</th>
+                                        <th>Assertividade</th>
+                                        <th>Resultado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboard-tag-diagnostics-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <aside id="dashboard-charts-area" class="flex flex-col gap-15">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>Assertividade (PerÃ­odo)</h3>
+                        </div>
+                        <div class="pos-rel h-220 mx-auto">
+                            <canvas id="dashboard-assertividade-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>Curva de PatrimÃ³nio (PerÃ­odo)</h3>
+                        </div>
+                        <div class="pos-rel h-220 mx-auto">
+                            <canvas id="dashboard-patrimonio-chart"></canvas>
+                        </div>
+                    </div>
+                </aside>
+            </main>
+        </div>
+
+        <div id="diario-content" class="tab-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>HistÃ³rico de SessÃµes</h2>
+                    <div id="diario-filter-buttons" class="filter-buttons">
+                        <button class="active" data-filter="todas">Todas</button>
+                        <button data-filter="oficial">Oficial</button>
+                        <button data-filter="simulacao">SimulaÃ§Ã£o</button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table id="tabela-historico-sessoes">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Modo</th>
+                                <th>Resultado</th>
+                                <th>NÂº Ops</th>
+                                <th>Assertividade</th>
+                                <th>AÃ§Ãµes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-historico-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="analise-content" class="tab-content">
+            <div class="panel">
+                <p class="text-muted text-center italic">
+                    A anÃ¡lise abaixo utiliza os filtros de <strong>PerÃ­odo</strong> e
+                    <strong>Modo de SessÃ£o</strong> definidos na aba <strong>Dashboard</strong>.
+                </p>
+            </div>
+            <div class="analysis-section panel" id="analise-desempenho">
+                <div class="panel-header">
+                    <h2>AnÃ¡lise de Desempenho Multi-dimensional</h2>
+                </div>
+                <div class="input-group max-w-350 mb-20">
+                    <label for="analise-dimension-select">Analisar Performance Por:</label>
+                    <select id="analise-dimension-select">
+                        <option value="dayOfWeek">Dia da Semana</option>
+                        <option value="hourOfDay">Hora do Dia</option>
+                        <option value="tag">Tag de OperaÃ§Ã£o</option>
+                        <option value="payout">Faixa de Payout</option>
+                    </select>
+                </div>
+                <div class="overflow-x-auto">
+                    <table id="analise-results-table">
+                        <thead id="analise-results-head"></thead>
+                        <tbody id="analise-results-body"></tbody>
+                    </table>
+                </div>
+                <div class="insight-panel hidden mt-15" id="analise-insight-panel">
+                    <h3 id="analise-insight-title">DiagnÃ³stico Quantitativo</h3>
+                    <p id="analise-insight-text" class="italic text-muted"></p>
+                </div>
+            </div>
+            <div class="analysis-section panel" id="goal-optimizer-panel">
+                <div class="panel-header">
+                    <h2>Otimizador de Metas e Risco</h2>
+                </div>
+                <p class="text-muted mb-15">
+                    Testo diferentes metas e Stop Loss com base no seu histÃ³rico de
+                    operaÃ§Ãµes (usando os filtros do Dashboard) para encontrar a configuraÃ§Ã£o
+                    ideal de Risco/Retorno. <br /><strong class="text-info">Ã‰ recomendado um histÃ³rico de pelo menos 20
+                        operaÃ§Ãµes para uma
+                        simulaÃ§Ã£o mais confiÃ¡vel.</strong>
+                </p>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label for="optimizer-stop-win">Simular Meta (%)</label>
+                        <input type="number" id="optimizer-stop-win" value="10" min="0" max="100" step="0.1" />
+                    </div>
+                    <div class="input-group">
+                        <label for="optimizer-stop-loss">Simular Stop Loss (%)</label>
+                        <input type="number" id="optimizer-stop-loss" value="15" min="0" max="100" step="0.1" />
+                    </div>
+                </div>
+                <div class="modal-actions mb-15 grid-cols-1">
+                    <button id="run-goal-simulation-btn" class="modal-action-btn bg-accent">
+                        Simular CenÃ¡rio
+                    </button>
+                </div>
+                <div id="goal-simulation-results" class="hidden">
+                    <hr />
+                    <div class="stats-grid grid-cols-2 gap-15">
+                        <div class="stat-card">
+                            <h4>Resultado Simulado</h4>
+                            <p id="goal-sim-result"></p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Risco/Retorno</h4>
+                            <p id="goal-sim-rr"></p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>SessÃµes de Win</h4>
+                            <p id="goal-sim-wins" class="positive"></p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>SessÃµes de Loss</h4>
+                            <p id="goal-sim-losses" class="negative"></p>
+                        </div>
+                    </div>
+                    <p id="goal-simulation-insight"></p>
+                </div>
+            </div>
+            <div class="analysis-section panel" id="capital-curve-panel">
+                <div class="panel-header">
+                    <h2>DiagnÃ³stico da Curva de Capital</h2>
+                    <button id="run-capital-curve-analysis-btn" class="modal-action-btn bg-info w-auto p-btn">
+                        Analisar Curva
+                    </button>
+                </div>
+                <p class="text-muted mb-15">
+                    Esta ferramenta analisa a sequÃªncia das suas operaÃ§Ãµes para identificar os
+                    seus maiores perÃ­odos de perda (Drawdown) e de ganho (Pico de Performance),
+                    ajudando-o a entender a volatilidade da sua estratÃ©gia.
+                </p>
+                <div id="capital-curve-results" class="hidden">
+                    <hr />
+                    <div class="stats-grid grid-cols-2 gap-15">
+                        <div class="stat-card">
+                            <h4>ðŸ“‰ Maior Drawdown</h4>
+                            <p id="curve-max-drawdown" class="negative"></p>
+                            <span id="curve-drawdown-duration" class="text-08 text-muted"></span>
+                        </div>
+                        <div class="stat-card">
+                            <h4>ðŸ“ˆ Maior Pico</h4>
+                            <p id="curve-max-peak" class="positive"></p>
+                            <span id="curve-peak-duration" class="text-08 text-muted"></span>
+                        </div>
+                    </div>
+                    <p id="capital-curve-insight" class="insight-panel mt-15 p-10"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="session-mode-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Iniciar Nova SessÃ£o</h2>
+            <p>
+                Selecione o modo para a sua prÃ³xima sessÃ£o de trading. Esta escolha serÃ¡
+                registada no seu diÃ¡rio.
+            </p>
+            <div class="options">
+                <button class="checklist-option" id="start-official-session-btn">
+                    <span class="text-15 lh-1">ðŸ“ˆ</span>
+                    <span class="block mt-05">SessÃ£o Oficial</span>
+                </button>
+                <button class="checklist-option" id="start-simulation-session-btn">
+                    <span class="text-15 lh-1">ðŸ§ª</span>
+                    <span class="block mt-05">SessÃ£o de SimulaÃ§Ã£o</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmation-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 id="modal-title"></h2>
+            <p id="modal-message"></p>
+            <div class="modal-actions">
+                <button id="modal-cancel-btn" class="modal-action-btn">Cancelar</button>
+                <button id="modal-confirm-btn" class="modal-action-btn">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tags-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="tags-modal-title">Classifique sua operaÃ§Ã£o:</h3>
+            <div id="tags-container" class="tags-container"></div>
+            <div class="input-group">
+                <label for="op-note" class="mt-10">Notas (Opcional):</label>
+                <textarea id="op-note" placeholder="Ex: Entrei atrasado, notÃ­cia impactou..."></textarea>
+            </div>
+            <div class="modal-actions mt-10">
+                <button id="skip-tag-btn" class="modal-action-btn bg-info">
+                    Registar Sem Tag
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>ConfiguraÃ§Ãµes</h2>
+            <nav class="settings-tabs">
+                <button class="settings-tab-button tab-button active" data-tab="settings-gerenciamento">
+                    ðŸ“Š Gerenciamento
+                </button>
+                <button class="settings-tab-button tab-button" data-tab="settings-perfil">
+                    ðŸ‘¤ Perfil
+                </button>
+                <button class="settings-tab-button tab-button" data-tab="settings-aparencia">
+                    ðŸŽ¨ AparÃªncia
+                </button>
+                <button class="settings-tab-button tab-button" data-tab="settings-preferencias">
+                    âš™ï¸ PreferÃªncias
+                </button>
+            </nav>
+            <div id="settings-gerenciamento-content" class="settings-tab-content active">
+                <h3>Gerenciamento</h3>
+                <div class="flex-row justify-between mb-10">
+                    <span class="tooltip-container">
+                        <label for="modal-modo-guiado-toggle">Modo Guiado</label>
+                        <i class="tooltip-icon">i<span class="tooltip-text">Trava as operaÃ§Ãµes, permitindo registrar
+                                resultados apenas na
+                                etapa atual do plano.</span></i>
+                    </span>
+                    <label class="switch"><input type="checkbox" id="modal-modo-guiado-toggle" checked /><span
+                            class="slider"></span></label>
+                </div>
+                <div class="flex-row justify-between mb-10">
+                    <span class="tooltip-container">
+                        <label for="modal-incorporar-lucro-toggle">Incorporar Lucros</label>
+                        <i class="tooltip-icon">i<span class="tooltip-text">Soma automaticamente o lucro de ciclos
+                                vencedores ao capital,
+                                recalculando os prÃ³ximos aportes (juros compostos).</span></i>
+                    </span>
+                    <label class="switch"><input type="checkbox" id="modal-incorporar-lucro-toggle" /><span
+                            class="slider"></span></label>
+                </div>
+                <div class="flex-row justify-between mb-10">
+                    <span class="tooltip-container">
+                        <label for="auto-lock-toggle">Bloqueio AutomÃ¡tico</label>
+                        <i class="tooltip-icon">i<span class="tooltip-text">Bloqueia o app por um tempo apÃ³s atingir a
+                                meta de ganho ou
+                                perda.</span></i>
+                    </span>
+                    <label class="switch"><input type="checkbox" id="auto-lock-toggle" /><span
+                            class="slider"></span></label>
+                </div>
+                <div id="lock-duration-container" class="input-group hidden mt-10">
+                    <label for="lock-duration-select">DuraÃ§Ã£o do Bloqueio</label>
+                    <select id="lock-duration-select">
+                        <option value="8">8 Horas</option>
+                        <option value="12">12 Horas</option>
+                        <option value="16">16 Horas</option>
+                        <option value="20">20 Horas</option>
+                    </select>
+                </div>
+                <hr class="my-15 border-muted" />
+                <div id="divisor-recuperacao-group">
+                    <h3>EstratÃ©gia de RecuperaÃ§Ã£o</h3>
+                    <div class="input-group mt-10">
+                        <div class="tooltip-container mb-05">
+                            <label for="divisor-recuperacao-slider">DivisÃ£o de RecuperaÃ§Ã£o (Aporte 1 / Aporte 2)</label>
+                            <i class="tooltip-icon">?<span class="tooltip-text">Defina a agressividade da sua
+                                    recuperaÃ§Ã£o. Isto ajusta a
+                                    percentagem do prejuÃ­zo que cada um dos dois aportes de
+                                    recuperaÃ§Ã£o tentarÃ¡ cobrir.</span></i>
+                        </div>
+                        <div class="slider-control-group">
+                            <button class="slider-btn" id="recovery-slider-minus">-</button>
+                            <input type="range" min="10" max="90" value="35" id="divisor-recuperacao-slider"
+                                aria-label="Divisor de RecuperaÃ§Ã£o" class="w-full" step="1" />
+                            <button class="slider-btn" id="recovery-slider-plus">+</button>
+                        </div>
+                        <div id="divisor-recuperacao-valor" class="slider-value-display">
+                            <span>35%</span> / <span>65%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="settings-perfil-content" class="settings-tab-content">
+                <h3>Perfil do Trader</h3>
+                <div class="input-group">
+                    <label for="trader-name-input">Seu Nome</label><input type="text" id="trader-name-input"
+                        placeholder="Digite seu nome ou apelido" />
+                </div>
+            </div>
+            <div id="settings-aparencia-content" class="settings-tab-content">
+                <h3>Temas</h3>
+                <div class="theme-selector" id="modal-theme-selector">
+                    <div class="theme-card" data-theme="moderno">
+                        <div class="theme-preview">
+                            <div class="theme-preview-col"></div>
+                            <div class="theme-preview-col"></div>
+                            <div class="theme-preview-col"></div>
+                        </div>
+                        <p>Moderno</p>
+                    </div>
+                    <div class="theme-card" data-theme="claro">
+                        <div class="theme-preview">
+                            <div class="theme-preview-col"></div>
+                            <div class="theme-preview-col"></div>
+                            <div class="theme-preview-col"></div>
+                        </div>
+                        <p>Claro</p>
+                    </div>
+                    <div class="theme-card" data-theme="matrix">
+                        <div class="theme-preview">
+                            <div class="theme-preview-col"></div>
+                            <div class="theme-preview-col"></div>
+                            <div class="theme-preview-col"></div>
+                        </div>
+                        <p>Matrix</p>
+                    </div>
+                    <div class="theme-card" data-theme="daltonismo">
+                        <div class="theme-preview">
+                            <div class="theme-preview-col"></div>
+                            <div class="theme-preview-col"></div>
+                            <div class="theme-preview-col"></div>
+                        </div>
+                        <p>Contraste</p>
+                    </div>
+                </div>
+            </div>
+            <div id="settings-preferencias-content" class="settings-tab-content">
+                <h3>PreferÃªncias Gerais</h3>
+                <div class="flex-row justify-between mb-10">
+                    <label for="modal-notifications-toggle">NotificaÃ§Ãµes de Insight</label><label class="switch"><input
+                            type="checkbox" id="modal-notifications-toggle" checked /><span
+                            class="slider"></span></label>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="close-settings-btn" class="modal-action-btn bg-primary">
+                    Fechar e Aplicar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="replay-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 id="replay-title">Replay da SessÃ£o</h2>
+            <div id="replay-dashboard" class="grid-2-1 gap-15 mt-15">
+                <div id="replay-left-col" class="flex flex-col gap-15">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>EstatÃ­sticas da SessÃ£o</h3>
+                        </div>
+                        <div id="replay-stats-grid" class="stats-grid"></div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>HistÃ³rico Visual da SessÃ£o</h3>
+                        </div>
+                        <div id="replay-timeline-container" class="timeline-container"></div>
+                    </div>
+                </div>
+                <div id="replay-right-col" class="flex flex-col gap-15">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>Assertividade</h3>
+                        </div>
+                        <div class="pos-rel h-200 mx-auto">
+                            <canvas id="replayAssertividadeChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>Curva de PatrimÃ³nio</h3>
+                        </div>
+                        <div class="pos-rel h-200 mx-auto">
+                            <canvas id="replayPatrimonioChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="close-replay-btn" class="modal-action-btn bg-primary">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="insight-popup">
+        <p id="insight-popup-text"></p>
+    </div>
+
+    <div id="lockdown-overlay" class="hidden">
+        <h2>Metas Atingidas!</h2>
+        <p>
+            A disciplina Ã© a sua maior aliada. A aplicaÃ§Ã£o estÃ¡ bloqueada para proteger o seu
+            capital e a sua mente. Volte mais tarde.
+        </p>
+        <div id="countdown-timer">00:00:00</div>
+    </div>
+
+    <div id="risk-lab-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>ðŸ”¬ LaboratÃ³rio de Risco (Monte Carlo)</h2>
+            <p>
+                Simule milhares de dias de trading com a sua gestÃ£o e estatÃ­sticas atuais para
+                analisar a robustez da sua estratÃ©gia a longo prazo.
+            </p>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Taxa de Acerto (W) da SessÃ£o</label>
+                    <input type="text" id="sim-winrate" disabled
+                        title="Valor calculado automaticamente com base nas operaÃ§Ãµes do perÃ­odo" />
+                </div>
+                <div class="input-group">
+                    <label>Payout MÃ©dio (P) da SessÃ£o</label>
+                    <input type="text" id="sim-payout" disabled
+                        title="Valor calculado automaticamente com base nas operaÃ§Ãµes do perÃ­odo" />
+                </div>
+            </div>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label for="sim-num-simulations">NÂº de SimulaÃ§Ãµes</label>
+                    <select id="sim-num-simulations">
+                        <option value="1000">1.000</option>
+                        <option value="5000">5.000</option>
+                        <option value="10000">10.000</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="sim-max-ops">MÃ¡x. OperaÃ§Ãµes / Dia</label>
+                    <input type="number" id="sim-max-ops" value="50" min="1" max="1000" />
+                </div>
+            </div>
+            <div class="modal-actions mb-15 grid-cols-1">
+                <button id="run-simulation-btn" class="modal-action-btn bg-accent">
+                    Executar SimulaÃ§Ã£o
+                </button>
+            </div>
+            <div id="simulation-progress-container" class="hidden">
+                <label>A simular...</label>
+                <div class="progress-bar-container h-12 mt-05">
+                    <div id="simulation-progress-bar" class="progress-bar-fill bg-info"></div>
+                </div>
+            </div>
+            <div id="simulation-results" class="hidden">
+                <hr />
+                <div class="stats-grid grid-cols-2 gap-15">
+                    <div class="stat-card">
+                        <h4>Prob. Atingir Stop Win</h4>
+                        <p id="sim-prob-win" class="positive"></p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Prob. Atingir Stop Loss</h4>
+                        <p id="sim-prob-loss" class="negative"></p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Resultado MÃ©dio</h4>
+                        <p id="sim-avg-result"></p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Drawdown MÃ¡ximo</h4>
+                        <p id="sim-max-drawdown" class="negative"></p>
+                    </div>
+                </div>
+                <p id="simulation-insight"></p>
+            </div>
+            <div class="modal-actions">
+                <button id="close-lab-btn" class="modal-action-btn bg-secondary">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SeÃ§Ã£o de Testes AutomÃ¡ticos -->
+    <div id="testes-content" class="tab-content">
+        <div class="panel">
+            <div class="panel-header">
+                <h2>ðŸ§ª Testes AutomÃ¡ticos</h2>
+                <p class="text-muted mt-05">
+                    Sistema de testes para verificar a integridade e funcionamento de todos os
+                    mÃ³dulos
+                </p>
+            </div>
+            <div class="test-controls">
+                <button id="run-all-tests" class="btn btn-primary">
+                    ðŸš€ Executar Todos os Testes
+                </button>
+                <button id="run-logic-tests" class="btn btn-secondary">
+                    ðŸ§® Testes de LÃ³gica
+                </button>
+                <button id="run-ui-tests" class="btn btn-secondary">
+                    ðŸŽ¨ Testes de Interface
+                </button>
+                <button id="run-db-tests" class="btn btn-secondary">ðŸ’¾ Testes de Banco</button>
+                <button id="run-simulation-tests" class="btn btn-secondary">
+                    ðŸŽ² Testes de SimulaÃ§Ã£o
+                </button>
+            </div>
+            <div id="test-results" class="test-results"></div>
+        </div>
+    </div>
+
+
+
+    <!-- ðŸ—‘ï¸ SISTEMA DE LIXEIRA PROFISSIONAL - ETAPAS 1, 2, 3, 4 & 5 -->
+    <script type="module" src="src/trash/TrashManager.js"></script>
+    <script type="module" src="src/trash/TrashFAB.js"></script>
+    <script type="module" src="src/trash/TrashModal.js"></script>
+    <script type="module" src="src/trash/TagsTrashHandler.js"></script>
+    <script type="module" src="src/trash/OperationsTrashHandler.js"></script>
+    <script type="module" src="src/trash/SessionsTrashHandler.js"></script>
+
+    <script type="module" src="tests/test-dom-recursion.js"></script>
+    <script type="module" src="utils/GoalsUtils.js"></script>
+
+    <!-- âœ… APP LIMPO PARA TRADER - SEM MÃ“DULOS ADMINISTRATIVOS -->
+
+    <!-- ðŸŽ¯ Funcionalidades Ãšteis para o Trader -->
+    <script type="module" src="src/trader/TraderAssistant.js"></script>
+
+    <script type="module" src="progress-card-calculator.js"></script>
+    <script type="module" src="progress-card-updater.js"></script>
+    <script type="module" src="progress-card-monetary.js"></script>
+    <script type="module" src="progress-card-cache.js"></script>
+    <script type="module" src="src/validation/validation-integration.js"></script>
+    <script src="error-handler.js"></script>
+    <script src="enhanced-donut-chart-system.js"></script>
+
+    <script type="module" src="main.js"></script>
+    <script type="module" src="sidebar.js"></script>
+
+
+
+    <!-- Arquivos test-simple.js e test-all-components.js movidos para testes-inuteis/ -->
+    <!-- Novos testes especÃ­ficos de sincronizaÃ§Ã£o -->
+    <script src="tests/test-capital-sync.js"></script>
+    <script src="tests/test-stopwin-sync.js"></script>
+    <script src="tests/test-stopwin-display.js"></script>
+    <script src="tests/test-stoploss-sync.js"></script>
+    <script src="tests/test-stoploss-display.js"></script>
+    <script src="tests/test-sidebar-new-session-btn.js"></script>
+
+    <!-- ðŸ›¡ï¸ SISTEMA DE MONITORAMENTO INTELIGENTE -->
+    <script type="module" src="src/monitoring/SmartMonitor.js"></script>
+    <script type="module" src="src/monitoring/ErrorBoundary.js"></script>
+    <script type="module" src="src/testing/AutomatedTestSuite.js"></script>
+
+    <!-- Script inline para aguardar carregamento e disponibilizar testes -->
+    <script>
+        // ðŸ—‘ï¸ InicializaÃ§Ã£o do Sistema de Lixeira
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                try {
+                    console.log('ðŸ—‘ï¸ Inicializando Sistema de Lixeira...');
+
+                    // Inicializa TrashManager (jÃ¡ inicializado automaticamente)
+                    if (window.trashManager && window.trashManager.isInitialized) {
+                        console.log('âœ… TrashManager inicializado');
+                    }
+
+                    // Inicializa TrashFAB
+                    if (window.getTrashFAB) {
+                        window.trashFAB = window.getTrashFAB();
+                        console.log('âœ… TrashFAB inicializado');
+                    }
+
+                    // Inicializa TrashModal
+                    if (window.getTrashModal) {
+                        window.trashModal = window.getTrashModal();
+                        console.log('âœ… TrashModal inicializado');
+                    }
+
+                    // Inicializa TagsTrashHandler
+                    if (window.getTagsTrashHandler) {
+                        window.tagsTrashHandler = window.getTagsTrashHandler();
+                        console.log('âœ… TagsTrashHandler inicializado');
+                    }
+
+                    // Inicializa OperationsTrashHandler
+                    if (window.getOperationsTrashHandler) {
+                        window.operationsTrashHandler = window.getOperationsTrashHandler();
+                        console.log('âœ… OperationsTrashHandler inicializado');
+                    }
+
+                    // Inicializa SessionsTrashHandler
+                    if (window.getSessionsTrashHandler) {
+                        window.sessionsTrashHandler = window.getSessionsTrashHandler();
+                        console.log('âœ… SessionsTrashHandler inicializado');
+                    }
+
+                    // FunÃ§Ã£o de teste global para a lixeira
+                    window.testTrashSystem = function () {
+                        console.log('ðŸ§ª Testando Sistema de Lixeira Completo...');
+
+                        const managerTest = window.trashManager ? window.trashManager.test() : { allTestsPass: false };
+                        const fabTest = window.trashFAB ? window.trashFAB.test() : { allTestsPass: false };
+                        const modalTest = window.trashModal ? window.trashModal.test() : { allTestsPass: false };
+                        const tagsTest = window.tagsTrashHandler ? window.tagsTrashHandler.test() : { allTestsPass: false };
+                        const operationsTest = window.operationsTrashHandler ? window.operationsTrashHandler.test() : { allTestsPass: false };
+                        const sessionsTest = window.sessionsTrashHandler ? window.sessionsTrashHandler.test() : { allTestsPass: false };
+
+                        const systemTest = {
+                            manager: managerTest.allTestsPass,
+                            fab: fabTest.allTestsPass,
+                            modal: modalTest.allTestsPass,
+                            tags: tagsTest.allTestsPass,
+                            operations: operationsTest.allTestsPass,
+                            sessions: sessionsTest.allTestsPass,
+                            integration: !!(window.trashManager && window.trashFAB && window.trashModal && window.tagsTrashHandler && window.operationsTrashHandler && window.sessionsTrashHandler)
+                        };
+
+                        const allSystemTestsPass = Object.values(systemTest).every(Boolean);
+
+                        console.log(allSystemTestsPass ? 'âœ… Sistema de Lixeira funcionando perfeitamente!' : 'âŒ Problemas detectados no sistema:', systemTest);
+
+                        return {
+                            system: systemTest,
+                            manager: managerTest,
+                            fab: fabTest,
+                            modal: modalTest,
+                            tags: tagsTest,
+                            operations: operationsTest,
+                            sessions: sessionsTest,
+                            allTestsPass: allSystemTestsPass
+                        };
+                    };
+
+                    // FunÃ§Ã£o para testar abertura do modal
+                    window.openTrashModal = function () {
+                        if (window.trashModal) {
+                            window.trashModal.open();
+                            console.log('ðŸ—‘ï¸ Modal da lixeira aberto via comando');
+                        } else {
+                            console.warn('âš ï¸ Modal da lixeira nÃ£o disponÃ­vel');
+                        }
+                    };
+
+                    // FunÃ§Ã£o para testar exclusÃ£o de tags
+                    window.testTagDeletion = function () {
+                        console.log('ðŸ§ª Testando exclusÃ£o de tags...');
+
+                        // Cria tag de teste
+                        const testTag = {
+                            id: 'test_tag_' + Date.now(),
+                            text: 'Tag de Teste',
+                            createdAt: new Date().toISOString()
+                        };
+
+                        // Move para lixeira
+                        if (window.trashManager) {
+                            const trashId = window.trashManager.moveToTrash(
+                                testTag,
+                                window.trashManager.categories.TAG,
+                                window.trashManager.complexityLevels.SIMPLE
+                            );
+
+                            if (trashId) {
+                                console.log('âœ… Tag de teste movida para lixeira:', trashId);
+                                console.log('ðŸ’¡ Abra o modal da lixeira para ver o item');
+                                return trashId;
+                            } else {
+                                console.error('âŒ Falha ao mover tag para lixeira');
+                            }
+                        } else {
+                            console.warn('âš ï¸ TrashManager nÃ£o disponÃ­vel');
+                        }
+                    };
+
+                    // FunÃ§Ã£o para testar restauraÃ§Ã£o
+                    window.testRestore = function (trashId) {
+                        if (!trashId) {
+                            console.warn('âš ï¸ ForneÃ§a o ID do item na lixeira');
+                            console.log('ðŸ’¡ Use: testRestore("trash_id_aqui")');
+                            return;
+                        }
+
+                        console.log('ðŸ§ª Testando restauraÃ§Ã£o:', trashId);
+
+                        if (window.trashManager) {
+                            const restored = window.trashManager.restoreFromTrash(trashId);
+
+                            if (restored && restored.success) {
+                                console.log('âœ… Item restaurado com sucesso:', restored);
+                            } else {
+                                console.error('âŒ Falha ao restaurar item');
+                            }
+                        } else {
+                            console.warn('âš ï¸ TrashManager nÃ£o disponÃ­vel');
+                        }
+                    };
+
+                    // FunÃ§Ã£o para testar exclusÃ£o de operaÃ§Ãµes
+                    window.testOperationDeletion = function () {
+                        console.log('ðŸ§ª Testando exclusÃ£o de operaÃ§Ãµes...');
+
+                        // Verifica se hÃ¡ operaÃ§Ãµes no histÃ³rico
+                        if (!window.state || !window.state.historicoCombinado || window.state.historicoCombinado.length === 0) {
+                            console.warn('âš ï¸ Nenhuma operaÃ§Ã£o encontrada no histÃ³rico');
+                            console.log('ðŸ’¡ Execute algumas operaÃ§Ãµes primeiro para testar a exclusÃ£o');
+                            return;
+                        }
+
+                        // Cria operaÃ§Ã£o de teste
+                        const testOperation = {
+                            id: 'test_operation_' + Date.now(),
+                            isWin: true,
+                            valor: 50.00,
+                            valorEntrada: 100.00,
+                            valorRetorno: 150.00,
+                            timestamp: new Date().toISOString(),
+                            tag: 'Teste de ExclusÃ£o',
+                            etapa: 1
+                        };
+
+                        // Adiciona ao histÃ³rico
+                        window.state.historicoCombinado.push(testOperation);
+
+                        // Atualiza UI
+                        if (window.ui && window.ui.renderizarTimelineCompleta) {
+                            window.ui.renderizarTimelineCompleta();
+                        }
+
+                        console.log('âœ… OperaÃ§Ã£o de teste adicionada:', testOperation.id);
+                        console.log('ðŸ’¡ Passe o mouse sobre a operaÃ§Ã£o na timeline para ver o botÃ£o de exclusÃ£o ðŸ—‘ï¸');
+
+                        return testOperation.id;
+                    };
+
+                    // FunÃ§Ã£o para simular operaÃ§Ã£o e testar exclusÃ£o
+                    window.testFullOperationCycle = function () {
+                        console.log('ðŸ§ª Testando ciclo completo de operaÃ§Ã£o...');
+
+                        // Cria operaÃ§Ã£o de teste
+                        const operationId = window.testOperationDeletion();
+
+                        if (operationId) {
+                            console.log('âœ… OperaÃ§Ã£o criada:', operationId);
+                            console.log('ðŸ’¡ Agora vocÃª pode:');
+                            console.log('   1. Passar o mouse sobre a operaÃ§Ã£o na timeline');
+                            console.log('   2. Clicar no botÃ£o ðŸ—‘ï¸ para excluir');
+                            console.log('   3. Abrir o modal da lixeira para ver o item');
+                            console.log('   4. Restaurar a operaÃ§Ã£o se desejar');
+                        }
+                    };
+
+                    // FunÃ§Ã£o para testar exclusÃ£o de sessÃµes
+                    window.testSessionDeletion = function () {
+                        console.log('ðŸ§ª Testando exclusÃ£o de sessÃµes...');
+
+                        // Verifica se hÃ¡ sessÃ£o ativa
+                        if (!window.state || !window.state.isSessionActive) {
+                            console.warn('âš ï¸ Nenhuma sessÃ£o ativa encontrada');
+                            console.log('ðŸ’¡ Inicie uma sessÃ£o primeiro para testar a exclusÃ£o');
+                            return;
+                        }
+
+                        // Verifica se hÃ¡ operaÃ§Ãµes
+                        if (!window.state.historicoCombinado || window.state.historicoCombinado.length === 0) {
+                            console.warn('âš ï¸ SessÃ£o ativa mas sem operaÃ§Ãµes');
+                            console.log('ðŸ’¡ Execute algumas operaÃ§Ãµes primeiro');
+                            return;
+                        }
+
+                        console.log('âœ… SessÃ£o ativa encontrada com', window.state.historicoCombinado.length, 'operaÃ§Ãµes');
+                        console.log('ðŸ’¡ Procure pelo botÃ£o "ðŸ—‘ï¸ Excluir SessÃ£o" nos controles de sessÃ£o');
+                        console.log('ðŸ’¡ O botÃ£o aparece apenas quando hÃ¡ uma sessÃ£o ativa com operaÃ§Ãµes');
+
+                        return {
+                            sessionActive: true,
+                            operationsCount: window.state.historicoCombinado.length,
+                            capitalInicial: window.state.capitalInicioSessao,
+                            capitalAtual: window.state.capitalAtual,
+                            resultado: window.state.capitalAtual - window.state.capitalInicioSessao
+                        };
+                    };
+
+                    // FunÃ§Ã£o para testar limpeza automÃ¡tica
+                    window.testAutoCleanup = function () {
+                        console.log('ðŸ§ª Testando sistema de limpeza automÃ¡tica...');
+
+                        if (!window.trashManager) {
+                            console.warn('âš ï¸ TrashManager nÃ£o disponÃ­vel');
+                            return;
+                        }
+
+                        // ObtÃ©m estatÃ­sticas atuais
+                        const stats = window.trashManager.getCleanupStats();
+                        const config = window.trashManager.getCleanupConfig();
+
+                        console.log('ðŸ“Š EstatÃ­sticas de limpeza:', stats);
+                        console.log('ðŸ”§ ConfiguraÃ§Ãµes atuais:', config);
+
+                        // Executa limpeza manual
+                        const result = window.trashManager.performAutoCleanup();
+
+                        if (result.error) {
+                            console.error('âŒ Erro na limpeza:', result.error);
+                        } else {
+                            console.log('âœ… Limpeza executada:', result);
+                            console.log(`   - ${result.deletedCount} item(s) removido(s)`);
+                            console.log(`   - ${result.expiringSoonCount} item(s) expirando em breve`);
+                            console.log(`   - ${result.totalItemsRemaining} item(s) restantes`);
+                        }
+
+                        return { stats, config, result };
+                    };
+
+                    // FunÃ§Ã£o para configurar limpeza
+                    window.configureCleanup = function (options = {}) {
+                        console.log('ðŸ”§ Configurando sistema de limpeza...');
+
+                        if (!window.trashManager) {
+                            console.warn('âš ï¸ TrashManager nÃ£o disponÃ­vel');
+                            return;
+                        }
+
+                        const defaultOptions = {
+                            enabled: true,
+                            intervalHours: 6,
+                            maxRetentionDays: 30,
+                            notifyExpiring: true,
+                            notifyCleanup: true
+                        };
+
+                        const finalOptions = { ...defaultOptions, ...options };
+
+                        const result = window.trashManager.configureCleanup(finalOptions);
+
+                        if (result) {
+                            console.log('âœ… ConfiguraÃ§Ã£o aplicada:', result);
+                        } else {
+                            console.error('âŒ Falha ao configurar limpeza');
+                        }
+
+                        return result;
+                    };
+
+                    // ðŸ§ª FunÃ§Ã£o de teste especÃ­fica para sessÃµes
+                    window.testSessionTrash = function () {
+                        console.log('ðŸ§ª Testando sistema de lixeira para sessÃµes...');
+
+                        if (!window.sessionsTrashHandler) {
+                            console.warn('âš ï¸ SessionsTrashHandler nÃ£o disponÃ­vel');
+                            return;
+                        }
+
+                        // Verifica se o botÃ£o de exclusÃ£o existe
+                        const deleteBtn = document.querySelector('.delete-session-btn');
+                        console.log('ðŸ” BotÃ£o de exclusÃ£o encontrado:', deleteBtn ? 'SIM' : 'NÃƒO');
+
+                        if (deleteBtn) {
+                            console.log('ðŸ‘ï¸ Visibilidade do botÃ£o:', deleteBtn.style.display);
+                            console.log('ðŸ“Š Estado da sessÃ£o:', {
+                                isSessionActive: window.state?.isSessionActive,
+                                hasOperations: window.state?.historicoCombinado?.length > 0,
+                                operationsCount: window.state?.historicoCombinado?.length || 0
+                            });
+                        }
+
+                        // Verifica controles de sessÃ£o
+                        const sessionControls = document.querySelector('.session-controls, .controls-container, [class*="session"], [class*="control"]');
+                        console.log('ðŸŽ›ï¸ Controles de sessÃ£o encontrados:', sessionControls ? 'SIM' : 'NÃƒO');
+
+                        if (sessionControls) {
+                            console.log('ðŸ“ LocalizaÃ§Ã£o dos controles:', sessionControls.className);
+                            console.log('ðŸ”§ Filhos dos controles:', Array.from(sessionControls.children).map(c => c.className));
+                        }
+
+                        return {
+                            deleteButtonExists: !!deleteBtn,
+                            deleteButtonVisible: deleteBtn ? deleteBtn.style.display !== 'none' : false,
+                            sessionState: window.state?.isSessionActive,
+                            operationsCount: window.state?.historicoCombinado?.length || 0,
+                            sessionControlsFound: !!sessionControls
+                        };
+                    };
+
+                    // ðŸ§ª FunÃ§Ã£o de teste para sistema de restauraÃ§Ã£o
+                    window.testTrashRestore = function () {
+                        console.log('ðŸ§ª Testando sistema de restauraÃ§Ã£o da lixeira...');
+
+                        const results = {
+                            trashManager: !!window.trashManager,
+                            trashModal: !!window.trashModal,
+                            operationsHandler: !!window.operationsTrashHandler,
+                            sessionsHandler: !!window.sessionsTrashHandler,
+                            tagsHandler: !!window.tagsTrashHandler,
+                            trashItems: 0,
+                            canRestore: false,
+                            sessionTests: {}
+                        };
+
+                        if (window.trashManager) {
+                            const items = window.trashManager.getTrashItems();
+                            results.trashItems = items.length;
+                            results.canRestore = items.length > 0;
+
+                            console.log('ðŸ“Š Itens na lixeira:', items.length);
+
+                            if (items.length > 0) {
+                                console.log('ðŸ—‘ï¸ Itens disponÃ­veis para restauraÃ§Ã£o:');
+                                items.forEach((item, index) => {
+                                    console.log(`  ${index + 1}. [${item.category}] ${item.originalId} - ${new Date(item.deletedAt).toLocaleString()}`);
+                                });
+
+                                // Testa especificamente sessÃµes
+                                const sessionItems = items.filter(item => item.category === 'session');
+                                if (sessionItems.length > 0) {
+                                    console.log('ðŸ“Š Testando restauraÃ§Ã£o de sessÃ£o...');
+                                    const sessionItem = sessionItems[0];
+
+                                    try {
+                                        console.log('ðŸ” Dados da sessÃ£o na lixeira:', sessionItem.data);
+
+                                        // Testa mapeamento de dados
+                                        if (window.sessionsTrashHandler) {
+                                            const mappedData = window.sessionsTrashHandler.mapSessionDataToState(sessionItem.data);
+                                            console.log('ðŸ—ºï¸ Dados mapeados:', mappedData);
+                                            results.sessionTests.mapping = true;
+                                        }
+
+                                        results.sessionTests.available = true;
+                                    } catch (error) {
+                                        console.error('âŒ Erro no teste de sessÃ£o:', error);
+                                        results.sessionTests.error = error.message;
+                                    }
+                                }
+
+                                // NÃ£o executa restauraÃ§Ã£o automÃ¡tica para evitar conflitos
+                                console.log('â„¹ï¸ Para testar restauraÃ§Ã£o, use: window.trashModal.restoreItem("ID_DO_ITEM")');
+                            }
+                        }
+
+                        console.log('ðŸ“‹ Resultados do teste:', results);
+                        return results;
+                    };
+
+                    // ðŸ§ª FunÃ§Ã£o especÃ­fica para testar restauraÃ§Ã£o de sessÃ£o
+                    window.testSessionRestore = async function (sessionId) {
+                        console.log('ðŸ§ª Testando restauraÃ§Ã£o especÃ­fica de sessÃ£o...');
+
+                        if (!window.trashManager) {
+                            console.error('âŒ TrashManager nÃ£o disponÃ­vel');
+                            return false;
+                        }
+
+                        const items = window.trashManager.getTrashItems();
+                        const sessionItem = items.find(item =>
+                            item.category === 'session' &&
+                            (item.id === sessionId || item.originalId === sessionId)
+                        );
+
+                        if (!sessionItem) {
+                            console.error('âŒ SessÃ£o nÃ£o encontrada na lixeira');
+                            console.log('ðŸ“Š SessÃµes disponÃ­veis:',
+                                items.filter(item => item.category === 'session')
+                                    .map(item => ({ id: item.id, originalId: item.originalId }))
+                            );
+                            return false;
+                        }
+
+                        try {
+                            console.log('ðŸ” Testando restauraÃ§Ã£o da sessÃ£o:', sessionItem);
+
+                            if (window.trashModal) {
+                                await window.trashModal.restoreItem(sessionItem.id);
+                                return true;
+                            } else {
+                                console.error('âŒ TrashModal nÃ£o disponÃ­vel');
+                                return false;
+                            }
+
+                        } catch (error) {
+                            console.error('âŒ Erro no teste de restauraÃ§Ã£o:', error);
+                            return false;
+                        }
+                    };
+
+                    // ðŸ§ª FunÃ§Ã£o para listar sessÃµes na lixeira
+                    window.listSessionsInTrash = function () {
+                        console.log('ðŸ“‹ Listando sessÃµes na lixeira...');
+
+                        if (!window.trashManager) {
+                            console.error('âŒ TrashManager nÃ£o disponÃ­vel');
+                            return [];
+                        }
+
+                        const items = window.trashManager.getTrashItems();
+                        const sessions = items.filter(item => item.category === 'session');
+
+                        console.log(`ðŸ“Š Encontradas ${sessions.length} sessÃµes na lixeira:`);
+
+                        sessions.forEach((session, index) => {
+                            const data = new Date(session.data?.data || session.deletedAt).toLocaleDateString();
+                            const modo = session.data?.modo || session.data?.sessionMode || 'indefinido';
+                            const ops = session.data?.historicoCombinado?.length || 0;
+
+                            console.log(`  ${index + 1}. ID: ${session.id}`);
+                            console.log(`     Data: ${data}`);
+                            console.log(`     Modo: ${modo}`);
+                            console.log(`     OperaÃ§Ãµes: ${ops}`);
+                            console.log(`     Original ID: ${session.originalId}`);
+                            console.log('     ---');
+                        });
+
+                        return sessions;
+                    };
+
+                    // FunÃ§Ã£o para criar sessÃ£o de teste
+                    window.createTestSession = function () {
+                        console.log('ðŸ§ª Criando sessÃ£o de teste...');
+
+                        // Verifica se jÃ¡ hÃ¡ sessÃ£o ativa
+                        if (window.state && window.state.isSessionActive) {
+                            console.warn('âš ï¸ JÃ¡ existe uma sessÃ£o ativa');
+                            console.log('ðŸ’¡ Finalize a sessÃ£o atual primeiro ou use testSessionDeletion()');
+                            return;
+                        }
+
+                        try {
+                            // Inicia nova sessÃ£o se possÃ­vel
+                            if (window.events && window.events.handleNewSession) {
+                                window.events.handleNewSession({ auto: true });
+                            } else if (window.logic && window.logic.startNewSession) {
+                                window.logic.startNewSession('normal');
+                            } else {
+                                // Fallback manual
+                                if (window.state) {
+                                    window.state.isSessionActive = true;
+                                    window.state.sessionMode = 'normal';
+                                    window.state.capitalInicioSessao = window.state.capitalAtual || 1000;
+                                    window.state.historicoCombinado = [];
+                                    window.state.undoStack = [];
+                                }
+                            }
+
+                            // Adiciona algumas operaÃ§Ãµes de teste
+                            if (window.state) {
+                                const testOperations = [
+                                    { id: 'test_1', isWin: true, valor: 50, timestamp: new Date().toISOString(), tag: 'Teste WIN' },
+                                    { id: 'test_2', isWin: false, valor: -30, timestamp: new Date().toISOString(), tag: 'Teste LOSS' },
+                                    { id: 'test_3', isWin: true, valor: 80, timestamp: new Date().toISOString(), tag: 'Teste WIN 2' }
+                                ];
+
+                                window.state.historicoCombinado = testOperations;
+                                window.state.capitalAtual = window.state.capitalInicioSessao + 100; // Lucro de R$ 100
+                            }
+
+                            // Atualiza interface
+                            if (window.ui) {
+                                if (window.ui.atualizarVisibilidadeBotoesSessao) {
+                                    window.ui.atualizarVisibilidadeBotoesSessao();
+                                }
+                                if (window.ui.renderizarTimelineCompleta) {
+                                    window.ui.renderizarTimelineCompleta();
+                                }
+                            }
+
+                            console.log('âœ… SessÃ£o de teste criada com sucesso!');
+                            console.log('ðŸ’¡ Agora vocÃª pode testar a exclusÃ£o com testSessionDeletion()');
+
+                            return true;
+
+                        } catch (error) {
+                            console.error('âŒ Erro ao criar sessÃ£o de teste:', error);
+                            return false;
+                        }
+                    };
+
+                    console.log('ðŸ—‘ï¸ Sistema de Lixeira carregado com sucesso!');
+                    console.log('ðŸ’¡ Use testTrashSystem() para testar o sistema completo');
+
+                } catch (error) {
+                    console.error('âŒ Erro ao inicializar Sistema de Lixeira:', error);
+                }
+            }, 1000);
+        });
+
+        // Aguarda carregamento completo e disponibiliza testes globalmente
+        setTimeout(() => {
+            console.log('ðŸ§ª Inicializando ambiente de testes...');
+
+            // Verifica se as funÃ§Ãµes de teste estÃ£o disponÃ­veis
+            const testFunctions = [
+                'quickTestAll',
+                'testComponent',
+                'listAvailableTests',
+                'runAllComponentTests',
+                'generateTestCoverageReport',
+                'runQuickTests',
+            ];
+
+            let available = 0;
+            testFunctions.forEach((func) => {
+                if (typeof window[func] === 'function') {
+                    available++;
+                    console.log(`âœ… ${func}: DisponÃ­vel`);
+                } else {
+                    console.log(`âŒ ${func}: NÃ£o encontrada`);
+                }
+            });
+
+            console.log(
+                `ðŸ“Š Total: ${available}/${testFunctions.length} funÃ§Ãµes de teste carregadas`
+            );
+
+            // SEMPRE criar funÃ§Ã£o de emergÃªncia (independente dos outros scripts)
+            window.emergencyTest = function () {
+                console.log('ðŸš¨ TESTE DE EMERGÃŠNCIA - COMPONENTES BÃSICOS');
+                console.log('='.repeat(50));
+
+                const basicTests = [
+                    { name: 'DOM Object', test: () => typeof dom !== 'undefined' },
+                    { name: 'UI Object', test: () => typeof ui !== 'undefined' },
+                    { name: 'Logic Object', test: () => typeof logic !== 'undefined' },
+                    { name: 'Charts Object', test: () => typeof charts !== 'undefined' },
+                    { name: 'Config Object', test: () => typeof config !== 'undefined' },
+                    { name: 'State Object', test: () => typeof state !== 'undefined' },
+                    { name: 'Sidebar Object', test: () => typeof sidebar !== 'undefined' },
+                ];
+
+                let passed = 0;
+                basicTests.forEach(({ name, test }) => {
+                    try {
+                        if (test()) {
+                            console.log(`âœ… ${name}: OK`);
+                            passed++;
+                        } else {
+                            console.log(`âŒ ${name}: FALHOU`);
+                        }
+                    } catch (error) {
+                        console.log(`ðŸ’¥ ${name}: ERRO - ${error.message}`);
+                    }
+                });
+
+                console.log('='.repeat(50));
+                console.log(
+                    `ðŸ“Š RESULTADO: ${passed}/${basicTests.length} componentes bÃ¡sicos OK`
+                );
+                return { passed, total: basicTests.length };
+            };
+
+            // FunÃ§Ã£o para testar componentes individuais
+            window.testBasic = function (componentName) {
+                console.log(`ðŸŽ¯ Testando: ${componentName}`);
+
+                switch (componentName.toLowerCase()) {
+                    case 'dom':
+                        return typeof dom !== 'undefined' && Object.keys(dom).length > 10;
+                    case 'ui':
+                        return (
+                            typeof ui !== 'undefined' && typeof ui.atualizarTudo === 'function'
+                        );
+                    case 'logic':
+                        return (
+                            typeof logic !== 'undefined' &&
+                            typeof logic.calcularEntrada === 'function'
+                        );
+                    case 'charts':
+                        return (
+                            typeof charts !== 'undefined' &&
+                            typeof charts.updateProgressChart === 'function'
+                        );
+                    case 'config':
+                        return (
+                            typeof config !== 'undefined' && config.capitalInicial !== undefined
+                        );
+                    case 'state':
+                        return (
+                            typeof state !== 'undefined' &&
+                            typeof state.isSessionActive !== 'undefined'
+                        );
+                    case 'sidebar':
+                        return typeof sidebar !== 'undefined';
+                    default:
+                        console.log(
+                            'âŒ Componente nÃ£o reconhecido. Use: dom, ui, logic, charts, config, state, sidebar'
+                        );
+                        return false;
+                }
+            };
+
+            // FunÃ§Ã£o para ver objetos globais
+            window.showGlobals = function () {
+                console.log('ðŸŒ OBJETOS GLOBAIS DISPONÃVEIS:');
+                const globals = [
+                    'dom',
+                    'ui',
+                    'logic',
+                    'charts',
+                    'config',
+                    'state',
+                    'sidebar',
+                    'cssResolver',
+                ];
+                globals.forEach((name) => {
+                    const exists = typeof window[name] !== 'undefined';
+                    console.log(
+                        `${exists ? 'âœ…' : 'âŒ'} ${name}:`,
+                        exists ? typeof window[name] : 'nÃ£o encontrado'
+                    );
+                });
+            };
+
+            if (available > 0) {
+                console.log('ðŸš€ TESTES AVANÃ‡ADOS PRONTOS! Use:');
+                if (window.quickTestAll) console.log('  - quickTestAll()');
+                if (window.testComponent) console.log('  - testComponent("dom")');
+                if (window.listAvailableTests) console.log('  - listAvailableTests()');
+                if (window.runAllComponentTests) console.log('  - runAllComponentTests()');
+                console.log('');
+            }
+
+            console.log('ðŸš¨ FUNÃ‡Ã•ES DE EMERGÃŠNCIA SEMPRE DISPONÃVEIS:');
+            console.log('  - emergencyTest()');
+            console.log('  - testBasic("dom")');
+            console.log('  - showGlobals()');
+
+            console.log('='.repeat(60));
+
+            // ðŸ”„ Tenta novamente apÃ³s mais tempo se poucas funÃ§Ãµes carregaram
+            if (available < 4) {
+                console.log('â³ Tentando carregar funÃ§Ãµes adicionais em 2 segundos...');
+                setTimeout(() => {
+                    const delayedFunctions = [
+                        'testUIComponents',
+                        'testLogicFunctions',
+                        'testSidebar',
+                        'testInitialization',
+                    ];
+                    let foundLater = 0;
+
+                    delayedFunctions.forEach((func) => {
+                        if (typeof window[func] === 'function') {
+                            foundLater++;
+                            console.log(`âœ… ${func}: Carregada tardiamente`);
+                        }
+                    });
+
+                    if (foundLater > 0) {
+                        console.log(
+                            `ðŸŽ‰ ${foundLater} funÃ§Ãµes adicionais carregadas! Total agora: ${available + foundLater}`
+                        );
+                        console.log('ðŸš€ Tente novamente: emergencyTest() ou quickTestAll()');
+                    }
+                }, 2000);
+            }
+        }, 3000); // Aguarda 3 segundos para garantir carregamento completo
+    </script>
+
+    <!-- ðŸ›¡ï¸ SISTEMA DE PROTEÃ‡ÃƒO REENGENHARIA - VERSÃƒO SEGURA -->
+    <script type="module">
+        console.log('ðŸ›¡ï¸ Sistema de ProteÃ§Ã£o REENGENHARIA - VersÃ£o Segura v2.0');
+
+        // ================================================================
+        // ðŸš¨ PROTEÃ‡ÃƒO CONTRA RECURSÃƒO INFINITA
+        // ================================================================
+        class SafeProtectionSystem {
+            constructor() {
+                this.isActive = false;
+                this.emergencyMode = false;
+                this.recursionDepth = 0;
+                this.maxRecursionDepth = 3;
+                this.timerIds = new Set();
+                this.intervalIds = new Set();
+            }
+
+            // Wrapper seguro para setTimeout
+            safeSetTimeout(callback, delay) {
+                // ðŸ›¡ï¸ VerificaÃ§Ã£o ultra-robusta de contexto
+                const safeThis = this || window.safeProtection;
+
+                if (
+                    !safeThis ||
+                    typeof safeThis.recursionDepth === 'undefined' ||
+                    !safeThis.isActive
+                ) {
+                    console.warn(
+                        'âš ï¸ SafeProtection contexto invÃ¡lido - usando fallback direto'
+                    );
+
+                    // ðŸš‘ Tentar acessar instÃ¢ncia global como backup
+                    if (window.safeProtection && window.safeProtection !== safeThis) {
+                        try {
+                            return window.safeProtection.safeSetTimeout(callback, delay);
+                        } catch (globalError) {
+                            console.warn(
+                                'âš ï¸ InstÃ¢ncia global tambÃ©m falhou:',
+                                globalError.message
+                            );
+                        }
+                    }
+
+                    // ðŸ›¡ï¸ Ãšltimo fallback: setTimeout nativo com proteÃ§Ã£o
+                    console.warn('âŒ SafeProtection: Usando setTimeout nativo seguro');
+                    try {
+                        return setTimeout(() => {
+                            try {
+                                callback();
+                            } catch (callbackError) {
+                                console.error('âŒ Erro no callback:', callbackError);
+                            }
+                        }, delay);
+                    } catch (setTimeoutError) {
+                        console.error('âŒ Erro crÃ­tico no setTimeout:', setTimeoutError);
+                        return null;
+                    }
+                }
+
+                // ðŸ”„ Usar contexto vÃ¡lido encontrado
+                const contextToUse = safeThis;
+
+                if (contextToUse.recursionDepth > contextToUse.maxRecursionDepth) {
+                    console.warn('ðŸš¨ RecursÃ£o detectada em setTimeout - abortando');
+                    return null;
+                }
+
+                const timerId = setTimeout(() => {
+                    contextToUse.recursionDepth++;
+                    try {
+                        callback();
+                    } catch (error) {
+                        console.error('âŒ Erro em setTimeout:', error);
+                    } finally {
+                        contextToUse.recursionDepth--;
+                        if (contextToUse.timerIds) {
+                            contextToUse.timerIds.delete(timerId);
+                        }
+                    }
+                }, delay);
+
+                if (contextToUse.timerIds) {
+                    contextToUse.timerIds.add(timerId);
+                }
+                return timerId;
+            }
+
+            // Wrapper seguro para setInterval
+            safeSetInterval(callback, delay) {
+                // ðŸ›¡ï¸ VerificaÃ§Ã£o ultra-robusta de contexto
+                const safeThis = this || window.safeProtection;
+
+                if (
+                    !safeThis ||
+                    typeof safeThis.recursionDepth === 'undefined' ||
+                    !safeThis.isActive
+                ) {
+                    console.warn(
+                        'âš ï¸ SafeProtection contexto invÃ¡lido - usando fallback direto'
+                    );
+
+                    // ðŸš‘ Tentar acessar instÃ¢ncia global como backup
+                    if (window.safeProtection && window.safeProtection !== safeThis) {
+                        try {
+                            return window.safeProtection.safeSetInterval(callback, delay);
+                        } catch (globalError) {
+                            console.warn(
+                                'âš ï¸ InstÃ¢ncia global tambÃ©m falhou:',
+                                globalError.message
+                            );
+                        }
+                    }
+
+                    // ðŸ›¡ï¸ Ãšltimo fallback: setInterval nativo com proteÃ§Ã£o
+                    console.warn('âŒ SafeProtection: Usando setInterval nativo seguro');
+                    try {
+                        return setInterval(() => {
+                            try {
+                                callback();
+                            } catch (callbackError) {
+                                console.error('âŒ Erro no callback:', callbackError);
+                            }
+                        }, delay);
+                    } catch (setIntervalError) {
+                        console.error('âŒ Erro crÃ­tico no setInterval:', setIntervalError);
+                        return null;
+                    }
+                }
+
+                // ðŸ”„ Usar contexto vÃ¡lido encontrado
+                const contextToUse = safeThis;
+
+                if (contextToUse.recursionDepth > contextToUse.maxRecursionDepth) {
+                    console.warn('ðŸš¨ RecursÃ£o detectada em setInterval - abortando');
+                    return null;
+                }
+
+                const intervalId = setInterval(() => {
+                    contextToUse.recursionDepth++;
+                    try {
+                        callback();
+                    } catch (error) {
+                        console.error('âŒ Erro em setInterval:', error);
+                        if (contextToUse.clearSafeInterval) {
+                            contextToUse.clearSafeInterval(intervalId);
+                        } else {
+                            clearInterval(intervalId);
+                        }
+                    } finally {
+                        contextToUse.recursionDepth--;
+                    }
+                }, delay);
+
+                if (contextToUse.intervalIds) {
+                    contextToUse.intervalIds.add(intervalId);
+                }
+                return intervalId;
+            }
+
+            clearSafeTimeout(timerId) {
+                if (timerId && this.timerIds.has(timerId)) {
+                    clearTimeout(timerId);
+                    this.timerIds.delete(timerId);
+                }
+            }
+
+            clearSafeInterval(intervalId) {
+                if (intervalId && this.intervalIds.has(intervalId)) {
+                    clearInterval(intervalId);
+                    this.intervalIds.delete(intervalId);
+                }
+            }
+
+            emergencyStop() {
+                console.log('ðŸš¨ EMERGENCY STOP - Parando todos os timers...');
+                this.emergencyMode = true;
+
+                // Para todos os timers conhecidos
+                this.timerIds.forEach((id) => clearTimeout(id));
+                this.intervalIds.forEach((id) => clearInterval(id));
+
+                this.timerIds.clear();
+                this.intervalIds.clear();
+                this.recursionDepth = 0;
+
+                console.log('âœ… Emergency stop completo');
+            }
+
+            forceRecovery() {
+                console.log('ðŸ”„ ForÃ§ando recuperaÃ§Ã£o do sistema...');
+                this.emergencyStop();
+
+                // Reinicia sistemas bÃ¡sicos se possÃ­vel
+                this.safeSetTimeout(() => {
+                    if (window.ui && typeof window.ui.syncUIFromState === 'function') {
+                        try {
+                            window.ui.syncUIFromState();
+                            console.log('âœ… UI sincronizada');
+                        } catch (error) {
+                            console.warn('âš ï¸ Erro ao sincronizar UI:', error.message);
+                        }
+                    }
+                }, 1000);
+            }
+
+            // ðŸš‘ ForÃ§ar inicializaÃ§Ã£o quando necessÃ¡rio
+            _forceInitialization() {
+                try {
+                    console.log('ðŸ”„ ForÃ§ando reinicializaÃ§Ã£o do SafeProtection...');
+                    this.isActive = false;
+                    this.emergencyMode = false;
+                    this.recursionDepth = 0;
+                    this.maxRecursionDepth = 3;
+                    this.timerIds = new Set();
+                    this.intervalIds = new Set();
+                    this.isActive = true;
+                    console.log('âœ… SafeProtection reinicializado com sucesso');
+                } catch (error) {
+                    console.error('âŒ Erro na reinicializaÃ§Ã£o do SafeProtection:', error);
+                }
+            }
+
+            // ðŸ“Š MÃ©todo de diagnÃ³stico
+            getStatus() {
+                return {
+                    isActive: this.isActive,
+                    emergencyMode: this.emergencyMode,
+                    recursionDepth: this.recursionDepth,
+                    activeTimers: this.timerIds.size,
+                    activeIntervals: this.intervalIds.size,
+                };
+            }
+        }
+
+        // ðŸš€ Instancia o sistema de proteÃ§Ã£o seguro com inicializaÃ§Ã£o robusta
+        let safeProtection;
+        try {
+            safeProtection = new SafeProtectionSystem();
+            safeProtection.isActive = true;
+            console.log('âœ… SafeProtectionSystem inicializado:', safeProtection.getStatus());
+        } catch (error) {
+            console.error('âŒ Erro ao criar SafeProtectionSystem:', error);
+            // Fallback para o sistema simples
+            safeProtection = {
+                safeSetTimeout: (cb, delay) => setTimeout(cb, delay),
+                safeSetInterval: (cb, delay) => setInterval(cb, delay),
+                safeClearTimeout: (id) => clearTimeout(id),
+                safeClearInterval: (id) => clearInterval(id),
+                isActive: false,
+                getStatus: () => ({ isActive: false, fallbackMode: true }),
+            };
+            console.log('âš ï¸ SafeProtection em modo fallback');
+        }
+
+        // ðŸŒ ExpÃµe funÃ§Ãµes globalmente com verificaÃ§Ã£o
+        window.emergencyProtectionStop = () => {
+            if (safeProtection && typeof safeProtection.emergencyStop === 'function') {
+                return safeProtection.emergencyStop();
+            }
+            console.warn('âš ï¸ emergencyProtectionStop nÃ£o disponÃ­vel');
+        };
+
+        window.forceRecovery = () => {
+            if (safeProtection && typeof safeProtection.forceRecovery === 'function') {
+                return safeProtection.forceRecovery();
+            }
+            console.warn('âš ï¸ forceRecovery nÃ£o disponÃ­vel');
+        };
+
+        window.safeProtection = safeProtection;
+
+        // ðŸ“Š FunÃ§Ã£o de diagnÃ³stico global
+        window.checkSafeProtectionStatus = () => {
+            if (safeProtection && typeof safeProtection.getStatus === 'function') {
+                const status = safeProtection.getStatus();
+                console.log('ðŸ“Š SafeProtection Status:', status);
+                return status;
+            }
+            console.warn('âŒ SafeProtection nÃ£o disponÃ­vel');
+            return { available: false };
+        };
+
+        // ProteÃ§Ãµes automÃ¡ticas
+        let errorCount = 0;
+        window.addEventListener('error', (event) => {
+            errorCount++;
+            if (errorCount > 10) {
+                console.warn('ðŸš¨ Muitos erros detectados - ativando modo de emergÃªncia');
+                safeProtection.emergencyStop();
+            }
+        });
+
+        // Reset do contador de erros periodicamente
+        safeProtection.safeSetInterval(() => {
+            if (errorCount > 0) {
+                errorCount = Math.max(0, errorCount - 1);
+            }
+        }, 30000); // Reset gradual a cada 30 segundos
+
+        console.log('ðŸ›¡ï¸ Sistema de ProteÃ§Ã£o Seguro ATIVO');
+        console.log('ðŸš¨ FunÃ§Ãµes de emergÃªncia disponÃ­veis:');
+        console.log('  emergencyProtectionStop() - Para todos os sistemas');
+        console.log('  forceRecovery() - RecuperaÃ§Ã£o forÃ§ada');
+        console.log('  safeProtection.safeSetTimeout() - setTimeout seguro');
+        console.log('  safeProtection.safeSetInterval() - setInterval seguro');
+    </script>
+
+
+
+    <!-- ðŸ” TESTES DE CORES E GRÃFICOS REMOVIDOS -->
+    <!-- Arquivos movidos para testes-inuteis/ para evitar spam e problemas de performance -->
+    <!-- Use teste-restauracao-limpo.js para testes limpos -->
+
+    <!-- ðŸŽ¨ LAYOUTS ALTERNATIVOS PARA CENTRO DO GRÃFICO -->
+    <script src="layouts-centro-grafico.js"></script>
+
+
+    <!-- ðŸ§  SISTEMA UNIFICADO DE GRÃFICOS - ARQUITETURA LENDÃRIA -->
+    <script type="module" src="src/charts/UnifiedChartSystem.js"></script>
+    <script type="module" src="src/charts/MigrationManager.js"></script>
+
+    <!-- Plugins do Sistema Unificado -->
+    <script type="module" src="src/charts/plugins/PerformanceMonitorPlugin.js"></script>
+    <script type="module" src="src/charts/plugins/DataValidationPlugin.js"></script>
+    <script type="module" src="src/charts/plugins/StateObserverPlugin.js"></script>
+
+    <!-- Sistema Legado (serÃ¡ migrado gradualmente) -->
+    <script src="enhanced-donut-chart-system.js"></script>
+
+    <!-- ðŸ§ª Sistema de Testes Completo -->
+    <script type="module" src="src/charts/tests/UnifiedChartSystemTests.js"></script>
+
+
+    <!-- ðŸ§ª TESTE MANUAL CONSERVADOR -->
+    <script>
+        // FunÃ§Ãµes de teste inline para evitar arquivos externos
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('ðŸ§ª Teste manual carregado');
+
+            window.verificarCard = function () {
+                const metaProgress = document.getElementById('meta-progress-value');
+                const winValue = document.getElementById('win-current-value');
+                const lossValue = document.getElementById('loss-current-value');
+
+                console.log('ðŸ“Š Card Status:');
+                console.log('  Meta:', metaProgress?.textContent, '| Classe:', metaProgress?.className);
+                console.log('  Win:', winValue?.textContent);
+                console.log('  Loss:', lossValue?.textContent);
+                console.log('  OperaÃ§Ãµes:', window.state?.historicoCombinado?.length || 0);
+            };
+
+            window.testarOperacao = function () {
+                if (window.state?.historicoCombinado) {
+                    const antes = window.state.historicoCombinado.length;
+
+                    window.state.historicoCombinado.push({
+                        id: 'teste_' + Date.now(),
+                        isWin: true,
+                        resultado: 'win',
+                        valor: 100,
+                        entrada: 100,
+                        retorno: 180
+                    });
+
+                    console.log('ðŸŽ¯ OperaÃ§Ã£o adicionada:', antes, 'â†’', window.state.historicoCombinado.length);
+
+                    setTimeout(() => {
+                        console.log('ðŸ“Š Verificando card apÃ³s operaÃ§Ã£o:');
+                        window.verificarCard();
+                    }, 2000);
+                }
+            };
+        });
+    </script>
+
+
+
+    <!-- ðŸš¨ TESTE AUTOMÃTICO INICIAL -->
+    <script>
+        // Executar diagnÃ³stico automÃ¡tico apÃ³s carregamento
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                console.log('ðŸš¨ EXECUTANDO TESTE AUTOMÃTICO INICIAL...');
+                if (window.testGhostValues) {
+                    const ghostResults = window.testGhostValues();
+                    if (ghostResults.length > 0) {
+                        console.error('ðŸ‘» GHOST VALUES DETECTADOS:', ghostResults);
+                    } else {
+                        console.log('âœ… Nenhum ghost value detectado');
+                    }
+                }
+            }, 2000);
+        });
+    </script>
+    <script type="module" src="install-prompt.js"></script>
+    <script>
+    // Registrar Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('Ã¢Å“â€¦ SW registrado:', registration.scope);
+          })
+          .catch(error => {
+            console.log('Ã¢ÂÅ’ Falha ao registrar SW:', error);
+          });
+      });
+    }
+    </script>
+
+
+</body>
+
+</html>
+                                                                                           

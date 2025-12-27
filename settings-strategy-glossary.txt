@@ -1,0 +1,14 @@
+    'settings-strategy-type': {
+        icon: '🔄',
+        label: 'Tipo de Estratégia',
+        description: 'Define como o sistema gerencia seus aportes: com ou sem recuperação de perdas',
+        formula: 'Configuração global de gerenciamento de risco',
+        example: {
+            good: 'Ciclos de Recuperação = usa Martingale controlado para recuperar losses',
+            calculation: 'Entradas Fixas = valor constante em todas as operações (mais conservador)'
+        },
+        thresholds: {},
+        ideal: 'Entradas Fixas para iniciantes, Ciclos para traders experientes',
+        tip: 'Ciclos aumentam risco mas permitem recuperação. Fixas são mais seguras mas sem recuperação automática'
+    },
+

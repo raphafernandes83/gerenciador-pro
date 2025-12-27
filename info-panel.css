@@ -1,0 +1,76 @@
+/* ========================================
+   PAINEL INFORMATIVO - Data/Hora/Mensagens
+   Substitui o painel verde de parâmetros
+   ======================================== */
+
+.info-panel {
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.05) 0%,
+            rgba(255, 255, 255, 0.08) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 16px;
+    transition: all 300ms ease;
+}
+
+.info-panel:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Data e Hora */
+.info-datetime {
+    text-align: center;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-date {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 4px;
+}
+
+.info-time {
+    font-size: 28px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.95);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 2px;
+}
+
+.info-weekday {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 4px;
+    letter-spacing: 1px;
+}
+
+/* Mensagens */
+.info-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.info-message {
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.85);
+    font-style: italic;
+}
+
+.info-message:first-child {
+    border-left-color: rgba(0, 230, 118, 0.5);
+}
+
+.info-message:last-child {
+    border-left-color: rgba(33, 150, 243, 0.5);
+}

@@ -1017,31 +1017,63 @@ export const events = {
                 {
                     label: 'Resultado Total',
                     value: ui._formatarMoedaInternal(resultadoFinanceiro),
+                    rawValue: resultadoFinanceiro,
                     class: resultadoFinanceiro >= 0 ? 'positive' : 'negative',
                 },
-                { label: 'Assertividade', value: `${(assertividade * 100).toFixed(1)}%` },
-                { label: 'Payoff Ratio', value: isFinite(payoff) ? payoff.toFixed(2) : '--' },
+                { label: 'Assertividade', value: `${(assertividade * 100).toFixed(1)}%`, rawValue: assertividade * 100 },
+                { label: 'Payoff Ratio', value: isFinite(payoff) ? payoff.toFixed(2) : '--', rawValue: payoff },
                 {
                     label: 'Expectativa (EV)',
                     value: evResult.ev !== null ? ui._formatarMoedaInternal(evResult.ev) : '--',
+                    rawValue: evResult.ev,
                     class: evResult.class,
                 },
-                { label: 'Nº de Operações', value: totalOperacoes },
-                { label: 'Nº de Sessões', value: totalSessoes },
-                { label: 'Seq. de Vitórias', value: maxWins },
-                { label: 'Seq. de Derrotas', value: maxLosses },
+                { label: 'Nº de Operações', value: totalOperacoes, rawValue: totalOperacoes },
+                { label: 'Nº de Sessões', value: totalSessoes, rawValue: totalSessoes },
+                { label: 'Seq. de Vitórias', value: maxWins, rawValue: maxWins },
+                { label: 'Seq. de Derrotas', value: maxLosses, rawValue: maxLosses },
                 {
                     label: 'Drawdown Máximo',
                     value: ui._formatarMoedaInternal(-Math.abs(drawdown)),
+                    rawValue: -Math.abs(drawdown),
                     class: 'negative',
                 },
-                { label: 'Payout Médio', value: `${payoutMedio.toFixed(0)}%` },
+                { label: 'Payout Médio', value: `${payoutMedio.toFixed(0)}%`, rawValue: payoutMedio },
             ];
 
-            stats.forEach((stat) => {
+            // IDs das métricas para sistema de ajuda
+            const METRIC_IDS = [
+                'resultado-total',
+                'assertividade',
+                'payoff-ratio',
+                'expectativa-ev',
+                'num-operacoes',
+                'num-sessoes',
+                'seq-vitorias',
+                'seq-derrotas',
+                'drawdown-maximo',
+                'payout-medio'
+            ];
+
+            stats.forEach((stat, index) => {
                 const card = document.createElement('div');
                 card.className = 'stat-card';
-                card.innerHTML = `<h4>${stat.label}</h4><p class="${stat.class || ''}">${config.zenMode ? '---' : stat.value}</p>`;
+                const metricId = METRIC_IDS[index];
+                const rawValue = stat.rawValue !== undefined ? stat.rawValue : stat.value;
+
+                card.innerHTML = `
+                    <h4>
+                        ${stat.label}
+                        <button class="help-icon" 
+                                data-metric="${metricId}" 
+                                data-value="${rawValue}"
+                                aria-label="Ajuda sobre ${stat.label}"
+                                title="Clique para mais informações">
+                            <span class="icon">?</span>
+                        </button>
+                    </h4>
+                    <p class="${stat.class || ''}">${config.zenMode ? '---' : stat.value}</p>
+                `;
                 grid.appendChild(card);
             });
 
@@ -1064,6 +1096,15 @@ export const events = {
                         true
                     );
                 }
+            }
+
+            // Inicializar tooltips após renderizar stats
+            if (window.MetricTooltipManager && !window.metricTooltips) {
+                window.metricTooltips = new window.MetricTooltipManager();
+                window.metricTooltips.init();
+            } else if (window.metricTooltips) {
+                // Re-attach listeners se já existe
+                window.metricTooltips.attachHelpIconListeners();
             }
 
             // A "Promessa" garante que o código que chama esta função espere

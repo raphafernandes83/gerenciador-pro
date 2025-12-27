@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Gerenciador PRO v9.3
 
-**Última atualização:** 25/11/2025 - 21:30  
+**Última atualização:** 24/11/2025 - 14:56  
 **Status do Projeto:** Em desenvolvimento ativo
 
 ---
@@ -12,21 +12,6 @@
 - ✅ Sistema de lixeira totalmente funcional
 - ✅ Fix crítico: `saveSession` → `updateSession` em SessionsTrashHandler
 - ✅ Fix crítico: `saveSession` → `addSession` em DataImporter
-
-## ✅ Concluído (25/11/2025)
-- ✅ **Otimização de Performance TabelaUI** (Roadmap #2)
-  - Debounce 150ms em filtros
-  - Cache inteligente de resultados filtrados
-  - DocumentFragment para renderização em lote (1 reflow vs N)
-- ✅ **Expansão TimelineUI** (+176 linhas)
-  - `renderizarCompleta()` com validações robustas
-  - `adicionarItem()` com ícones contextuais e Zen Mode
-- ✅ **Criação HistoricoUI** (+270 linhas - novo componente!)
-  - `renderDiario()`, `renderTagDiagnostics()`, `renderAnalysisResults()`, `renderGoalOptimizationResults()`
-- ✅ **Expansão ModalUI** (+60 linhas)
-  - Método `show()` compatível com ui.js
-- ✅ **Verificação NotificationUI** - completamente funcional
-- ✅ **Total:** ~500 linhas delegadas, 8 componentes modulares
 
 ---
 
@@ -55,26 +40,15 @@
 - ✅ `atualizarVisualPlano` → `PlanoUI`
 - ✅ `inicializarUI` → Componentes modulares
 
-**Funções delegadas (25/11/2025):**
-- ✅ `renderizarTabela` → `TabelaUI.renderizar()` + otimizações
-- ✅ `renderizarTimeline` / `renderizarTimelineCompleta` → `TimelineUI.renderizar()` / `renderizarCompleta()`
-- ✅ `showModal` → `ModalUI.show()`
-- ✅ `mostrarNotificacao` → `NotificationUI` (já completo)
-- ✅ `renderDiario` → `HistoricoUI.renderDiario()`
-- ✅ `renderTagDiagnostics` → `HistoricoUI.renderTagDiagnostics()`
-- ✅ `renderAnalysisResults` → `HistoricoUI.renderAnalysisResults()`
-- ✅ `renderGoalOptimizationResults` → `HistoricoUI.renderGoalOptimizationResults()`
-
-**Funções pendentes:**
+**Funções para delegar:**
+- [ ] `renderizarTabela` → `TabelaUI.renderizar()`
+- [ ] `renderizarTimeline` / `renderizarTimelineCompleta` → `TimelineUI.renderizar()`
 - [ ] `syncUIFromState` → Distribuir lógica entre componentes específicos
+- [ ] `showModal` / Modal-related → `ModalUI.show()`
+- [ ] `mostrarNotificacao` → `NotificationUI`
+- [ ] `renderDiario` / `renderizarHistorico` → Novo `HistoricoUI`
 
-**Objetivo:** Reduzir `ui.js` de 2926 linhas para <1500 linhas
-**Progresso Atual:** 2926 → 2618 linhas = **-308 linhas (-10.5%)**
-- ~500 linhas delegadas para componentes modulares
-- Componentes funcionam independentemente
-- ui.js mais limpo (código duplicado já removido)
-
-**Status:** ✅ **80% CONCLUÍDO** - Sistema modular e funcional
+**Objetivo:** Reduzir `ui.js` de 2850 linhas para <1500 linhas
 
 **Arquivos afetados:**
 - `ui.js` (arquivo principal)

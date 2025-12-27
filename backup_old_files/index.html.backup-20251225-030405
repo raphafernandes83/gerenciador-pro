@@ -1,0 +1,2190 @@
+﻿<!doctype html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerenciador de Operações PRO v9.3</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="sidebar.css" />
+    <link rel="stylesheet" href="animations.css" />
+    <link rel="stylesheet" href="panel-minimize.css" />
+    <link rel="stylesheet" href="ui-improvements.css" />
+    <link rel="stylesheet" href="parameters-panel-fix.css" />
+    <link rel="stylesheet" href="info-panel.css" />
+    <link rel="stylesheet" href="info-panel-responsive.css" />
+    <link rel="stylesheet" href="hide-green-panel.css" />
+    <link rel="stylesheet" href="src/ui/components/help/metric-tooltip.css" />
+    <link rel="stylesheet" href="src/ui/components/help/help-fab.css" />
+    <link rel="stylesheet" href="fab-unified-style.css" />
+    <link rel="stylesheet" href="src/ui/components/notifications.css" />
+    <link rel="stylesheet" href="src/validation/validation-styles.css" />
+    <link rel="manifest" href="manifest.json" />
+</head>
+
+<body data-theme="moderno">
+    <div id="container" class="container hidden">
+        <header class="app-header">
+            <div class="app-title-group">
+                <div>
+                    <p id="trader-name">Nome do Trader</p>
+                    <h1>Gerenciador <span class="pro-version">PRO v9.3</span></h1>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div id="status-indicators">
+                    <span id="session-mode-indicator" class="status-indicator tooltip-container">
+                        <span id="session-mode-icon">📈</span>
+                        <span class="tooltip-text">Modo da Sessão: Oficial</span>
+                    </span>
+                    <span id="strategy-indicator" class="status-indicator">
+                        <span id="strategy-indicator-icon">🔄</span>
+                        <button class="help-icon" data-metric="header-strategy-type" data-value="recovery"
+                            aria-label="Ajuda sobre Tipo de Estratégia" title="Clique para mais informações"
+                            type="button" style="margin-left: 4px;">
+                            <span class="icon">?</span>
+                        </button>
+                    </span>
+                    <span id="guided-mode-indicator" class="status-indicator tooltip-container" role="img"
+                        aria-label="Modo Guiado Ativo">
+                        🔒
+                        <span class="tooltip-text">Modo Guiado está ativo. Apenas a próxima etapa do plano pode ser
+                            executada.</span>
+                    </span>
+                    <span id="compounding-indicator" class="status-indicator tooltip-container" role="img"
+                        aria-label="Juros Compostos Ativos">
+                        💹
+                        <span class="tooltip-text">Incorporar Lucros está ativo. Os ganhos são somados ao capital para
+                            juros compostos.</span>
+                    </span>
+                </div>
+                <button id="zen-mode-btn" title="Modo Zen" aria-label="Ativar Modo Zen">
+                    👁️
+                </button>
+                <button id="compact-mode-btn" title="Modo Compacto" aria-label="Ativar Modo Compacto">
+                    ⤡
+                </button>
+                <button id="settings-btn" title="Configurações" aria-label="Abrir Configurações">
+                    ⚙️
+                </button>
+                <button id="install-app-btn" class="hidden" title="Instalar App" aria-label="Instalar como aplicativo">
+                    📱
+                </button>
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-button" data-tab="plano">Plano de Operações</button>
+            <button class="tab-button" data-tab="dashboard">Dashboard</button>
+            <button class="tab-button" data-tab="diario">Diário</button>
+            <button class="tab-button" data-tab="analise">Análise Estratégica</button>
+        </nav>
+
+        <div id="meta-aviso"></div>
+
+        <div id="plano-content" class="tab-content">
+            <main>
+                <section id="main-area">
+                    <div id="input-panel" class="input-panel panel"></div>
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>Plano de Operações</h2>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table id="tabela-resultados">
+                                <thead>
+                                    <tr>
+                                        <th>Etapa</th>
+                                        <th>Aporte</th>
+                                        <th>Valor (R$)</th>
+                                        <th>Retorno (R$)</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabela-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+
+                    <div class="results-panel panel">
+                        <div class="panel-header">
+                            <h2>Histórico Visual do Dia</h2>
+                            <div id="timeline-filters" class="filter-buttons">
+                                <button data-filter="all" class="active" aria-label="Mostrar todas as operações">
+                                    Tudo
+                                </button>
+                                <button data-filter="win_streak" aria-label="Mostrar maior sequência de vitórias">
+                                    🔥
+                                </button>
+                                <button data-filter="loss_streak" aria-label="Mostrar maior sequência de derrotas">
+                                    💀
+                                </button>
+                            </div>
+                        </div>
+                        <div id="timeline-container" class="timeline-container"></div>
+                    </div>
+                </section>
+                <aside id="right-sidebar">
+                    <div id="dashboard-area">
+                        <div id="performance-panel" class="panel">
+                            <h3 id="capital-atual-label">Capital Atual</h3>
+                            <p id="capital-atual" class="value"></p>
+                            <p id="display-capital-calculo">(Base: R$ 0,00)</p>
+                            <hr class="my-15 border-muted" />
+                            <h3 id="lucro-prejuizo-label">Resultado do Dia</h3>
+                            <p id="lucro-prejuizo" class="value"></p>
+                        </div>
+
+                        <!-- ===== PROGRESSO DAS METAS (MOVIDO PARA SIDEBAR) ===== -->
+                        <div class="panel progress-metas-panel" id="progress-metas-panel">
+                            <div class="panel-header">
+                                <h2>📊 Progresso das Metas</h2>
+                                <div class="progress-metas-subtitle">
+                                    <span>Meta Win/Loss vs. Realizado</span>
+                                    <span class="progress-session-info" id="progress-session-info">Sessão
+                                        Inativa</span>
+                                </div>
+                            </div>
+
+                            <!-- Container Principal dos Gráficos (layout com separador central do preview) -->
+                            <div class="progress-charts-grid">
+                                <!-- Gráfico de Pizza + legenda -->
+                                <div class="progress-chart-section progress-pie-section preview-left">
+                                    <h3 class="progress-chart-title">Distribuição da Sessão</h3>
+                                    <div class="progress-pie-wrapper">
+                                        <canvas id="progress-pie-chart" width="220" height="220"
+                                            aria-label="Gráfico de distribuição Win/Loss"></canvas>
+                                    </div>
+
+                                    <!-- Contadores de Vitórias e Derrotas -->
+                                    <div class="win-loss-counters">
+                                        <div class="counter-item counter-wins">
+                                            <span class="counter-icon">🟢</span>
+                                            <span class="counter-value" id="wins-counter">0</span>
+                                            <span class="counter-label">Vitórias</span>
+                                        </div>
+                                        <div class="counter-item counter-losses">
+                                            <span class="counter-icon">🔴</span>
+                                            <span class="counter-value" id="losses-counter">0</span>
+                                            <span class="counter-label">Derrotas</span>
+                                        </div>
+                                    </div>
+                                    <!-- Blocos textuais do preview (lado esquerdo) -->
+                                    <div class="grid grid-cols-2 gap-15 mt-10">
+                                        <div>
+                                            <h4 class="section-title">Meta (R$)</h4>
+                                            <div class="text-09 text-muted no-wrap">Alvo: <span
+                                                    id="win-target-amount">R$ 0,00</span></div>
+                                            <div class="text-09 text-muted no-wrap">Atingido: <span
+                                                    id="meta-achieved-amount">R$ 0,00</span></div>
+                                        </div>
+                                        <div>
+                                            <h4 class="section-title">Risco</h4>
+                                            <div class="text-09 text-muted no-wrap">Margem: <span id="status-margin">R$
+                                                    0,00</span></div>
+                                            <div class="text-09 text-muted no-wrap">Risco usado: <span
+                                                    id="risk-used-display">0%</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Separador vertical refinado -->
+                                <div class="preview-separator" aria-hidden="true"></div>
+
+                                <!-- Barras de Progresso Melhoradas -->
+                                <div class="progress-chart-section progress-bars-section">
+                                    <h3 class="progress-chart-title">Metas vs. Performance</h3>
+                                    <div class="progress-bars-grid">
+                                        <!-- Win Rate Bar -->
+                                        <div class="progress-bar-container">
+
+                                            <div class="progress-bar-track" id="win-main-track">
+                                                <div class="progress-bar-background"></div>
+                                                <div class="progress-bar-target" id="win-target-bar"
+                                                    title="Meta Win Rate"></div>
+                                                <div class="progress-bar-current progress-bar-win" id="win-current-bar"
+                                                    title="Win Rate Atual"></div>
+                                            </div>
+                                            <div class="progress-bar-info">
+                                                <span class="progress-target">Meta (WR):
+                                                    <span id="win-target-value">60%</span><span id="meta-target-percent"
+                                                        class="hidden"></span></span>
+                                                <span class="progress-current">WR Atual:
+                                                    <span id="win-current-value">0%</span><span
+                                                        id="meta-current-percent" class="hidden"></span>
+                                                    <span id="meta-trend-badge" class="trend-badge"></span></span>
+                                            </div>
+                                            <div class="progress-amount-info">
+                                                <span class="progress-target-amount">Meta:
+                                                    <span id="win-target-amount">R$ 0,00</span><span
+                                                        id="meta-target-amount" class="hidden"></span></span>
+                                                <span class="progress-remaining-amount">Atingido:
+                                                    <span id="win-remaining-amount">R$ 0,00</span><span
+                                                        id="meta-achieved-amount" class="hidden">R$ 0,00</span></span>
+                                            </div>
+                                            <!-- Mini barra: Progresso da Meta -->
+                                            <div class="mini-progress" id="meta-progress-area">
+                                                <div class="progress-bar-track" id="meta-progress-track">
+                                                    <div class="progress-bar-current progress-bar-win"
+                                                        id="meta-progress-fill" title="Progresso da Meta"></div>
+                                                </div>
+                                                <div class="progress-bar-info">
+                                                    <span>Progresso da Meta:
+                                                        <span id="meta-progress-display">0%</span></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Loss Rate Bar -->
+                                        <div class="progress-bar-container">
+
+                                            <div class="progress-bar-track" id="loss-main-track">
+                                                <div class="progress-bar-background"></div>
+                                                <div class="progress-bar-target" id="loss-target-bar"
+                                                    title="Meta Loss Rate"></div>
+                                                <div class="progress-bar-current progress-bar-loss"
+                                                    id="loss-current-bar" title="Loss Rate Atual"></div>
+                                            </div>
+                                            <div class="progress-bar-info">
+                                                <span class="progress-target">Limite (%):
+                                                    <span id="loss-target-value">40%</span><span
+                                                        id="loss-target-percent" class="hidden"></span></span>
+                                                <span class="progress-current">Loss Atual:
+                                                    <span id="loss-current-value">0%</span><span
+                                                        id="loss-current-percent" class="hidden"></span>
+                                                    <span id="loss-trend-badge" class="trend-badge"></span></span>
+                                            </div>
+                                            <div class="progress-amount-info">
+                                                <span class="progress-limit-amount">Limite (R$):
+                                                    <span id="loss-limit-amount">R$ 0,00</span></span>
+                                                <span class="progress-session-result">P/L Sessão (R$):
+                                                    <span id="loss-session-result">R$ 0,00</span></span>
+                                            </div>
+                                            <!-- Mini barra: Risco Utilizado -->
+                                            <div class="mini-progress" id="risk-used-area">
+                                                <div class="progress-bar-track" id="risk-used-track">
+                                                    <div class="progress-bar-current progress-bar-loss"
+                                                        id="risk-used-fill" title="Risco Utilizado"></div>
+                                                </div>
+                                                <div class="progress-bar-info">
+                                                    <span>Risco Usado: <span class="risk-used-secondary">0%</span> <span
+                                                            id="risk-used-value" class="hidden">0%</span></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Bloco de métricas no formato do preview -->
+                                    <div class="preview-metrics">
+                                        <h3 class="section-title">Performance</h3>
+                                        <ul class="metric-list" role="list">
+                                            <li class="metric-row"><span class="metric-label">Meta</span><span
+                                                    class="metric-value" id="meta-target-amount-panel">R$
+                                                    1.000,00</span></li>
+                                            <li class="metric-row"><span class="metric-label">Atingido</span><span
+                                                    class="metric-value" id="meta-achieved-amount-panel">R$ 0,00</span>
+                                            </li>
+                                            <li class="metric-row"><span class="metric-label">Progresso da
+                                                    Meta</span><span class="metric-value"
+                                                    id="meta-progress-value-panel">0%</span></li>
+                                        </ul>
+
+                                        <h3 class="section-title mt-15">Risco</h3>
+                                        <ul class="metric-list" role="list">
+                                            <li class="metric-row"><span class="metric-label">Limite (R$)</span><span
+                                                    class="metric-value" id="loss-limit-amount-panel">R$ 0,00</span>
+                                            </li>
+                                            <li class="metric-row"><span class="metric-label">P/L Sessão
+                                                    (R$)</span><span class="metric-value"
+                                                    id="loss-session-result-panel">R$ 0,00</span></li>
+                                            <li class="metric-row"><span class="metric-label">Risco Usado</span><span
+                                                    class="metric-value" id="risk-used-value-panel">0%</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Indicadores de Status Melhorados -->
+                            <div class="progress-status-grid">
+                                <div class="progress-status-card" id="win-status-indicator">
+                                    <div class="status-icon">
+                                        <span class="status-emoji">🎯</span>
+                                    </div>
+                                    <div class="status-content">
+                                        <span class="status-text">Vamos começar!</span>
+                                        <small class="status-subtext">Win Rate</small>
+                                    </div>
+                                </div>
+                                <div class="progress-status-card" id="loss-status-indicator">
+                                    <div class="status-icon">
+                                        <span class="status-emoji">âœ…</span>
+                                    </div>
+                                    <div class="status-content">
+                                        <span class="status-text">Controle total</span>
+                                        <small class="status-subtext">Loss Rate</small>
+                                    </div>
+                                </div>
+                                <!-- Badge opcional para lock suave (visível apenas quando sinalizado) -->
+                                <span id="progress-soft-lock-badge" class="badge muted hidden"
+                                    aria-live="polite"></span>
+                                <!-- Linhas de status financeiras (compatíveis com preview) -->
+                                <span id="status-target-amount" class="hidden">R$ 0,00</span>
+                                <span id="status-achieved" class="hidden">R$ 0,00</span>
+                                <span id="status-exceed" class="hidden">R$ 0,00</span>
+                                <span id="status-margin" class="hidden">R$ 0,00</span>
+                                <span id="status-risk-used" class="hidden">0%</span>
+                            </div>
+                        </div>
+
+                        <div id="mental-note-panel" class="panel insight-panel hidden">
+                            <div class="panel-header mb-05">
+                                <h3 id="mental-note-title">Diagnóstico do Dia</h3>
+                            </div>
+                            <p id="mental-note-text"></p>
+                        </div>
+                        <div id="session-controls" class="action-buttons">
+                            <button id="undo-btn" title="Desfaz a última operação registrada">
+                                Desfazer
+                            </button>
+                            <button id="finish-session-btn">Finalizar Sessão</button>
+                            <button id="new-session-btn" class="hidden">Nova Sessão</button>
+                        </div>
+                    </div>
+                </aside>
+
+            </main>
+        </div>
+
+        <div id="dashboard-content" class="tab-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>Filtros de Performance</h3>
+                </div>
+                <div class="filter-controls">
+                    <div class="filter-group">
+                        <label>Período de Análise</label>
+                        <div id="dashboard-period-filters" class="filter-buttons">
+                            <button data-period="7">Últimos 7 Dias</button>
+                            <button data-period="30">Últimos 30 Dias</button>
+                            <button data-period="month">Este Mês</button>
+                            <button data-period="all" class="active">Todo o Período</button>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label>Modo de Sessão</label>
+                        <div id="dashboard-mode-filters" class="filter-buttons">
+                            <button data-mode="all" class="active">Todas</button>
+                            <button data-mode="oficial">Oficial</button>
+                            <button data-mode="simulacao">Simulação</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <main>
+                <section id="dashboard-main-grid">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 id="dashboard-stats-title">Estatísticas (Todo o Período)</h3>
+                            <div id="dashboard-summary"></div>
+                        </div>
+                        <div id="dashboard-stats-grid" class="stats-grid"></div>
+                        <div class="action-buttons mt-15 grid-cols-2">
+                            <button id="open-lab-btn">Laboratório de Risco</button>
+                            <button id="generate-pdf-btn">Gerar Relatório PDF</button>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>Diagnóstico por Tag (Período)</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table id="dashboard-tag-diagnostics-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tag</th>
+                                        <th>Nº Ops</th>
+                                        <th>Assertividade</th>
+                                        <th>Resultado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboard-tag-diagnostics-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <aside id="dashboard-charts-area" class="flex flex-col gap-15">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>Assertividade (Período)</h3>
+                        </div>
+                        <div class="pos-rel h-220 mx-auto">
+                            <canvas id="dashboard-assertividade-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>Curva de Património (Período)</h3>
+                        </div>
+                        <div class="pos-rel h-220 mx-auto">
+                            <canvas id="dashboard-patrimonio-chart"></canvas>
+                        </div>
+                    </div>
+                </aside>
+            </main>
+        </div>
+
+        <div id="diario-content" class="tab-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Histórico de Sessões</h2>
+                    <div id="diario-filter-buttons" class="filter-buttons">
+                        <button class="active" data-filter="todas">Todas</button>
+                        <button data-filter="oficial">Oficial</button>
+                        <button data-filter="simulacao">Simulação</button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table id="tabela-historico-sessoes">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Modo</th>
+                                <th>Resultado</th>
+                                <th>Nº Ops</th>
+                                <th>Assertividade</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-historico-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="analise-content" class="tab-content">
+            <div class="panel">
+                <p class="text-muted text-center italic">
+                    A análise abaixo utiliza os filtros de <strong>Período</strong> e
+                    <strong>Modo de Sessão</strong> definidos na aba <strong>Dashboard</strong>.
+                </p>
+            </div>
+            <div class="analysis-section panel" id="analise-desempenho">
+                <div class="panel-header">
+                    <h2>Análise de Desempenho Multi-dimensional</h2>
+                </div>
+                <div class="input-group max-w-350 mb-20">
+                    <label for="analise-dimension-select">Analisar Performance Por:</label>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <select id="analise-dimension-select" style="flex: 1;">
+                            <option value="dayOfWeek">Dia da Semana</option>
+                            <option value="hourOfDay">Hora do Dia</option>
+                            <option value="tag">Tag de Operação</option>
+                            <option value="payout">Faixa de Payout</option>
+                        </select>
+                        <button class="help-icon" data-metric="analise-dimensao-selector" data-value="selector"
+                            aria-label="Ajuda sobre Dimensões de Análise" title="Clique para mais informações">
+                            <span class="icon">?</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <h3 style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                        Resultados por Categoria
+                        <button class="help-icon" data-metric="analise-tabela-categoria" data-value="table"
+                            aria-label="Ajuda sobre Tabela de Resultados" title="Clique para mais informações">
+                            <span class="icon">?</span>
+                        </button>
+                    </h3>
+                    <table id="analise-results-table">
+                        <thead id="analise-results-head"></thead>
+                        <tbody id="analise-results-body"></tbody>
+                    </table>
+                </div>
+                <div class="insight-panel hidden mt-15" id="analise-insight-panel">
+                    <h3 id="analise-insight-title">Diagnóstico Quantitativo</h3>
+                    <p id="analise-insight-text" class="italic text-muted"></p>
+                </div>
+            </div>
+            <div class="analysis-section panel" id="goal-optimizer-panel">
+                <div class="panel-header">
+                    <h2>Otimizador de Metas e Risco</h2>
+                </div>
+                <p class="text-muted mb-15">
+                    Testo diferentes metas e Stop Loss com base no seu histórico de
+                    operações (usando os filtros do Dashboard) para encontrar a configuração
+                    ideal de Risco/Retorno. <br /><strong class="text-info">É recomendado um histórico de pelo menos
+                        20
+                        operações para uma
+                        simulação mais confiável.</strong>
+                </p>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label for="optimizer-stop-win">Simular Meta (%)</label>
+                        <input type="number" id="optimizer-stop-win" value="10" min="0" max="100" step="0.1" />
+                    </div>
+                    <div class="input-group">
+                        <label for="optimizer-stop-loss">Simular Stop Loss (%)</label>
+                        <input type="number" id="optimizer-stop-loss" value="15" min="0" max="100" step="0.1" />
+                    </div>
+                </div>
+                <div class="modal-actions mb-15 grid-cols-1">
+                    <button id="run-goal-simulation-btn" class="modal-action-btn bg-accent">
+                        Simular Cenário
+                    </button>
+                </div>
+                <div id="goal-simulation-results" class="hidden">
+                    <hr />
+                    <div class="stats-grid grid-cols-2 gap-15">
+                        <div class="stat-card">
+                            <h4>Resultado Simulado</h4>
+                            <p id="goal-sim-result"></p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Risco/Retorno</h4>
+                            <p id="goal-sim-rr"></p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Sessões de Win</h4>
+                            <p id="goal-sim-wins" class="positive"></p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Sessões de Loss</h4>
+                            <p id="goal-sim-losses" class="negative"></p>
+                        </div>
+                    </div>
+                    <p id="goal-simulation-insight"></p>
+                </div>
+            </div>
+            <div class="analysis-section panel" id="capital-curve-panel">
+                <div class="panel-header">
+                    <h2>Diagnóstico da Curva de Capital</h2>
+                    <button id="run-capital-curve-analysis-btn" class="modal-action-btn bg-info w-auto p-btn">
+                        Analisar Curva
+                    </button>
+                </div>
+                <p class="text-muted mb-15">
+                    Esta ferramenta analisa a sequência das suas operações para identificar os
+                    seus maiores períodos de perda (Drawdown) e de ganho (Pico de Performance),
+                    ajudando-o a entender a volatilidade da sua estratégia.
+                </p>
+                <div id="capital-curve-results" class="hidden">
+                    <hr />
+                    <div class="stats-grid grid-cols-2 gap-15">
+                        <div class="stat-card">
+                            <h4>📉 Maior Drawdown</h4>
+                            <p id="curve-max-drawdown" class="negative"></p>
+                            <span id="curve-drawdown-duration" class="text-08 text-muted"></span>
+                        </div>
+                        <div class="stat-card">
+                            <h4>📈 Maior Pico</h4>
+                            <p id="curve-max-peak" class="positive"></p>
+                            <span id="curve-peak-duration" class="text-08 text-muted"></span>
+                        </div>
+                    </div>
+                    <p id="capital-curve-insight" class="insight-panel mt-15 p-10"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="session-mode-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Iniciar Nova Sessão</h2>
+            <p>
+                Selecione o modo para a sua próxima sessão de trading. Esta escolha será
+                registada no seu diário.
+            </p>
+            <div class="options">
+                <button class="checklist-option" id="start-official-session-btn">
+                    <span class="text-15 lh-1">📈</span>
+                    <span class="block mt-05">Sessão Oficial</span>
+                </button>
+                <button class="checklist-option" id="start-simulation-session-btn">
+                    <span class="text-15 lh-1">🧪</span>
+                    <span class="block mt-05">Sessão de Simulação</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmation-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 id="modal-title"></h2>
+            <p id="modal-message"></p>
+            <div class="modal-actions">
+                <button id="modal-cancel-btn" class="modal-action-btn">Cancelar</button>
+                <button id="modal-confirm-btn" class="modal-action-btn">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tags-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="tags-modal-title">Classifique sua operação:</h3>
+            <div id="tags-container" class="tags-container"></div>
+            <div class="input-group">
+                <label for="op-note" class="mt-10">Notas (Opcional):</label>
+                <textarea id="op-note" placeholder="Ex: Entrei atrasado, notícia impactou..."></textarea>
+            </div>
+            <div class="modal-actions mt-10">
+                <button id="skip-tag-btn" class="modal-action-btn bg-info">
+                    Registar Sem Tag
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Configurações</h2>
+            <nav class="settings-tabs">
+                <button class="settings-tab-button tab-button active" data-tab="settings-gerenciamento">
+                    📊 Gerenciamento
+                </button>
+                <button class="settings-tab-button tab-button" data-tab="settings-perfil">
+                    👤 Perfil
+                </button>
+                <button class="settings-tab-button tab-button" data-tab="settings-aparencia">
+                    🎨 Aparência
+                </button>
+                <button class="settings-tab-button tab-button" data-tab="settings-preferencias">
+                    ⚙️ Preferências
+                </button>
+            </nav>
+            <div id="settings-gerenciamento-content" class="settings-tab-content active">
+                <h3>Gerenciamento</h3>
+                <div class="flex-row justify-between mb-10">
+                    <span class="tooltip-container">
+                        <label for="modal-modo-guiado-toggle">Modo Guiado</label>
+                        <i class="tooltip-icon">i<span class="tooltip-text">Trava as operações, permitindo registrar
+                                resultados apenas na
+                                etapa atual do plano.</span></i>
+                    </span>
+                    <label class="switch"><input type="checkbox" id="modal-modo-guiado-toggle" checked /><span
+                            class="slider"></span></label>
+                </div>
+                <div class="flex-row justify-between mb-10">
+                    <span class="tooltip-container">
+                        <label for="modal-incorporar-lucro-toggle">Incorporar Lucros</label>
+                        <i class="tooltip-icon">i<span class="tooltip-text">Soma automaticamente o lucro de ciclos
+                                vencedores ao capital,
+                                recalculando os próximos aportes (juros compostos).</span></i>
+                    </span>
+                    <label class="switch"><input type="checkbox" id="modal-incorporar-lucro-toggle" /><span
+                            class="slider"></span></label>
+                </div>
+                <div class="flex-row justify-between mb-10">
+                    <span class="tooltip-container">
+                        <label for="auto-lock-toggle">Bloqueio Automático</label>
+                        <i class="tooltip-icon">i<span class="tooltip-text">Bloqueia o app por um tempo após atingir a
+                                meta de ganho ou
+                                perda.</span></i>
+                    </span>
+                    <label class="switch"><input type="checkbox" id="auto-lock-toggle" /><span
+                            class="slider"></span></label>
+                </div>
+                <div id="lock-duration-container" class="input-group hidden mt-10">
+                    <label for="lock-duration-select">Duração do Bloqueio</label>
+                    <select id="lock-duration-select">
+                        <option value="8">8 Horas</option>
+                        <option value="12">12 Horas</option>
+                        <option value="16">16 Horas</option>
+                        <option value="20">20 Horas</option>
+                    </select>
+                </div>
+                <hr class="my-15 border-muted" />
+                <div id="divisor-recuperacao-group">
+                    <h3>Estratégia de Recuperação</h3>
+                    <div class="input-group mt-10">
+                        <div class="tooltip-container mb-05">
+                            <label for="divisor-recuperacao-slider">Divisão de Recuperação (Aporte 1 / Aporte
+                                2)</label>
+                            <i class="tooltip-icon">?<span class="tooltip-text">Defina a agressividade da sua
+                                    recuperação. Isto ajusta a
+                                    percentagem do prejuízo que cada um dos dois aportes de
+                                    recuperação tentará cobrir.</span></i>
+                        </div>
+                        <div class="slider-control-group">
+                            <button class="slider-btn" id="recovery-slider-minus">-</button>
+                            <input type="range" min="10" max="90" value="35" id="divisor-recuperacao-slider"
+                                aria-label="Divisor de Recuperação" class="w-full" step="1" />
+                            <button class="slider-btn" id="recovery-slider-plus">+</button>
+                        </div>
+                        <div id="divisor-recuperacao-valor" class="slider-value-display">
+                            <span>35%</span> / <span>65%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="settings-perfil-content" class="settings-tab-content">
+                <h3>Perfil do Trader</h3>
+                <div class="input-group">
+                    <label for="trader-name-input">Seu Nome</label><input type="text" id="trader-name-input"
+                        placeholder="Digite seu nome ou apelido" />
+                </div>
+            </div>
+            <div id="settings-aparencia-content" class="settings-tab-content">
+                <h3>Temas</h3>
+                <div class="theme-selector" id="modal-theme-selector">
+                    <div class="theme-card" data-theme="moderno">
+                        <div class="theme-preview">
+                            <div class="theme-preview-col"></div>
+                            <div class="theme-preview-col"></div>
+                            <div class="theme-preview-col"></div>
+                        </div>
+                        <p>Moderno</p>
+                    </div>
+                    <div class="theme-card" data-theme="claro">
+                        <div class="theme-preview">
+                            <div class="theme-preview-col"></div>
+                            <div class="theme-preview-col"></div>
+                            <div class="theme-preview-col"></div>
+                        </div>
+                        <p>Claro</p>
+                    </div>
+                    <div class="theme-card" data-theme="matrix">
+                        <div class="theme-preview">
+                            <div class="theme-preview-col"></div>
+                            <div class="theme-preview-col"></div>
+                            <div class="theme-preview-col"></div>
+                        </div>
+                        <p>Matrix</p>
+                    </div>
+                    <div class="theme-card" data-theme="daltonismo">
+                        <div class="theme-preview">
+                            <div class="theme-preview-col"></div>
+                            <div class="theme-preview-col"></div>
+                            <div class="theme-preview-col"></div>
+                        </div>
+                        <p>Contraste</p>
+                    </div>
+                </div>
+            </div>
+            <div id="settings-preferencias-content" class="settings-tab-content">
+                <h3>Preferências Gerais</h3>
+                <div class="flex-row justify-between mb-10">
+                    <label for="modal-notifications-toggle">Notificações de Insight</label><label class="switch"><input
+                            type="checkbox" id="modal-notifications-toggle" checked /><span
+                            class="slider"></span></label>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="close-settings-btn" class="modal-action-btn bg-primary">
+                    Fechar e Aplicar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="replay-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 id="replay-title">Replay da Sessão</h2>
+            <div id="replay-dashboard" class="grid-2-1 gap-15 mt-15">
+                <div id="replay-left-col" class="flex flex-col gap-15">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>Estatísticas da Sessão</h3>
+                        </div>
+                        <div id="replay-stats-grid" class="stats-grid"></div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>Histórico Visual da Sessão</h3>
+                        </div>
+                        <div id="replay-timeline-container" class="timeline-container"></div>
+                    </div>
+                </div>
+                <div id="replay-right-col" class="flex flex-col gap-15">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>Assertividade</h3>
+                        </div>
+                        <div class="pos-rel h-200 mx-auto">
+                            <canvas id="replayAssertividadeChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>Curva de Património</h3>
+                        </div>
+                        <div class="pos-rel h-200 mx-auto">
+                            <canvas id="replayPatrimonioChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="close-replay-btn" class="modal-action-btn bg-primary">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="insight-popup">
+        <p id="insight-popup-text"></p>
+    </div>
+
+    <div id="lockdown-overlay" class="hidden">
+        <h2>Metas Atingidas!</h2>
+        <p>
+            A disciplina é a sua maior aliada. A aplicação está bloqueada para proteger o seu
+            capital e a sua mente. Volte mais tarde.
+        </p>
+        <div id="countdown-timer">00:00:00</div>
+    </div>
+
+    <div id="risk-lab-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>ðŸ”¬ Laboratório de Risco (Monte Carlo)</h2>
+            <p>
+                Simule milhares de dias de trading com a sua gestão e estatísticas atuais para
+                analisar a robustez da sua estratégia a longo prazo.
+            </p>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Taxa de Acerto (W) da Sessão</label>
+                    <input type="text" id="sim-winrate" disabled
+                        title="Valor calculado automaticamente com base nas operações do período" />
+                </div>
+                <div class="input-group">
+                    <label>Payout Médio (P) da Sessão</label>
+                    <input type="text" id="sim-payout" disabled
+                        title="Valor calculado automaticamente com base nas operações do período" />
+                </div>
+            </div>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label for="sim-num-simulations">Nº de Simulações</label>
+                    <select id="sim-num-simulations">
+                        <option value="1000">1.000</option>
+                        <option value="5000">5.000</option>
+                        <option value="10000">10.000</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="sim-max-ops">Máx. Operações / Dia</label>
+                    <input type="number" id="sim-max-ops" value="50" min="1" max="1000" />
+                </div>
+            </div>
+            <div class="modal-actions mb-15 grid-cols-1">
+                <button id="run-simulation-btn" class="modal-action-btn bg-accent">
+                    Executar Simulação
+                </button>
+            </div>
+            <div id="simulation-progress-container" class="hidden">
+                <label>A simular...</label>
+                <div class="progress-bar-container h-12 mt-05">
+                    <div id="simulation-progress-bar" class="progress-bar-fill bg-info"></div>
+                </div>
+            </div>
+            <div id="simulation-results" class="hidden">
+                <hr />
+                <div class="stats-grid grid-cols-2 gap-15">
+                    <div class="stat-card">
+                        <h4>Prob. Atingir Stop Win</h4>
+                        <p id="sim-prob-win" class="positive"></p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Prob. Atingir Stop Loss</h4>
+                        <p id="sim-prob-loss" class="negative"></p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Resultado Médio</h4>
+                        <p id="sim-avg-result"></p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Drawdown Máximo</h4>
+                        <p id="sim-max-drawdown" class="negative"></p>
+                    </div>
+                </div>
+                <p id="simulation-insight"></p>
+            </div>
+            <div class="modal-actions">
+                <button id="close-lab-btn" class="modal-action-btn bg-secondary">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção de Testes Automáticos -->
+    <div id="testes-content" class="tab-content">
+        <div class="panel">
+            <div class="panel-header">
+                <h2>🧪 Testes Automáticos</h2>
+                <p class="text-muted mt-05">
+                    Sistema de testes para verificar a integridade e funcionamento de todos os
+                    módulos
+                </p>
+            </div>
+            <div class="test-controls">
+                <button id="run-all-tests" class="btn btn-primary">
+                    🚀 Executar Todos os Testes
+                </button>
+                <button id="run-logic-tests" class="btn btn-secondary">
+                    🧮 Testes de Lógica
+                </button>
+                <button id="run-ui-tests" class="btn btn-secondary">
+                    🎨 Testes de Interface
+                </button>
+                <button id="run-db-tests" class="btn btn-secondary">ðŸ’¾ Testes de Banco</button>
+                <button id="run-simulation-tests" class="btn btn-secondary">
+                    🎲 Testes de Simulação
+                </button>
+            </div>
+            <div id="test-results" class="test-results"></div>
+        </div>
+    </div>
+
+
+
+    <!-- 🗑️ SISTEMA DE LIXEIRA PROFISSIONAL - ETAPAS 1, 2, 3, 4 & 5 -->
+    <script type="module" src="src/trash/TrashManager.js"></script>
+    <script type="module" src="src/trash/TrashFAB.js"></script>
+    <script type="module" src="src/trash/TrashModal.js"></script>
+    <script type="module" src="src/trash/TagsTrashHandler.js"></script>
+    <script type="module" src="src/trash/OperationsTrashHandler.js"></script>
+    <script type="module" src="src/trash/SessionsTrashHandler.js"></script>
+
+    <!-- 📊 PAINEL INFORMATIVO -->
+    <script type="module" src="src/ui/InfoPanel.js"></script>
+    <script type="module" src="add-info-panel.js"></script>
+    <!-- Script inline para aguardar carregamento e disponibilizar testes -->
+    <script>
+        // 🗑️ Inicialização do Sistema de Lixeira
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                try {
+                    console.log('🗑️ Inicializando Sistema de Lixeira...');
+
+                    // Inicializa TrashManager (já inicializado automaticamente)
+                    if (window.trashManager && window.trashManager.isInitialized) {
+                        console.log('✅ TrashManager inicializado');
+                    }
+
+                    // Inicializa TrashFAB
+                    if (window.getTrashFAB) {
+                        window.trashFAB = window.getTrashFAB();
+                        console.log('✅ TrashFAB inicializado');
+                    }
+
+                    // Inicializa TrashModal
+                    if (window.getTrashModal) {
+                        window.trashModal = window.getTrashModal();
+                        console.log('✅ TrashModal inicializado');
+                    }
+
+                    // Inicializa TagsTrashHandler
+                    if (window.getTagsTrashHandler) {
+                        window.tagsTrashHandler = window.getTagsTrashHandler();
+                        console.log('✅ TagsTrashHandler inicializado');
+                    }
+
+                    // Inicializa OperationsTrashHandler
+                    if (window.getOperationsTrashHandler) {
+                        window.operationsTrashHandler = window.getOperationsTrashHandler();
+                        console.log('✅ OperationsTrashHandler inicializado');
+                    }
+
+                    // Inicializa SessionsTrashHandler
+                    if (window.getSessionsTrashHandler) {
+                        window.sessionsTrashHandler = window.getSessionsTrashHandler();
+                        console.log('✅ SessionsTrashHandler inicializado');
+                    }
+
+                } catch (error) {
+                    console.error('❌ Erro ao inicializar sistema de lixeira:', error);
+                }
+            }, 1000);
+        });
+    </script>
+
+
+    <script type="module" src="tests/test-dom-recursion.js"></script>
+    <script type="module" src="utils/GoalsUtils.js"></script>
+
+    <!-- âœ… APP LIMPO PARA TRADER - SEM MÃ“DULOS ADMINISTRATIVOS -->
+
+    <!-- 🎯 Funcionalidades Úteis para o Trader -->
+    <script type="module" src="src/trader/TraderAssistant.js"></script>
+
+    <script type="module" src="progress-card-calculator.js"></script>
+    <script type="module" src="progress-card-updater.js"></script>
+    <script type="module" src="progress-card-monetary.js"></script>
+    <script type="module" src="progress-card-cache.js"></script>
+    <script type="module" src="src/validation/validation-integration.js"></script>
+    <script src="error-handler.js"></script>
+
+    <script type="module" src="main.js"></script>
+    <script type="module" src="sidebar.js"></script>
+
+
+
+    <!-- Arquivos test-simple.js e test-all-components.js movidos para testes-inuteis/ -->
+    <!-- Novos testes específicos de sincronização -->
+    <script src="tests/test-capital-sync.js"></script>
+    <script src="tests/test-stopwin-sync.js"></script>
+    <script src="tests/test-stopwin-display.js"></script>
+    <script src="tests/test-stoploss-sync.js"></script>
+    <script src="tests/test-stoploss-display.js"></script>
+    <script src="tests/test-sidebar-new-session-btn.js"></script>
+
+    <!-- 🛡️ SISTEMA DE MONITORAMENTO INTELIGENTE -->
+    <script type="module" src="src/monitoring/SmartMonitor.js"></script>
+    <script type="module" src="src/monitoring/ErrorBoundary.js"></script>
+    <script type="module" src="src/testing/AutomatedTestSuite.js"></script>
+
+    <!-- Script inline para aguardar carregamento e disponibilizar testes -->
+    <script>
+        // 🗑️ Inicialização do Sistema de Lixeira
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                try {
+                    console.log('🗑️ Inicializando Sistema de Lixeira...');
+
+                    // Inicializa TrashManager (já inicializado automaticamente)
+                    if (window.trashManager && window.trashManager.isInitialized) {
+                        console.log('âœ… TrashManager inicializado');
+                    }
+
+                    // Inicializa TrashFAB
+                    if (window.getTrashFAB) {
+                        window.trashFAB = window.getTrashFAB();
+                        console.log('âœ… TrashFAB inicializado');
+                    }
+
+                    // Inicializa TrashModal
+                    if (window.getTrashModal) {
+                        window.trashModal = window.getTrashModal();
+                        console.log('âœ… TrashModal inicializado');
+                    }
+
+                    // Inicializa TagsTrashHandler
+                    if (window.getTagsTrashHandler) {
+                        window.tagsTrashHandler = window.getTagsTrashHandler();
+                        console.log('âœ… TagsTrashHandler inicializado');
+                    }
+
+                    // Inicializa OperationsTrashHandler
+                    if (window.getOperationsTrashHandler) {
+                        window.operationsTrashHandler = window.getOperationsTrashHandler();
+                        console.log('âœ… OperationsTrashHandler inicializado');
+                    }
+
+                    // Inicializa SessionsTrashHandler
+                    if (window.getSessionsTrashHandler) {
+                        window.sessionsTrashHandler = window.getSessionsTrashHandler();
+                        console.log('âœ… SessionsTrashHandler inicializado');
+                    }
+
+                    // Função de teste global para a lixeira
+                    window.testTrashSystem = function () {
+                        console.log('🧪 Testando Sistema de Lixeira Completo...');
+
+                        const managerTest = window.trashManager ? window.trashManager.test() : { allTestsPass: false };
+                        const fabTest = window.trashFAB ? window.trashFAB.test() : { allTestsPass: false };
+                        const modalTest = window.trashModal ? window.trashModal.test() : { allTestsPass: false };
+                        const tagsTest = window.tagsTrashHandler ? window.tagsTrashHandler.test() : { allTestsPass: false };
+                        const operationsTest = window.operationsTrashHandler ? window.operationsTrashHandler.test() : { allTestsPass: false };
+                        const sessionsTest = window.sessionsTrashHandler ? window.sessionsTrashHandler.test() : { allTestsPass: false };
+
+                        const systemTest = {
+                            manager: managerTest.allTestsPass,
+                            fab: fabTest.allTestsPass,
+                            modal: modalTest.allTestsPass,
+                            tags: tagsTest.allTestsPass,
+                            operations: operationsTest.allTestsPass,
+                            sessions: sessionsTest.allTestsPass,
+                            integration: !!(window.trashManager && window.trashFAB && window.trashModal && window.tagsTrashHandler && window.operationsTrashHandler && window.sessionsTrashHandler)
+                        };
+
+                        const allSystemTestsPass = Object.values(systemTest).every(Boolean);
+
+                        console.log(allSystemTestsPass ? 'âœ… Sistema de Lixeira funcionando perfeitamente!' : 'âŒ Problemas detectados no sistema:', systemTest);
+
+                        return {
+                            system: systemTest,
+                            manager: managerTest,
+                            fab: fabTest,
+                            modal: modalTest,
+                            tags: tagsTest,
+                            operations: operationsTest,
+                            sessions: sessionsTest,
+                            allTestsPass: allSystemTestsPass
+                        };
+                    };
+
+                    // Função para testar abertura do modal
+                    window.openTrashModal = function () {
+                        if (window.trashModal) {
+                            window.trashModal.open();
+                            console.log('🗑️ Modal da lixeira aberto via comando');
+                        } else {
+                            console.warn('âš ï¸ Modal da lixeira não disponível');
+                        }
+                    };
+
+                    // Função para testar exclusão de tags
+                    window.testTagDeletion = function () {
+                        console.log('🧪 Testando exclusão de tags...');
+
+                        // Cria tag de teste
+                        const testTag = {
+                            id: 'test_tag_' + Date.now(),
+                            text: 'Tag de Teste',
+                            createdAt: new Date().toISOString()
+                        };
+
+                        // Move para lixeira
+                        if (window.trashManager) {
+                            const trashId = window.trashManager.moveToTrash(
+                                testTag,
+                                window.trashManager.categories.TAG,
+                                window.trashManager.complexityLevels.SIMPLE
+                            );
+
+                            if (trashId) {
+                                console.log('âœ… Tag de teste movida para lixeira:', trashId);
+                                console.log('ðŸ’¡ Abra o modal da lixeira para ver o item');
+                                return trashId;
+                            } else {
+                                console.error('âŒ Falha ao mover tag para lixeira');
+                            }
+                        } else {
+                            console.warn('âš ï¸ TrashManager não disponível');
+                        }
+                    };
+
+                    // Função para testar restauração
+                    window.testRestore = function (trashId) {
+                        if (!trashId) {
+                            console.warn('âš ï¸ Forneça o ID do item na lixeira');
+                            console.log('ðŸ’¡ Use: testRestore("trash_id_aqui")');
+                            return;
+                        }
+
+                        console.log('🧪 Testando restauração:', trashId);
+
+                        if (window.trashManager) {
+                            const restored = window.trashManager.restoreFromTrash(trashId);
+
+                            if (restored && restored.success) {
+                                console.log('âœ… Item restaurado com sucesso:', restored);
+                            } else {
+                                console.error('âŒ Falha ao restaurar item');
+                            }
+                        } else {
+                            console.warn('âš ï¸ TrashManager não disponível');
+                        }
+                    };
+
+                    // Função para testar exclusão de operações
+                    window.testOperationDeletion = function () {
+                        console.log('🧪 Testando exclusão de operações...');
+
+                        // Verifica se há operações no histórico
+                        if (!window.state || !window.state.historicoCombinado || window.state.historicoCombinado.length === 0) {
+                            console.warn('âš ï¸ Nenhuma operação encontrada no histórico');
+                            console.log('ðŸ’¡ Execute algumas operações primeiro para testar a exclusão');
+                            return;
+                        }
+
+                        // Cria operação de teste
+                        const testOperation = {
+                            id: 'test_operation_' + Date.now(),
+                            isWin: true,
+                            valor: 50.00,
+                            valorEntrada: 100.00,
+                            valorRetorno: 150.00,
+                            timestamp: new Date().toISOString(),
+                            tag: 'Teste de Exclusão',
+                            etapa: 1
+                        };
+
+                        // Adiciona ao histórico
+                        window.state.historicoCombinado.push(testOperation);
+
+                        // Atualiza UI
+                        if (window.ui && window.ui.renderizarTimelineCompleta) {
+                            window.ui.renderizarTimelineCompleta();
+                        }
+
+                        console.log('âœ… Operação de teste adicionada:', testOperation.id);
+                        console.log('ðŸ’¡ Passe o mouse sobre a operação na timeline para ver o botão de exclusão 🗑️');
+
+                        return testOperation.id;
+                    };
+
+                    // Função para simular operação e testar exclusão
+                    window.testFullOperationCycle = function () {
+                        console.log('🧪 Testando ciclo completo de operação...');
+
+                        // Cria operação de teste
+                        const operationId = window.testOperationDeletion();
+
+                        if (operationId) {
+                            console.log('âœ… Operação criada:', operationId);
+                            console.log('ðŸ’¡ Agora você pode:');
+                            console.log('   1. Passar o mouse sobre a operação na timeline');
+                            console.log('   2. Clicar no botão 🗑️ para excluir');
+                            console.log('   3. Abrir o modal da lixeira para ver o item');
+                            console.log('   4. Restaurar a operação se desejar');
+                        }
+                    };
+
+                    // Função para testar exclusão de sessões
+                    window.testSessionDeletion = function () {
+                        console.log('🧪 Testando exclusão de sessões...');
+
+                        // Verifica se há sessão ativa
+                        if (!window.state || !window.state.isSessionActive) {
+                            console.warn('âš ï¸ Nenhuma sessão ativa encontrada');
+                            console.log('ðŸ’¡ Inicie uma sessão primeiro para testar a exclusão');
+                            return;
+                        }
+
+                        // Verifica se há operações
+                        if (!window.state.historicoCombinado || window.state.historicoCombinado.length === 0) {
+                            console.warn('âš ï¸ Sessão ativa mas sem operações');
+                            console.log('ðŸ’¡ Execute algumas operações primeiro');
+                            return;
+                        }
+
+                        console.log('âœ… Sessão ativa encontrada com', window.state.historicoCombinado.length, 'operações');
+                        console.log('ðŸ’¡ Procure pelo botão "🗑️ Excluir Sessão" nos controles de sessão');
+                        console.log('ðŸ’¡ O botão aparece apenas quando há uma sessão ativa com operações');
+
+                        return {
+                            sessionActive: true,
+                            operationsCount: window.state.historicoCombinado.length,
+                            capitalInicial: window.state.capitalInicioSessao,
+                            capitalAtual: window.state.capitalAtual,
+                            resultado: window.state.capitalAtual - window.state.capitalInicioSessao
+                        };
+                    };
+
+                    // Função para testar limpeza automática
+                    window.testAutoCleanup = function () {
+                        console.log('🧪 Testando sistema de limpeza automática...');
+
+                        if (!window.trashManager) {
+                            console.warn('âš ï¸ TrashManager não disponível');
+                            return;
+                        }
+
+                        // Obtém estatísticas atuais
+                        const stats = window.trashManager.getCleanupStats();
+                        const config = window.trashManager.getCleanupConfig();
+
+                        console.log('📊 Estatísticas de limpeza:', stats);
+                        console.log('ðŸ”§ Configurações atuais:', config);
+
+                        // Executa limpeza manual
+                        const result = window.trashManager.performAutoCleanup();
+
+                        if (result.error) {
+                            console.error('âŒ Erro na limpeza:', result.error);
+                        } else {
+                            console.log('âœ… Limpeza executada:', result);
+                            console.log(`   - ${result.deletedCount} item(s) removido(s)`);
+                            console.log(`   - ${result.expiringSoonCount} item(s) expirando em breve`);
+                            console.log(`   - ${result.totalItemsRemaining} item(s) restantes`);
+                        }
+
+                        return { stats, config, result };
+                    };
+
+                    // Função para configurar limpeza
+                    window.configureCleanup = function (options = {}) {
+                        console.log('ðŸ”§ Configurando sistema de limpeza...');
+
+                        if (!window.trashManager) {
+                            console.warn('âš ï¸ TrashManager não disponível');
+                            return;
+                        }
+
+                        const defaultOptions = {
+                            enabled: true,
+                            intervalHours: 6,
+                            maxRetentionDays: 30,
+                            notifyExpiring: true,
+                            notifyCleanup: true
+                        };
+
+                        const finalOptions = { ...defaultOptions, ...options };
+
+                        const result = window.trashManager.configureCleanup(finalOptions);
+
+                        if (result) {
+                            console.log('âœ… Configuração aplicada:', result);
+                        } else {
+                            console.error('âŒ Falha ao configurar limpeza');
+                        }
+
+                        return result;
+                    };
+
+                    // 🧪 Função de teste específica para sessões
+                    window.testSessionTrash = function () {
+                        console.log('🧪 Testando sistema de lixeira para sessões...');
+
+                        if (!window.sessionsTrashHandler) {
+                            console.warn('âš ï¸ SessionsTrashHandler não disponível');
+                            return;
+                        }
+
+                        // Verifica se o botão de exclusão existe
+                        const deleteBtn = document.querySelector('.delete-session-btn');
+                        console.log('ðŸ” Botão de exclusão encontrado:', deleteBtn ? 'SIM' : 'NÃƒO');
+
+                        if (deleteBtn) {
+                            console.log('ðŸ‘ï¸ Visibilidade do botão:', deleteBtn.style.display);
+                            console.log('📊 Estado da sessão:', {
+                                isSessionActive: window.state?.isSessionActive,
+                                hasOperations: window.state?.historicoCombinado?.length > 0,
+                                operationsCount: window.state?.historicoCombinado?.length || 0
+                            });
+                        }
+
+                        // Verifica controles de sessão
+                        const sessionControls = document.querySelector('.session-controls, .controls-container, [class*="session"], [class*="control"]');
+                        console.log('ðŸŽ›ï¸ Controles de sessão encontrados:', sessionControls ? 'SIM' : 'NÃƒO');
+
+                        if (sessionControls) {
+                            console.log('ðŸ“ Localização dos controles:', sessionControls.className);
+                            console.log('ðŸ”§ Filhos dos controles:', Array.from(sessionControls.children).map(c => c.className));
+                        }
+
+                        return {
+                            deleteButtonExists: !!deleteBtn,
+                            deleteButtonVisible: deleteBtn ? deleteBtn.style.display !== 'none' : false,
+                            sessionState: window.state?.isSessionActive,
+                            operationsCount: window.state?.historicoCombinado?.length || 0,
+                            sessionControlsFound: !!sessionControls
+                        };
+                    };
+
+                    // 🧪 Função de teste para sistema de restauração
+                    window.testTrashRestore = function () {
+                        console.log('🧪 Testando sistema de restauração da lixeira...');
+
+                        const results = {
+                            trashManager: !!window.trashManager,
+                            trashModal: !!window.trashModal,
+                            operationsHandler: !!window.operationsTrashHandler,
+                            sessionsHandler: !!window.sessionsTrashHandler,
+                            tagsHandler: !!window.tagsTrashHandler,
+                            trashItems: 0,
+                            canRestore: false,
+                            sessionTests: {}
+                        };
+
+                        if (window.trashManager) {
+                            const items = window.trashManager.getTrashItems();
+                            results.trashItems = items.length;
+                            results.canRestore = items.length > 0;
+
+                            console.log('📊 Itens na lixeira:', items.length);
+
+                            if (items.length > 0) {
+                                console.log('🗑️ Itens disponíveis para restauração:');
+                                items.forEach((item, index) => {
+                                    console.log(`  ${index + 1}. [${item.category}] ${item.originalId} - ${new Date(item.deletedAt).toLocaleString()}`);
+                                });
+
+                                // Testa especificamente sessões
+                                const sessionItems = items.filter(item => item.category === 'session');
+                                if (sessionItems.length > 0) {
+                                    console.log('📊 Testando restauração de sessão...');
+                                    const sessionItem = sessionItems[0];
+
+                                    try {
+                                        console.log('ðŸ” Dados da sessão na lixeira:', sessionItem.data);
+
+                                        // Testa mapeamento de dados
+                                        if (window.sessionsTrashHandler) {
+                                            const mappedData = window.sessionsTrashHandler.mapSessionDataToState(sessionItem.data);
+                                            console.log('ðŸ—ºï¸ Dados mapeados:', mappedData);
+                                            results.sessionTests.mapping = true;
+                                        }
+
+                                        results.sessionTests.available = true;
+                                    } catch (error) {
+                                        console.error('âŒ Erro no teste de sessão:', error);
+                                        results.sessionTests.error = error.message;
+                                    }
+                                }
+
+                                // Não executa restauração automática para evitar conflitos
+                                console.log('â„¹ï¸ Para testar restauração, use: window.trashModal.restoreItem("ID_DO_ITEM")');
+                            }
+                        }
+
+                        console.log('ðŸ“‹ Resultados do teste:', results);
+                        return results;
+                    };
+
+                    // 🧪 Função específica para testar restauração de sessão
+                    window.testSessionRestore = async function (sessionId) {
+                        console.log('🧪 Testando restauração específica de sessão...');
+
+                        if (!window.trashManager) {
+                            console.error('âŒ TrashManager não disponível');
+                            return false;
+                        }
+
+                        const items = window.trashManager.getTrashItems();
+                        const sessionItem = items.find(item =>
+                            item.category === 'session' &&
+                            (item.id === sessionId || item.originalId === sessionId)
+                        );
+
+                        if (!sessionItem) {
+                            console.error('âŒ Sessão não encontrada na lixeira');
+                            console.log('📊 Sessões disponíveis:',
+                                items.filter(item => item.category === 'session')
+                                    .map(item => ({ id: item.id, originalId: item.originalId }))
+                            );
+                            return false;
+                        }
+
+                        try {
+                            console.log('ðŸ” Testando restauração da sessão:', sessionItem);
+
+                            if (window.trashModal) {
+                                await window.trashModal.restoreItem(sessionItem.id);
+                                return true;
+                            } else {
+                                console.error('âŒ TrashModal não disponível');
+                                return false;
+                            }
+
+                        } catch (error) {
+                            console.error('âŒ Erro no teste de restauração:', error);
+                            return false;
+                        }
+                    };
+
+                    // 🧪 Função para listar sessões na lixeira
+                    window.listSessionsInTrash = function () {
+                        console.log('ðŸ“‹ Listando sessões na lixeira...');
+
+                        if (!window.trashManager) {
+                            console.error('âŒ TrashManager não disponível');
+                            return [];
+                        }
+
+                        const items = window.trashManager.getTrashItems();
+                        const sessions = items.filter(item => item.category === 'session');
+
+                        console.log(`📊 Encontradas ${sessions.length} sessões na lixeira:`);
+
+                        sessions.forEach((session, index) => {
+                            const data = new Date(session.data?.data || session.deletedAt).toLocaleDateString();
+                            const modo = session.data?.modo || session.data?.sessionMode || 'indefinido';
+                            const ops = session.data?.historicoCombinado?.length || 0;
+
+                            console.log(`  ${index + 1}. ID: ${session.id}`);
+                            console.log(`     Data: ${data}`);
+                            console.log(`     Modo: ${modo}`);
+                            console.log(`     Operações: ${ops}`);
+                            console.log(`     Original ID: ${session.originalId}`);
+                            console.log('     ---');
+                        });
+
+                        return sessions;
+                    };
+
+                    // Função para criar sessão de teste
+                    window.createTestSession = function () {
+                        console.log('🧪 Criando sessão de teste...');
+
+                        // Verifica se já há sessão ativa
+                        if (window.state && window.state.isSessionActive) {
+                            console.warn('âš ï¸ Já existe uma sessão ativa');
+                            console.log('ðŸ’¡ Finalize a sessão atual primeiro ou use testSessionDeletion()');
+                            return;
+                        }
+
+                        try {
+                            // Inicia nova sessão se possível
+                            if (window.events && window.events.handleNewSession) {
+                                window.events.handleNewSession({ auto: true });
+                            } else if (window.logic && window.logic.startNewSession) {
+                                window.logic.startNewSession('normal');
+                            } else {
+                                // Fallback manual
+                                if (window.state) {
+                                    window.state.isSessionActive = true;
+                                    window.state.sessionMode = 'normal';
+                                    window.state.capitalInicioSessao = window.state.capitalAtual || 1000;
+                                    window.state.historicoCombinado = [];
+                                    window.state.undoStack = [];
+                                }
+                            }
+
+                            // Adiciona algumas operações de teste
+                            if (window.state) {
+                                const testOperations = [
+                                    { id: 'test_1', isWin: true, valor: 50, timestamp: new Date().toISOString(), tag: 'Teste WIN' },
+                                    { id: 'test_2', isWin: false, valor: -30, timestamp: new Date().toISOString(), tag: 'Teste LOSS' },
+                                    { id: 'test_3', isWin: true, valor: 80, timestamp: new Date().toISOString(), tag: 'Teste WIN 2' }
+                                ];
+
+                                window.state.historicoCombinado = testOperations;
+                                window.state.capitalAtual = window.state.capitalInicioSessao + 100; // Lucro de R$ 100
+                            }
+
+                            // Atualiza interface
+                            if (window.ui) {
+                                if (window.ui.atualizarVisibilidadeBotoesSessao) {
+                                    window.ui.atualizarVisibilidadeBotoesSessao();
+                                }
+                                if (window.ui.renderizarTimelineCompleta) {
+                                    window.ui.renderizarTimelineCompleta();
+                                }
+                            }
+
+                            console.log('âœ… Sessão de teste criada com sucesso!');
+                            console.log('ðŸ’¡ Agora você pode testar a exclusão com testSessionDeletion()');
+
+                            return true;
+
+                        } catch (error) {
+                            console.error('âŒ Erro ao criar sessão de teste:', error);
+                            return false;
+                        }
+                    };
+
+                    console.log('🗑️ Sistema de Lixeira carregado com sucesso!');
+                    console.log('ðŸ’¡ Use testTrashSystem() para testar o sistema completo');
+
+                } catch (error) {
+                    console.error('âŒ Erro ao inicializar Sistema de Lixeira:', error);
+                }
+            }, 1000);
+        });
+
+        // Aguarda carregamento completo e disponibiliza testes globalmente
+        setTimeout(() => {
+            console.log('🧪 Inicializando ambiente de testes...');
+
+            // Verifica se as funções de teste estão disponíveis
+            const testFunctions = [
+                'quickTestAll',
+                'testComponent',
+                'listAvailableTests',
+                'runAllComponentTests',
+                'generateTestCoverageReport',
+                'runQuickTests',
+            ];
+
+            let available = 0;
+            testFunctions.forEach((func) => {
+                if (typeof window[func] === 'function') {
+                    available++;
+                    console.log(`âœ… ${func}: Disponível`);
+                } else {
+                    console.log(`âŒ ${func}: Não encontrada`);
+                }
+            });
+
+            console.log(
+                `📊 Total: ${available}/${testFunctions.length} funções de teste carregadas`
+            );
+
+            // SEMPRE criar função de emergência (independente dos outros scripts)
+            window.emergencyTest = function () {
+                console.log('ðŸš¨ TESTE DE EMERGÃŠNCIA - COMPONENTES BÃSICOS');
+                console.log('='.repeat(50));
+
+                const basicTests = [
+                    { name: 'DOM Object', test: () => typeof dom !== 'undefined' },
+                    { name: 'UI Object', test: () => typeof ui !== 'undefined' },
+                    { name: 'Logic Object', test: () => typeof logic !== 'undefined' },
+                    { name: 'Charts Object', test: () => typeof charts !== 'undefined' },
+                    { name: 'Config Object', test: () => typeof config !== 'undefined' },
+                    { name: 'State Object', test: () => typeof state !== 'undefined' },
+                    { name: 'Sidebar Object', test: () => typeof sidebar !== 'undefined' },
+                ];
+
+                let passed = 0;
+                basicTests.forEach(({ name, test }) => {
+                    try {
+                        if (test()) {
+                            console.log(`âœ… ${name}: OK`);
+                            passed++;
+                        } else {
+                            console.log(`âŒ ${name}: FALHOU`);
+                        }
+                    } catch (error) {
+                        console.log(`ðŸ’¥ ${name}: ERRO - ${error.message}`);
+                    }
+                });
+
+                console.log('='.repeat(50));
+                console.log(
+                    `📊 RESULTADO: ${passed}/${basicTests.length} componentes básicos OK`
+                );
+                return { passed, total: basicTests.length };
+            };
+
+            // Função para testar componentes individuais
+            window.testBasic = function (componentName) {
+                console.log(`🎯 Testando: ${componentName}`);
+
+                switch (componentName.toLowerCase()) {
+                    case 'dom':
+                        return typeof dom !== 'undefined' && Object.keys(dom).length > 10;
+                    case 'ui':
+                        return (
+                            typeof ui !== 'undefined' && typeof ui.atualizarTudo === 'function'
+                        );
+                    case 'logic':
+                        return (
+                            typeof logic !== 'undefined' &&
+                            typeof logic.calcularEntrada === 'function'
+                        );
+                    case 'charts':
+                        return (
+                            typeof charts !== 'undefined' &&
+                            typeof charts.updateProgressChart === 'function'
+                        );
+                    case 'config':
+                        return (
+                            typeof config !== 'undefined' && config.capitalInicial !== undefined
+                        );
+                    case 'state':
+                        return (
+                            typeof state !== 'undefined' &&
+                            typeof state.isSessionActive !== 'undefined'
+                        );
+                    case 'sidebar':
+                        return typeof sidebar !== 'undefined';
+                    default:
+                        console.log(
+                            'âŒ Componente não reconhecido. Use: dom, ui, logic, charts, config, state, sidebar'
+                        );
+                        return false;
+                }
+            };
+
+            // Função para ver objetos globais
+            window.showGlobals = function () {
+                console.log('ðŸŒ OBJETOS GLOBAIS DISPONÃVEIS:');
+                const globals = [
+                    'dom',
+                    'ui',
+                    'logic',
+                    'charts',
+                    'config',
+                    'state',
+                    'sidebar',
+                    'cssResolver',
+                ];
+                globals.forEach((name) => {
+                    const exists = typeof window[name] !== 'undefined';
+                    console.log(
+                        `${exists ? 'âœ…' : 'âŒ'} ${name}:`,
+                        exists ? typeof window[name] : 'não encontrado'
+                    );
+                });
+            };
+
+            if (available > 0) {
+                console.log('🚀 TESTES AVANÃ‡ADOS PRONTOS! Use:');
+                if (window.quickTestAll) console.log('  - quickTestAll()');
+                if (window.testComponent) console.log('  - testComponent("dom")');
+                if (window.listAvailableTests) console.log('  - listAvailableTests()');
+                if (window.runAllComponentTests) console.log('  - runAllComponentTests()');
+                console.log('');
+            }
+
+            console.log('ðŸš¨ FUNÃ‡Ã•ES DE EMERGÃŠNCIA SEMPRE DISPONÃVEIS:');
+            console.log('  - emergencyTest()');
+            console.log('  - testBasic("dom")');
+            console.log('  - showGlobals()');
+
+            console.log('='.repeat(60));
+
+            // ðŸ”„ Tenta novamente após mais tempo se poucas funções carregaram
+            if (available < 4) {
+                console.log('â³ Tentando carregar funções adicionais em 2 segundos...');
+                setTimeout(() => {
+                    const delayedFunctions = [
+                        'testUIComponents',
+                        'testLogicFunctions',
+                        'testSidebar',
+                        'testInitialization',
+                    ];
+                    let foundLater = 0;
+
+                    delayedFunctions.forEach((func) => {
+                        if (typeof window[func] === 'function') {
+                            foundLater++;
+                            console.log(`âœ… ${func}: Carregada tardiamente                    });
+
+                    if (foundLater > 0) {
+                        console.log(
+                            `ðŸŽ‰ ${ foundLater } funções adicionais carregadas! Total agora: ${ available + foundLater}`
+                        );
+                        console.log('🚀 Tente novamente: emergencyTest() ou quickTestAll()');
+                    }
+                }, 2000);
+            }
+        }, 3000); // Aguarda 3 segundos para garantir carregamento completo
+    </script>
+
+    <!-- 🛡️ SISTEMA DE PROTEÃ‡ÃƒO REENGENHARIA - VERSÃƒO SEGURA -->
+    <script type="module">
+        console.log('🛡️ Sistema de Proteção REENGENHARIA - Versão Segura v2.0');
+
+        // ================================================================
+        // ðŸš¨ PROTEÃ‡ÃƒO CONTRA RECURSÃƒO INFINITA
+        // ================================================================
+        class SafeProtectionSystem {
+            constructor() {
+                this.isActive = false;
+                this.emergencyMode = false;
+                this.recursionDepth = 0;
+                this.maxRecursionDepth = 3;
+                this.timerIds = new Set();
+                this.intervalIds = new Set();
+            }
+
+            // Wrapper seguro para setTimeout
+            safeSetTimeout(callback, delay) {
+                // 🛡️ Verificação ultra-robusta de contexto
+                const safeThis = this || window.safeProtection;
+
+                if (
+                    !safeThis ||
+                    typeof safeThis.recursionDepth === 'undefined' ||
+                    !safeThis.isActive
+                ) {
+                    console.warn(
+                        'âš ï¸ SafeProtection contexto inválido - usando fallback direto'
+                    );
+
+                    // ðŸš‘ Tentar acessar instância global como backup
+                    if (window.safeProtection && window.safeProtection !== safeThis) {
+                        try {
+                            return window.safeProtection.safeSetTimeout(callback, delay);
+                        } catch (globalError) {
+                            console.warn(
+                                'âš ï¸ Instância global também falhou:',
+                                globalError.message
+                            );
+                        }
+                    }
+
+                    // 🛡️ Último fallback: setTimeout nativo com proteção
+                    console.warn('âŒ SafeProtection: Usando setTimeout nativo seguro');
+                    try {
+                        return setTimeout(() => {
+                            try {
+                                callback();
+                            } catch (callbackError) {
+                                console.error('âŒ Erro no callback:', callbackError);
+                            }
+                        }, delay);
+                    } catch (setTimeoutError) {
+                        console.error('âŒ Erro crítico no setTimeout:', setTimeoutError);
+                        return null;
+                    }
+                }
+
+                // ðŸ”„ Usar contexto válido encontrado
+                const contextToUse = safeThis;
+
+                if (contextToUse.recursionDepth > contextToUse.maxRecursionDepth) {
+                    console.warn('ðŸš¨ Recursão detectada em setTimeout - abortando');
+                    return null;
+                }
+
+                const timerId = setTimeout(() => {
+                    contextToUse.recursionDepth++;
+                    try {
+                        callback();
+                    } catch (error) {
+                        console.error('âŒ Erro em setTimeout:', error);
+                    } finally {
+                        contextToUse.recursionDepth--;
+                        if (contextToUse.timerIds) {
+                            contextToUse.timerIds.delete(timerId);
+                        }
+                    }
+                }, delay);
+
+                if (contextToUse.timerIds) {
+                    contextToUse.timerIds.add(timerId);
+                }
+                return timerId;
+            }
+
+            // Wrapper seguro para setInterval
+            safeSetInterval(callback, delay) {
+                // 🛡️ Verificação ultra-robusta de contexto
+                const safeThis = this || window.safeProtection;
+
+                if (
+                    !safeThis ||
+                    typeof safeThis.recursionDepth === 'undefined' ||
+                    !safeThis.isActive
+                ) {
+                    console.warn(
+                        'âš ï¸ SafeProtection contexto inválido - usando fallback direto'
+                    );
+
+                    // ðŸš‘ Tentar acessar instância global como backup
+                    if (window.safeProtection && window.safeProtection !== safeThis) {
+                        try {
+                            return window.safeProtection.safeSetInterval(callback, delay);
+                        } catch (globalError) {
+                            console.warn(
+                                'âš ï¸ Instância global também falhou:',
+                                globalError.message
+                            );
+                        }
+                    }
+
+                    // 🛡️ Último fallback: setInterval nativo com proteção
+                    console.warn('âŒ SafeProtection: Usando setInterval nativo seguro');
+                    try {
+                        return setInterval(() => {
+                            try {
+                                callback();
+                            } catch (callbackError) {
+                                console.error('âŒ Erro no callback:', callbackError);
+                            }
+                        }, delay);
+                    } catch (setIntervalError) {
+                        console.error('âŒ Erro crítico no setInterval:', setIntervalError);
+                        return null;
+                    }
+                }
+
+                // ðŸ”„ Usar contexto válido encontrado
+                const contextToUse = safeThis;
+
+                if (contextToUse.recursionDepth > contextToUse.maxRecursionDepth) {
+                    console.warn('ðŸš¨ Recursão detectada em setInterval - abortando');
+                    return null;
+                }
+
+                const intervalId = setInterval(() => {
+                    contextToUse.recursionDepth++;
+                    try {
+                        callback();
+                    } catch (error) {
+                        console.error('âŒ Erro em setInterval:', error);
+                        if (contextToUse.clearSafeInterval) {
+                            contextToUse.clearSafeInterval(intervalId);
+                        } else {
+                            clearInterval(intervalId);
+                        }
+                    } finally {
+                        contextToUse.recursionDepth--;
+                    }
+                }, delay);
+
+                if (contextToUse.intervalIds) {
+                    contextToUse.intervalIds.add(intervalId);
+                }
+                return intervalId;
+            }
+
+            clearSafeTimeout(timerId) {
+                if (timerId && this.timerIds.has(timerId)) {
+                    clearTimeout(timerId);
+                    this.timerIds.delete(timerId);
+                }
+            }
+
+            clearSafeInterval(intervalId) {
+                if (intervalId && this.intervalIds.has(intervalId)) {
+                    clearInterval(intervalId);
+                    this.intervalIds.delete(intervalId);
+                }
+            }
+
+            emergencyStop() {
+                console.log('ðŸš¨ EMERGENCY STOP - Parando todos os timers...');
+                this.emergencyMode = true;
+
+                // Para todos os timers conhecidos
+                this.timerIds.forEach((id) => clearTimeout(id));
+                this.intervalIds.forEach((id) => clearInterval(id));
+
+                this.timerIds.clear();
+                this.intervalIds.clear();
+                this.recursionDepth = 0;
+
+                console.log('âœ… Emergency stop completo');
+            }
+
+            forceRecovery() {
+                console.log('ðŸ”„ Forçando recuperação do sistema...');
+                this.emergencyStop();
+
+                // Reinicia sistemas básicos se possível
+                this.safeSetTimeout(() => {
+                    if (window.ui && typeof window.ui.syncUIFromState === 'function') {
+                        try {
+                            window.ui.syncUIFromState();
+                            console.log('âœ… UI sincronizada');
+                        } catch (error) {
+                            console.warn('âš ï¸ Erro ao sincronizar UI:', error.message);
+                        }
+                    }
+                }, 1000);
+            }
+
+            // ðŸš‘ Forçar inicialização quando necessário
+            _forceInitialization() {
+                try {
+                    console.log('ðŸ”„ Forçando reinicialização do SafeProtection...');
+                    this.isActive = false;
+                    this.emergencyMode = false;
+                    this.recursionDepth = 0;
+                    this.maxRecursionDepth = 3;
+                    this.timerIds = new Set();
+                    this.intervalIds = new Set();
+                    this.isActive = true;
+                    console.log('âœ… SafeProtection reinicializado com sucesso');
+                } catch (error) {
+                    console.error('âŒ Erro na reinicialização do SafeProtection:', error);
+                }
+            }
+
+            // 📊 Método de diagnóstico
+            getStatus() {
+                return {
+                    isActive: this.isActive,
+                    emergencyMode: this.emergencyMode,
+                    recursionDepth: this.recursionDepth,
+                    activeTimers: this.timerIds.size,
+                    activeIntervals: this.intervalIds.size,
+                };
+            }
+        }
+
+        // 🚀 Instancia o sistema de proteção seguro com inicialização robusta
+        let safeProtection;
+        try {
+            safeProtection = new SafeProtectionSystem();
+            safeProtection.isActive = true;
+            console.log('âœ… SafeProtectionSystem inicializado:', safeProtection.getStatus());
+        } catch (error) {
+            console.error('âŒ Erro ao criar SafeProtectionSystem:', error);
+            // Fallback para o sistema simples
+            safeProtection = {
+                safeSetTimeout: (cb, delay) => setTimeout(cb, delay),
+                safeSetInterval: (cb, delay) => setInterval(cb, delay),
+                safeClearTimeout: (id) => clearTimeout(id),
+                safeClearInterval: (id) => clearInterval(id),
+                isActive: false,
+                getStatus: () => ({ isActive: false, fallbackMode: true }),
+            };
+            console.log('âš ï¸ SafeProtection em modo fallback');
+        }
+
+        // ðŸŒ Expõe funções globalmente com verificação
+        window.emergencyProtectionStop = () => {
+            if (safeProtection && typeof safeProtection.emergencyStop === 'function') {
+                return safeProtection.emergencyStop();
+            }
+            console.warn('âš ï¸ emergencyProtectionStop não disponível');
+        };
+
+        window.forceRecovery = () => {
+            if (safeProtection && typeof safeProtection.forceRecovery === 'function') {
+                return safeProtection.forceRecovery();
+            }
+            console.warn('âš ï¸ forceRecovery não disponível');
+        };
+
+        window.safeProtection = safeProtection;
+
+        // 📊 Função de diagnóstico global
+        window.checkSafeProtectionStatus = () => {
+            if (safeProtection && typeof safeProtection.getStatus === 'function') {
+                const status = safeProtection.getStatus();
+                console.log('📊 SafeProtection Status:', status);
+                return status;
+            }
+            console.warn('âŒ SafeProtection não disponível');
+            return { available: false };
+        };
+
+        // Proteções automáticas
+        let errorCount = 0;
+        window.addEventListener('error', (event) => {
+            errorCount++;
+            if (errorCount > 10) {
+                console.warn('ðŸš¨ Muitos erros detectados - ativando modo de emergência');
+                safeProtection.emergencyStop();
+                  });
+
+        // Reset de erros periodicamente
+        safeProtection.safeSetInterval(() => {
+            if (errorCount > 0) {
+                errorCount = Math.max(0, errorCount - 1);
+            }
+        }, 30000); // Reset gradual a cada 30 segundos
+
+        console.log('🛡️ Sistema de Proteção Seguro ATIVO');
+        console.log('ðŸš¨ Funções de emergência disponíveis:');
+        console.log('  emergencyProtectionStop() - Para todos os sistemas');
+        console.log('  forceRecovery() - Recuperação forçada');
+        console.log('  safeProtection.safeSetTimeout() - setTimeout seguro');
+        console.log('  safeProtection.safeSetInterval() - setInterval seguro');
+    </script>
+
+
+
+    <!-- ðŸ” TESTES DE CORES E GRÃFICOS REMOVIDOS -->
+    <!-- Arquivos movidos para testes-inuteis/ para evitar spam e problemas de performance -->
+    <!-- Use teste-restauracao-limpo.js para testes limpos -->
+
+    <!-- 🎨 LAYOUTS ALTERNATIVOS PARA CENTRO DO GRÃFICO -->
+    <script src="layouts-centro-grafico.js"></script>
+
+
+    <!-- ðŸ§  SISTEMA UNIFICADO DE GRÃFICOS - ARQUITETURA LENDÃRIA -->
+    <script type="module" src="src/charts/UnifiedChartSystem.js"></script>
+    <script type="module" src="src/charts/MigrationManager.js"></script>
+
+    <!-- Plugins do Sistema Unificado -->
+    <script type="module" src="src/charts/plugins/PerformanceMonitorPlugin.js"></script>
+    <script type="module" src="src/charts/plugins/DataValidationPlugin.js"></script>
+    <script type="module" src="src/charts/plugins/StateObserverPlugin.js"></script>
+
+    <!-- Sistema Legado (será migrado gradualmente) -->
+    <script src="enhanced-donut-chart-system.js"></script>
+
+    <!-- 🧪 Sistema de Testes Completo -->
+    <script type="module" src="src/charts/tests/UnifiedChartSystemTests.js"></script>
+
+
+    <!-- 🧪 TESTE MANUAL CONSERVADOR -->
+    <script>
+        // Funções de teste inline para evitar arquivos externos
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🧪 Teste manual carregado');
+
+            window.verificarCard = function () {
+                const metaProgress = document.getElementById('meta-progress-value');
+                const winValue = document.getElementById('win-current-value');
+                const lossValue = document.getElementById('loss-current-value');
+
+                console.log('📊 Card Status:');
+                console.log('  Meta:', metaProgress?.textContent, '| Classe:', metaProgress?.className);
+                console.log('  Win:', winValue?.textContent);
+                console.log('  Loss:', lossValue?.textContent);
+                console.log('  Operações:', window.state?.historicoCombinado?.length || 0);
+            };
+
+            window.testarOperacao = function () {
+                if (window.state?.historicoCombinado) {
+                    const a = wiistoricoCombinado.length;
+
+                    window.state.historicoCombinado.push({
+                        id: 'teste_' + Date.now(),
+                        isWin: true,
+                        resultado: 'win',
+                        valor: 100,
+                        entrada: 100,
+                        retorno: 180
+                    });
+
+                    console.log('🎯 Operação adicionada:', antes, 'â†’', window.state.historicoCombinado.length);
+
+                    setTimeout(() => {
+                        console.log('📊 Verificando card após operação:');
+                        window.verificarCard();
+             
+                }
+            };
+        });
+    </script>
+
+
+
+    <!-- ðŸš¨ TESTE AUTOMÃTICO INICIAL -->
+    <script>
+        // Executar diagnóstico automático após carregamento
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                console.log('ðŸš¨ EXECUTANDO TESTE AUTOMÃTICO INICIAL...');
+                if (window.testGhostValues) {
+                    const ghostResults = window.testGhostValues();
+                    if (ghostResults.length > 0) {
+                        console.error('ðŸ‘» GHOSLUES DEThostResults);
+                    } else {
+                        console.log('âœ… Nenhum ghost value detectado');
+                    }
+                }
+            }, 2000);
+        });
+    </script>
+    <script type="module" src="install-prompt.js"></script>
+    <script>
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('âÅ“â€¦ SW registrado:', registration.scope);
+            lha ao registrar SW:', error);
+                    });
+            });
+        }
+    </script>
+
+    <!-- Help System Components -->
+    <script src="src/ui/components/help/glossary-data.js"></script>
+    <script type="module" src="src/ui/components/help/MetricTooltipManager.js"></script>
+    <script type="module" src="src/ui/components/help/HelpFAB.js"></script>
+    <script type="module" src="src/ui/components/help/AnalysisHelpIcons.js"></script>
+    <script type="module" src="src/ui/components/help/ModalsHelpIcons.js"></script>
+    <script>
+        // Inicializar Help FAB quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', () => {
+            requestAnimationFrame(() => {
+                if (window.HelpFAB) {
+                    const helpFab = new window.HelpFAB();
+                    helpFab.init();
+                    window.helpFab = helpFab;
+                    console.log('✅ Sistema de Ajuda inicializado');
+                } else {
+                    console.error('❌ HelpFAB não encontrado');
+                }
+                
+                // INICIALIZAR METRICTOOLTIPMANAGER (para todos os tooltips)
+                if (window.MetricTooltipManager) {
+                    window.metricTooltips = new window.MetricTooltipManager();
+                    window.metricTooltips.init();
+                    console.log('✅ MetricTooltipManager ativado - Tooltips funcionais!');
+                } else {
+                    console.error('❌ MetricTooltipManager não encontrado');
+                }
+            });
+        });
+    </script>
+    <script src="src/ui/components/help/DashboardHelpIcons.js"></script>
+    <script src="fab-dock-manager.js"></script>
+
+</body>
+
+</html>
+                                                                                           

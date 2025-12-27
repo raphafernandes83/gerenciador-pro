@@ -380,6 +380,50 @@ export class ModalUI extends BaseUI {
 
         logger.debug(`Modal exibido: ${title}`);
     }
+
+    /**
+     * Exibe modal de tags para classificacao de operacoes Win/Loss
+     * @param {boolean} isWin - True se vitoria, false se derrota
+     */
+    showTagsModal(isWin) {
+        const TAGS = {
+            win: [
+                '✅ Segui o Plano',
+                '🎯 Análise Perfeita',
+                '📈 A Favor da Tendência',
+                '😌 Paciência',
+            ],
+            loss: [
+                '❌ Fora do Plano',
+                '😡 Impaciência',
+                '😰 Hesitação/Medo',
+                '📉 Contra Tendência',
+            ],
+        };
+        if (dom.tagsModalTitle)
+            dom.tagsModalTitle.textContent = `Classifique sua ${isWin ? 'VITÓRIA' : 'DERROTA'}:`;
+        if (dom.tagsContainer)
+            dom.tagsContainer.innerHTML = (isWin ? TAGS.win : TAGS.loss)
+                .map((tag) => `<button>${tag}</button>`)
+                .join('');
+        if (dom.opNote) dom.opNote.value = '';
+        if (dom.tagsModal) dom.tagsModal.classList.add('show');
+
+        logger.debug(`Tags modal exibido: ${isWin ? 'WIN' : 'LOSS'}`);
+    }
+
+    /**
+     * Atualiza visibilidade de elementos no modal de configuracoes
+     * baseado na estrategia ativa
+     * @param {Object} configObj - Objeto de configuracao
+     * @param {Object} constants - Constantes do sistema
+     */
+    updateSettingsModalVisibility(configObj, constants) {
+        if (dom.divisorRecuperacaoGroup) {
+            const shouldHide = configObj?.estrategiaAtiva !== constants?.STRATEGY?.CYCLES;
+            dom.divisorRecuperacaoGroup.classList.toggle('hidden', shouldHide);
+        }
+    }
 }
 
 export default ModalUI;

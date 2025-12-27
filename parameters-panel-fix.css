@@ -1,0 +1,25 @@
+/* ========================================
+   CORREÇÃO LEGIBILIDADE - PAINEL PARÂMETROS
+   Aplicar APENAS ao painel de parâmetros na sidebar
+   ======================================== */
+
+/* Sobrescreve apenas o painel de parâmetros específico */
+.sidebar-content .parameters-card {
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.08) 0%,
+            rgba(255, 255, 255, 0.12) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+.sidebar-content .parameters-card .param-value {
+    color: rgba(255, 255, 255, 0.95) !important;
+    font-weight: 700 !important;
+}
+
+.sidebar-content .parameters-card .param-label {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.sidebar-content .parameters-title {
+    color: rgba(255, 255, 255, 0.95) !important;
+}

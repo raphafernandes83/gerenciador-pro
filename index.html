@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="pt-br">
 
 <head>
@@ -13,8 +13,24 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="css/modals.css" />
+    <link rel="stylesheet" href="css/cards.css" />
+    <link rel="stylesheet" href="css/tables.css" />
+    <link rel="stylesheet" href="css/header.css" />
     <link rel="stylesheet" href="sidebar.css" />
+    <link rel="stylesheet" href="animations.css" />
+    <link rel="stylesheet" href="panel-minimize.css" />
+    <link rel="stylesheet" href="ui-improvements.css" />
+    <link rel="stylesheet" href="parameters-panel-fix.css" />
+    <link rel="stylesheet" href="info-panel.css" />
+    <link rel="stylesheet" href="info-panel-responsive.css" />
+    <link rel="stylesheet" href="hide-green-panel.css" />
+    <link rel="stylesheet" href="src/ui/components/help/metric-tooltip.css" />
+    <link rel="stylesheet" href="src/ui/components/help/help-fab.css" />
+    <link rel="stylesheet" href="fab-unified-style.css" />
+    <link rel="stylesheet" href="src/ui/components/notifications.css" />
     <link rel="stylesheet" href="src/validation/validation-styles.css" />
+    <link rel="manifest" href="manifest.json" />
 </head>
 
 <body data-theme="moderno">
@@ -28,26 +44,44 @@
             </div>
             <div class="header-actions">
                 <div id="status-indicators">
-                    <span id="session-mode-indicator" class="status-indicator tooltip-container">
-                        <span id="session-mode-icon">📈</span>
-                        <span class="tooltip-text">Modo da Sessão: Oficial</span>
-                    </span>
-                    <span id="strategy-indicator" class="status-indicator tooltip-container">
-                        <span id="strategy-indicator-icon">🔄</span>
-                        <span class="tooltip-text">Estratégia Ativa: Ciclos de Recuperação</span>
-                    </span>
-                    <span id="guided-mode-indicator" class="status-indicator tooltip-container" role="img"
-                        aria-label="Modo Guiado Ativo">
-                        🔒
-                        <span class="tooltip-text">Modo Guiado está ativo. Apenas a próxima etapa do plano pode ser
-                            executada.</span>
-                    </span>
-                    <span id="compounding-indicator" class="status-indicator tooltip-container" role="img"
-                        aria-label="Juros Compostos Ativos">
-                        💹
-                        <span class="tooltip-text">Incorporar Lucros está ativo. Os ganhos são somados ao capital para
-                            juros compostos.</span>
-                    </span>
+                    <button id="session-mode-indicator" class="status-chip session-official"
+                        title="Clique para alternar modo">
+                        <!-- SVG Activity Icon (Lucide) -->
+                        <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                        </svg>
+                        <span id="session-mode-label">OFICIAL</span>
+                    </button>
+                    <button id="strategy-indicator" class="status-chip strategy-normal" title="Tipo de Estratégia">
+                        <!-- SVG RefreshCw Icon (Lucide) -->
+                        <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 2v6h-6"></path>
+                            <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+                            <path d="M3 22v-6h6"></path>
+                            <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+                        </svg>
+                        <span id="strategy-indicator-label">NORMAL</span>
+                    </button>
+                    <button id="guided-mode-indicator" class="status-chip guided-active" title="Modo Guiado">
+                        <!-- SVG Lock Icon (Lucide) -->
+                        <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        <span id="guided-mode-label">GUIADO</span>
+                    </button>
+                    <button id="compounding-indicator" class="status-chip compound-active" title="Juros Compostos">
+                        <!-- SVG TrendingUp Icon (Lucide) -->
+                        <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                            <polyline points="17 6 23 6 23 12"></polyline>
+                        </svg>
+                        <span id="compounding-label">ATIVO</span>
+                    </button>
                 </div>
                 <button id="zen-mode-btn" title="Modo Zen" aria-label="Ativar Modo Zen">
                     👁️
@@ -56,7 +90,10 @@
                     ⤡
                 </button>
                 <button id="settings-btn" title="Configurações" aria-label="Abrir Configurações">
-                    ⚙️
+                    ⚙️
+                </button>
+                <button id="install-app-btn" class="hidden" title="Instalar App" aria-label="Instalar como aplicativo">
+                    📱
                 </button>
             </div>
         </header>
@@ -66,7 +103,6 @@
             <button class="tab-button" data-tab="dashboard">Dashboard</button>
             <button class="tab-button" data-tab="diario">Diário</button>
             <button class="tab-button" data-tab="analise">Análise Estratégica</button>
-            <button class="tab-button" data-tab="testes">🧪 Testes</button>
         </nav>
 
         <div id="meta-aviso"></div>
@@ -132,7 +168,8 @@
                                 <h2>📊 Progresso das Metas</h2>
                                 <div class="progress-metas-subtitle">
                                     <span>Meta Win/Loss vs. Realizado</span>
-                                    <span class="progress-session-info" id="progress-session-info">Sessão Inativa</span>
+                                    <span class="progress-session-info" id="progress-session-info">Sessão
+                                        Inativa</span>
                                 </div>
                             </div>
 
@@ -307,7 +344,7 @@
                                 </div>
                                 <div class="progress-status-card" id="loss-status-indicator">
                                     <div class="status-icon">
-                                        <span class="status-emoji">✅</span>
+                                        <span class="status-emoji">âœ…</span>
                                     </div>
                                     <div class="status-content">
                                         <span class="status-text">Controle total</span>
@@ -465,14 +502,27 @@
                 </div>
                 <div class="input-group max-w-350 mb-20">
                     <label for="analise-dimension-select">Analisar Performance Por:</label>
-                    <select id="analise-dimension-select">
-                        <option value="dayOfWeek">Dia da Semana</option>
-                        <option value="hourOfDay">Hora do Dia</option>
-                        <option value="tag">Tag de Operação</option>
-                        <option value="payout">Faixa de Payout</option>
-                    </select>
+                    <div class="flex-row-center-gap-8">
+                        <select id="analise-dimension-select" class="flex-1">
+                            <option value="dayOfWeek">Dia da Semana</option>
+                            <option value="hourOfDay">Hora do Dia</option>
+                            <option value="tag">Tag de Operação</option>
+                            <option value="payout">Faixa de Payout</option>
+                        </select>
+                        <button class="help-icon" data-metric="analise-dimensao-selector" data-value="selector"
+                            aria-label="Ajuda sobre Dimensões de Análise" title="Clique para mais informações">
+                            <span class="icon">?</span>
+                        </button>
+                    </div>
                 </div>
                 <div class="overflow-x-auto">
+                    <h3 class="h3-flex-row-mb-12">
+                        Resultados por Categoria
+                        <button class="help-icon" data-metric="analise-tabela-categoria" data-value="table"
+                            aria-label="Ajuda sobre Tabela de Resultados" title="Clique para mais informações">
+                            <span class="icon">?</span>
+                        </button>
+                    </h3>
                     <table id="analise-results-table">
                         <thead id="analise-results-head"></thead>
                         <tbody id="analise-results-body"></tbody>
@@ -490,7 +540,8 @@
                 <p class="text-muted mb-15">
                     Testo diferentes metas e Stop Loss com base no seu histórico de
                     operações (usando os filtros do Dashboard) para encontrar a configuração
-                    ideal de Risco/Retorno. <br /><strong class="text-info">É recomendado um histórico de pelo menos 20
+                    ideal de Risco/Retorno. <br /><strong class="text-info">É recomendado um histórico de pelo menos
+                        20
                         operações para uma
                         simulação mais confiável.</strong>
                 </p>
@@ -674,7 +725,8 @@
                     <h3>Estratégia de Recuperação</h3>
                     <div class="input-group mt-10">
                         <div class="tooltip-container mb-05">
-                            <label for="divisor-recuperacao-slider">Divisão de Recuperação (Aporte 1 / Aporte 2)</label>
+                            <label for="divisor-recuperacao-slider">Divisão de Recuperação (Aporte 1 / Aporte
+                                2)</label>
                             <i class="tooltip-icon">?<span class="tooltip-text">Defina a agressividade da sua
                                     recuperação. Isto ajusta a
                                     percentagem do prejuízo que cada um dos dois aportes de
@@ -812,7 +864,7 @@
 
     <div id="risk-lab-modal" class="modal-overlay">
         <div class="modal-content">
-            <h2>🔬 Laboratório de Risco (Monte Carlo)</h2>
+            <h2>ðŸ”¬ Laboratório de Risco (Monte Carlo)</h2>
             <p>
                 Simule milhares de dias de trading com a sua gestão e estatísticas atuais para
                 analisar a robustez da sua estratégia a longo prazo.
@@ -902,7 +954,7 @@
                 <button id="run-ui-tests" class="btn btn-secondary">
                     🎨 Testes de Interface
                 </button>
-                <button id="run-db-tests" class="btn btn-secondary">💾 Testes de Banco</button>
+                <button id="run-db-tests" class="btn btn-secondary">ðŸ’¾ Testes de Banco</button>
                 <button id="run-simulation-tests" class="btn btn-secondary">
                     🎲 Testes de Simulação
                 </button>
@@ -913,7 +965,7 @@
 
 
 
-    <!-- 🗑️ SISTEMA DE LIXEIRA PROFISSIONAL - ETAPAS 1, 2, 3, 4 & 5 -->
+    <!-- 🗑️ SISTEMA DE LIXEIRA PROFISSIONAL - ETAPAS 1, 2, 3, 4 & 5 -->
     <script type="module" src="src/trash/TrashManager.js"></script>
     <script type="module" src="src/trash/TrashFAB.js"></script>
     <script type="module" src="src/trash/TrashModal.js"></script>
@@ -921,10 +973,13 @@
     <script type="module" src="src/trash/OperationsTrashHandler.js"></script>
     <script type="module" src="src/trash/SessionsTrashHandler.js"></script>
 
+    <!-- 📊 PAINEL INFORMATIVO -->
+    <script type="module" src="src/ui/InfoPanel.js"></script>
+    <script type="module" src="add-info-panel.js"></script>
     <script type="module" src="tests/test-dom-recursion.js"></script>
     <script type="module" src="utils/GoalsUtils.js"></script>
 
-    <!-- ✅ APP LIMPO PARA TRADER - SEM MÓDULOS ADMINISTRATIVOS -->
+    <!-- âœ… APP LIMPO PARA TRADER - SEM MÃ“DULOS ADMINISTRATIVOS -->
 
     <!-- 🎯 Funcionalidades Úteis para o Trader -->
     <script type="module" src="src/trader/TraderAssistant.js"></script>
@@ -934,6 +989,8 @@
     <script type="module" src="progress-card-monetary.js"></script>
     <script type="module" src="progress-card-cache.js"></script>
     <script type="module" src="src/validation/validation-integration.js"></script>
+    <script src="error-handler.js"></script>
+
     <script type="module" src="main.js"></script>
     <script type="module" src="sidebar.js"></script>
 
@@ -948,1032 +1005,21 @@
     <script src="tests/test-stoploss-display.js"></script>
     <script src="tests/test-sidebar-new-session-btn.js"></script>
 
-    <!-- 🛡️ SISTEMA DE MONITORAMENTO INTELIGENTE -->
+    <!-- 🛡️ SISTEMA DE MONITORAMENTO INTELIGENTE -->
     <script type="module" src="src/monitoring/SmartMonitor.js"></script>
     <script type="module" src="src/monitoring/ErrorBoundary.js"></script>
     <script type="module" src="src/testing/AutomatedTestSuite.js"></script>
 
-    <!-- Script inline para aguardar carregamento e disponibilizar testes -->
-    <script>
-        // 🗑️ Inicialização do Sistema de Lixeira
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                try {
-                    console.log('🗑️ Inicializando Sistema de Lixeira...');
-
-                    // Inicializa TrashManager (já inicializado automaticamente)
-                    if (window.trashManager && window.trashManager.isInitialized) {
-                        console.log('✅ TrashManager inicializado');
-                    }
-
-                    // Inicializa TrashFAB
-                    if (window.getTrashFAB) {
-                        window.trashFAB = window.getTrashFAB();
-                        console.log('✅ TrashFAB inicializado');
-                    }
-
-                    // Inicializa TrashModal
-                    if (window.getTrashModal) {
-                        window.trashModal = window.getTrashModal();
-                        console.log('✅ TrashModal inicializado');
-                    }
-
-                    // Inicializa TagsTrashHandler
-                    if (window.getTagsTrashHandler) {
-                        window.tagsTrashHandler = window.getTagsTrashHandler();
-                        console.log('✅ TagsTrashHandler inicializado');
-                    }
-
-                    // Inicializa OperationsTrashHandler
-                    if (window.getOperationsTrashHandler) {
-                        window.operationsTrashHandler = window.getOperationsTrashHandler();
-                        console.log('✅ OperationsTrashHandler inicializado');
-                    }
-
-                    // Inicializa SessionsTrashHandler
-                    if (window.getSessionsTrashHandler) {
-                        window.sessionsTrashHandler = window.getSessionsTrashHandler();
-                        console.log('✅ SessionsTrashHandler inicializado');
-                    }
-
-                    // Função de teste global para a lixeira
-                    window.testTrashSystem = function () {
-                        console.log('🧪 Testando Sistema de Lixeira Completo...');
-
-                        const managerTest = window.trashManager ? window.trashManager.test() : { allTestsPass: false };
-                        const fabTest = window.trashFAB ? window.trashFAB.test() : { allTestsPass: false };
-                        const modalTest = window.trashModal ? window.trashModal.test() : { allTestsPass: false };
-                        const tagsTest = window.tagsTrashHandler ? window.tagsTrashHandler.test() : { allTestsPass: false };
-                        const operationsTest = window.operationsTrashHandler ? window.operationsTrashHandler.test() : { allTestsPass: false };
-                        const sessionsTest = window.sessionsTrashHandler ? window.sessionsTrashHandler.test() : { allTestsPass: false };
-
-                        const systemTest = {
-                            manager: managerTest.allTestsPass,
-                            fab: fabTest.allTestsPass,
-                            modal: modalTest.allTestsPass,
-                            tags: tagsTest.allTestsPass,
-                            operations: operationsTest.allTestsPass,
-                            sessions: sessionsTest.allTestsPass,
-                            integration: !!(window.trashManager && window.trashFAB && window.trashModal && window.tagsTrashHandler && window.operationsTrashHandler && window.sessionsTrashHandler)
-                        };
-
-                        const allSystemTestsPass = Object.values(systemTest).every(Boolean);
-
-                        console.log(allSystemTestsPass ? '✅ Sistema de Lixeira funcionando perfeitamente!' : '❌ Problemas detectados no sistema:', systemTest);
-
-                        return {
-                            system: systemTest,
-                            manager: managerTest,
-                            fab: fabTest,
-                            modal: modalTest,
-                            tags: tagsTest,
-                            operations: operationsTest,
-                            sessions: sessionsTest,
-                            allTestsPass: allSystemTestsPass
-                        };
-                    };
-
-                    // Função para testar abertura do modal
-                    window.openTrashModal = function () {
-                        if (window.trashModal) {
-                            window.trashModal.open();
-                            console.log('🗑️ Modal da lixeira aberto via comando');
-                        } else {
-                            console.warn('⚠️ Modal da lixeira não disponível');
-                        }
-                    };
-
-                    // Função para testar exclusão de tags
-                    window.testTagDeletion = function () {
-                        console.log('🧪 Testando exclusão de tags...');
-
-                        // Cria tag de teste
-                        const testTag = {
-                            id: 'test_tag_' + Date.now(),
-                            text: 'Tag de Teste',
-                            createdAt: new Date().toISOString()
-                        };
-
-                        // Move para lixeira
-                        if (window.trashManager) {
-                            const trashId = window.trashManager.moveToTrash(
-                                testTag,
-                                window.trashManager.categories.TAG,
-                                window.trashManager.complexityLevels.SIMPLE
-                            );
-
-                            if (trashId) {
-                                console.log('✅ Tag de teste movida para lixeira:', trashId);
-                                console.log('💡 Abra o modal da lixeira para ver o item');
-                                return trashId;
-                            } else {
-                                console.error('❌ Falha ao mover tag para lixeira');
-                            }
-                        } else {
-                            console.warn('⚠️ TrashManager não disponível');
-                        }
-                    };
-
-                    // Função para testar restauração
-                    window.testRestore = function (trashId) {
-                        if (!trashId) {
-                            console.warn('⚠️ Forneça o ID do item na lixeira');
-                            console.log('💡 Use: testRestore("trash_id_aqui")');
-                            return;
-                        }
-
-                        console.log('🧪 Testando restauração:', trashId);
-
-                        if (window.trashManager) {
-                            const restored = window.trashManager.restoreFromTrash(trashId);
-
-                            if (restored && restored.success) {
-                                console.log('✅ Item restaurado com sucesso:', restored);
-                            } else {
-                                console.error('❌ Falha ao restaurar item');
-                            }
-                        } else {
-                            console.warn('⚠️ TrashManager não disponível');
-                        }
-                    };
-
-                    // Função para testar exclusão de operações
-                    window.testOperationDeletion = function () {
-                        console.log('🧪 Testando exclusão de operações...');
-
-                        // Verifica se há operações no histórico
-                        if (!window.state || !window.state.historicoCombinado || window.state.historicoCombinado.length === 0) {
-                            console.warn('⚠️ Nenhuma operação encontrada no histórico');
-                            console.log('💡 Execute algumas operações primeiro para testar a exclusão');
-                            return;
-                        }
-
-                        // Cria operação de teste
-                        const testOperation = {
-                            id: 'test_operation_' + Date.now(),
-                            isWin: true,
-                            valor: 50.00,
-                            valorEntrada: 100.00,
-                            valorRetorno: 150.00,
-                            timestamp: new Date().toISOString(),
-                            tag: 'Teste de Exclusão',
-                            etapa: 1
-                        };
-
-                        // Adiciona ao histórico
-                        window.state.historicoCombinado.push(testOperation);
-
-                        // Atualiza UI
-                        if (window.ui && window.ui.renderizarTimelineCompleta) {
-                            window.ui.renderizarTimelineCompleta();
-                        }
-
-                        console.log('✅ Operação de teste adicionada:', testOperation.id);
-                        console.log('💡 Passe o mouse sobre a operação na timeline para ver o botão de exclusão 🗑️');
-
-                        return testOperation.id;
-                    };
-
-                    // Função para simular operação e testar exclusão
-                    window.testFullOperationCycle = function () {
-                        console.log('🧪 Testando ciclo completo de operação...');
-
-                        // Cria operação de teste
-                        const operationId = window.testOperationDeletion();
-
-                        if (operationId) {
-                            console.log('✅ Operação criada:', operationId);
-                            console.log('💡 Agora você pode:');
-                            console.log('   1. Passar o mouse sobre a operação na timeline');
-                            console.log('   2. Clicar no botão 🗑️ para excluir');
-                            console.log('   3. Abrir o modal da lixeira para ver o item');
-                            console.log('   4. Restaurar a operação se desejar');
-                        }
-                    };
-
-                    // Função para testar exclusão de sessões
-                    window.testSessionDeletion = function () {
-                        console.log('🧪 Testando exclusão de sessões...');
-
-                        // Verifica se há sessão ativa
-                        if (!window.state || !window.state.isSessionActive) {
-                            console.warn('⚠️ Nenhuma sessão ativa encontrada');
-                            console.log('💡 Inicie uma sessão primeiro para testar a exclusão');
-                            return;
-                        }
-
-                        // Verifica se há operações
-                        if (!window.state.historicoCombinado || window.state.historicoCombinado.length === 0) {
-                            console.warn('⚠️ Sessão ativa mas sem operações');
-                            console.log('💡 Execute algumas operações primeiro');
-                            return;
-                        }
-
-                        console.log('✅ Sessão ativa encontrada com', window.state.historicoCombinado.length, 'operações');
-                        console.log('💡 Procure pelo botão "🗑️ Excluir Sessão" nos controles de sessão');
-                        console.log('💡 O botão aparece apenas quando há uma sessão ativa com operações');
-
-                        return {
-                            sessionActive: true,
-                            operationsCount: window.state.historicoCombinado.length,
-                            capitalInicial: window.state.capitalInicioSessao,
-                            capitalAtual: window.state.capitalAtual,
-                            resultado: window.state.capitalAtual - window.state.capitalInicioSessao
-                        };
-                    };
-
-                    // Função para testar limpeza automática
-                    window.testAutoCleanup = function () {
-                        console.log('🧪 Testando sistema de limpeza automática...');
-
-                        if (!window.trashManager) {
-                            console.warn('⚠️ TrashManager não disponível');
-                            return;
-                        }
-
-                        // Obtém estatísticas atuais
-                        const stats = window.trashManager.getCleanupStats();
-                        const config = window.trashManager.getCleanupConfig();
-
-                        console.log('📊 Estatísticas de limpeza:', stats);
-                        console.log('🔧 Configurações atuais:', config);
-
-                        // Executa limpeza manual
-                        const result = window.trashManager.performAutoCleanup();
-
-                        if (result.error) {
-                            console.error('❌ Erro na limpeza:', result.error);
-                        } else {
-                            console.log('✅ Limpeza executada:', result);
-                            console.log(`   - ${result.deletedCount} item(s) removido(s)`);
-                            console.log(`   - ${result.expiringSoonCount} item(s) expirando em breve`);
-                            console.log(`   - ${result.totalItemsRemaining} item(s) restantes`);
-                        }
-
-                        return { stats, config, result };
-                    };
-
-                    // Função para configurar limpeza
-                    window.configureCleanup = function (options = {}) {
-                        console.log('🔧 Configurando sistema de limpeza...');
-
-                        if (!window.trashManager) {
-                            console.warn('⚠️ TrashManager não disponível');
-                            return;
-                        }
-
-                        const defaultOptions = {
-                            enabled: true,
-                            intervalHours: 6,
-                            maxRetentionDays: 30,
-                            notifyExpiring: true,
-                            notifyCleanup: true
-                        };
-
-                        const finalOptions = { ...defaultOptions, ...options };
-
-                        const result = window.trashManager.configureCleanup(finalOptions);
-
-                        if (result) {
-                            console.log('✅ Configuração aplicada:', result);
-                        } else {
-                            console.error('❌ Falha ao configurar limpeza');
-                        }
-
-                        return result;
-                    };
-
-                    // 🧪 Função de teste específica para sessões
-                    window.testSessionTrash = function () {
-                        console.log('🧪 Testando sistema de lixeira para sessões...');
-
-                        if (!window.sessionsTrashHandler) {
-                            console.warn('⚠️ SessionsTrashHandler não disponível');
-                            return;
-                        }
-
-                        // Verifica se o botão de exclusão existe
-                        const deleteBtn = document.querySelector('.delete-session-btn');
-                        console.log('🔍 Botão de exclusão encontrado:', deleteBtn ? 'SIM' : 'NÃO');
-
-                        if (deleteBtn) {
-                            console.log('👁️ Visibilidade do botão:', deleteBtn.style.display);
-                            console.log('📊 Estado da sessão:', {
-                                isSessionActive: window.state?.isSessionActive,
-                                hasOperations: window.state?.historicoCombinado?.length > 0,
-                                operationsCount: window.state?.historicoCombinado?.length || 0
-                            });
-                        }
-
-                        // Verifica controles de sessão
-                        const sessionControls = document.querySelector('.session-controls, .controls-container, [class*="session"], [class*="control"]');
-                        console.log('🎛️ Controles de sessão encontrados:', sessionControls ? 'SIM' : 'NÃO');
-
-                        if (sessionControls) {
-                            console.log('📍 Localização dos controles:', sessionControls.className);
-                            console.log('🔧 Filhos dos controles:', Array.from(sessionControls.children).map(c => c.className));
-                        }
-
-                        return {
-                            deleteButtonExists: !!deleteBtn,
-                            deleteButtonVisible: deleteBtn ? deleteBtn.style.display !== 'none' : false,
-                            sessionState: window.state?.isSessionActive,
-                            operationsCount: window.state?.historicoCombinado?.length || 0,
-                            sessionControlsFound: !!sessionControls
-                        };
-                    };
-
-                    // 🧪 Função de teste para sistema de restauração
-                    window.testTrashRestore = function () {
-                        console.log('🧪 Testando sistema de restauração da lixeira...');
-
-                        const results = {
-                            trashManager: !!window.trashManager,
-                            trashModal: !!window.trashModal,
-                            operationsHandler: !!window.operationsTrashHandler,
-                            sessionsHandler: !!window.sessionsTrashHandler,
-                            tagsHandler: !!window.tagsTrashHandler,
-                            trashItems: 0,
-                            canRestore: false,
-                            sessionTests: {}
-                        };
-
-                        if (window.trashManager) {
-                            const items = window.trashManager.getTrashItems();
-                            results.trashItems = items.length;
-                            results.canRestore = items.length > 0;
-
-                            console.log('📊 Itens na lixeira:', items.length);
-
-                            if (items.length > 0) {
-                                console.log('🗑️ Itens disponíveis para restauração:');
-                                items.forEach((item, index) => {
-                                    console.log(`  ${index + 1}. [${item.category}] ${item.originalId} - ${new Date(item.deletedAt).toLocaleString()}`);
-                                });
-
-                                // Testa especificamente sessões
-                                const sessionItems = items.filter(item => item.category === 'session');
-                                if (sessionItems.length > 0) {
-                                    console.log('📊 Testando restauração de sessão...');
-                                    const sessionItem = sessionItems[0];
-
-                                    try {
-                                        console.log('🔍 Dados da sessão na lixeira:', sessionItem.data);
-
-                                        // Testa mapeamento de dados
-                                        if (window.sessionsTrashHandler) {
-                                            const mappedData = window.sessionsTrashHandler.mapSessionDataToState(sessionItem.data);
-                                            console.log('🗺️ Dados mapeados:', mappedData);
-                                            results.sessionTests.mapping = true;
-                                        }
-
-                                        results.sessionTests.available = true;
-                                    } catch (error) {
-                                        console.error('❌ Erro no teste de sessão:', error);
-                                        results.sessionTests.error = error.message;
-                                    }
-                                }
-
-                                // Não executa restauração automática para evitar conflitos
-                                console.log('ℹ️ Para testar restauração, use: window.trashModal.restoreItem("ID_DO_ITEM")');
-                            }
-                        }
-
-                        console.log('📋 Resultados do teste:', results);
-                        return results;
-                    };
-
-                    // 🧪 Função específica para testar restauração de sessão
-                    window.testSessionRestore = async function (sessionId) {
-                        console.log('🧪 Testando restauração específica de sessão...');
-
-                        if (!window.trashManager) {
-                            console.error('❌ TrashManager não disponível');
-                            return false;
-                        }
-
-                        const items = window.trashManager.getTrashItems();
-                        const sessionItem = items.find(item =>
-                            item.category === 'session' &&
-                            (item.id === sessionId || item.originalId === sessionId)
-                        );
-
-                        if (!sessionItem) {
-                            console.error('❌ Sessão não encontrada na lixeira');
-                            console.log('📊 Sessões disponíveis:',
-                                items.filter(item => item.category === 'session')
-                                    .map(item => ({ id: item.id, originalId: item.originalId }))
-                            );
-                            return false;
-                        }
-
-                        try {
-                            console.log('🔍 Testando restauração da sessão:', sessionItem);
-
-                            if (window.trashModal) {
-                                await window.trashModal.restoreItem(sessionItem.id);
-                                return true;
-                            } else {
-                                console.error('❌ TrashModal não disponível');
-                                return false;
-                            }
-
-                        } catch (error) {
-                            console.error('❌ Erro no teste de restauração:', error);
-                            return false;
-                        }
-                    };
-
-                    // 🧪 Função para listar sessões na lixeira
-                    window.listSessionsInTrash = function () {
-                        console.log('📋 Listando sessões na lixeira...');
-
-                        if (!window.trashManager) {
-                            console.error('❌ TrashManager não disponível');
-                            return [];
-                        }
-
-                        const items = window.trashManager.getTrashItems();
-                        const sessions = items.filter(item => item.category === 'session');
-
-                        console.log(`📊 Encontradas ${sessions.length} sessões na lixeira:`);
-
-                        sessions.forEach((session, index) => {
-                            const data = new Date(session.data?.data || session.deletedAt).toLocaleDateString();
-                            const modo = session.data?.modo || session.data?.sessionMode || 'indefinido';
-                            const ops = session.data?.historicoCombinado?.length || 0;
-
-                            console.log(`  ${index + 1}. ID: ${session.id}`);
-                            console.log(`     Data: ${data}`);
-                            console.log(`     Modo: ${modo}`);
-                            console.log(`     Operações: ${ops}`);
-                            console.log(`     Original ID: ${session.originalId}`);
-                            console.log('     ---');
-                        });
-
-                        return sessions;
-                    };
-
-                    // Função para criar sessão de teste
-                    window.createTestSession = function () {
-                        console.log('🧪 Criando sessão de teste...');
-
-                        // Verifica se já há sessão ativa
-                        if (window.state && window.state.isSessionActive) {
-                            console.warn('⚠️ Já existe uma sessão ativa');
-                            console.log('💡 Finalize a sessão atual primeiro ou use testSessionDeletion()');
-                            return;
-                        }
-
-                        try {
-                            // Inicia nova sessão se possível
-                            if (window.events && window.events.handleNewSession) {
-                                window.events.handleNewSession({ auto: true });
-                            } else if (window.logic && window.logic.startNewSession) {
-                                window.logic.startNewSession('normal');
-                            } else {
-                                // Fallback manual
-                                if (window.state) {
-                                    window.state.isSessionActive = true;
-                                    window.state.sessionMode = 'normal';
-                                    window.state.capitalInicioSessao = window.state.capitalAtual || 1000;
-                                    window.state.historicoCombinado = [];
-                                    window.state.undoStack = [];
-                                }
-                            }
-
-                            // Adiciona algumas operações de teste
-                            if (window.state) {
-                                const testOperations = [
-                                    { id: 'test_1', isWin: true, valor: 50, timestamp: new Date().toISOString(), tag: 'Teste WIN' },
-                                    { id: 'test_2', isWin: false, valor: -30, timestamp: new Date().toISOString(), tag: 'Teste LOSS' },
-                                    { id: 'test_3', isWin: true, valor: 80, timestamp: new Date().toISOString(), tag: 'Teste WIN 2' }
-                                ];
-
-                                window.state.historicoCombinado = testOperations;
-                                window.state.capitalAtual = window.state.capitalInicioSessao + 100; // Lucro de R$ 100
-                            }
-
-                            // Atualiza interface
-                            if (window.ui) {
-                                if (window.ui.atualizarVisibilidadeBotoesSessao) {
-                                    window.ui.atualizarVisibilidadeBotoesSessao();
-                                }
-                                if (window.ui.renderizarTimelineCompleta) {
-                                    window.ui.renderizarTimelineCompleta();
-                                }
-                            }
-
-                            console.log('✅ Sessão de teste criada com sucesso!');
-                            console.log('💡 Agora você pode testar a exclusão com testSessionDeletion()');
-
-                            return true;
-
-                        } catch (error) {
-                            console.error('❌ Erro ao criar sessão de teste:', error);
-                            return false;
-                        }
-                    };
-
-                    console.log('🗑️ Sistema de Lixeira carregado com sucesso!');
-                    console.log('💡 Use testTrashSystem() para testar o sistema completo');
-
-                } catch (error) {
-                    console.error('❌ Erro ao inicializar Sistema de Lixeira:', error);
-                }
-            }, 1000);
-        });
-
-        // Aguarda carregamento completo e disponibiliza testes globalmente
-        setTimeout(() => {
-            console.log('🧪 Inicializando ambiente de testes...');
-
-            // Verifica se as funções de teste estão disponíveis
-            const testFunctions = [
-                'quickTestAll',
-                'testComponent',
-                'listAvailableTests',
-                'runAllComponentTests',
-                'generateTestCoverageReport',
-                'runQuickTests',
-            ];
-
-            let available = 0;
-            testFunctions.forEach((func) => {
-                if (typeof window[func] === 'function') {
-                    available++;
-                    console.log(`✅ ${func}: Disponível`);
-                } else {
-                    console.log(`❌ ${func}: Não encontrada`);
-                }
-            });
-
-            console.log(
-                `📊 Total: ${available}/${testFunctions.length} funções de teste carregadas`
-            );
-
-            // SEMPRE criar função de emergência (independente dos outros scripts)
-            window.emergencyTest = function () {
-                console.log('🚨 TESTE DE EMERGÊNCIA - COMPONENTES BÁSICOS');
-                console.log('='.repeat(50));
-
-                const basicTests = [
-                    { name: 'DOM Object', test: () => typeof dom !== 'undefined' },
-                    { name: 'UI Object', test: () => typeof ui !== 'undefined' },
-                    { name: 'Logic Object', test: () => typeof logic !== 'undefined' },
-                    { name: 'Charts Object', test: () => typeof charts !== 'undefined' },
-                    { name: 'Config Object', test: () => typeof config !== 'undefined' },
-                    { name: 'State Object', test: () => typeof state !== 'undefined' },
-                    { name: 'Sidebar Object', test: () => typeof sidebar !== 'undefined' },
-                ];
-
-                let passed = 0;
-                basicTests.forEach(({ name, test }) => {
-                    try {
-                        if (test()) {
-                            console.log(`✅ ${name}: OK`);
-                            passed++;
-                        } else {
-                            console.log(`❌ ${name}: FALHOU`);
-                        }
-                    } catch (error) {
-                        console.log(`💥 ${name}: ERRO - ${error.message}`);
-                    }
-                });
-
-                console.log('='.repeat(50));
-                console.log(
-                    `📊 RESULTADO: ${passed}/${basicTests.length} componentes básicos OK`
-                );
-                return { passed, total: basicTests.length };
-            };
-
-            // Função para testar componentes individuais
-            window.testBasic = function (componentName) {
-                console.log(`🎯 Testando: ${componentName}`);
-
-                switch (componentName.toLowerCase()) {
-                    case 'dom':
-                        return typeof dom !== 'undefined' && Object.keys(dom).length > 10;
-                    case 'ui':
-                        return (
-                            typeof ui !== 'undefined' && typeof ui.atualizarTudo === 'function'
-                        );
-                    case 'logic':
-                        return (
-                            typeof logic !== 'undefined' &&
-                            typeof logic.calcularEntrada === 'function'
-                        );
-                    case 'charts':
-                        return (
-                            typeof charts !== 'undefined' &&
-                            typeof charts.updateProgressChart === 'function'
-                        );
-                    case 'config':
-                        return (
-                            typeof config !== 'undefined' && config.capitalInicial !== undefined
-                        );
-                    case 'state':
-                        return (
-                            typeof state !== 'undefined' &&
-                            typeof state.isSessionActive !== 'undefined'
-                        );
-                    case 'sidebar':
-                        return typeof sidebar !== 'undefined';
-                    default:
-                        console.log(
-                            '❌ Componente não reconhecido. Use: dom, ui, logic, charts, config, state, sidebar'
-                        );
-                        return false;
-                }
-            };
-
-            // Função para ver objetos globais
-            window.showGlobals = function () {
-                console.log('🌐 OBJETOS GLOBAIS DISPONÍVEIS:');
-                const globals = [
-                    'dom',
-                    'ui',
-                    'logic',
-                    'charts',
-                    'config',
-                    'state',
-                    'sidebar',
-                    'cssResolver',
-                ];
-                globals.forEach((name) => {
-                    const exists = typeof window[name] !== 'undefined';
-                    console.log(
-                        `${exists ? '✅' : '❌'} ${name}:`,
-                        exists ? typeof window[name] : 'não encontrado'
-                    );
-                });
-            };
-
-            if (available > 0) {
-                console.log('🚀 TESTES AVANÇADOS PRONTOS! Use:');
-                if (window.quickTestAll) console.log('  - quickTestAll()');
-                if (window.testComponent) console.log('  - testComponent("dom")');
-                if (window.listAvailableTests) console.log('  - listAvailableTests()');
-                if (window.runAllComponentTests) console.log('  - runAllComponentTests()');
-                console.log('');
-            }
-
-            console.log('🚨 FUNÇÕES DE EMERGÊNCIA SEMPRE DISPONÍVEIS:');
-            console.log('  - emergencyTest()');
-            console.log('  - testBasic("dom")');
-            console.log('  - showGlobals()');
-
-            console.log('='.repeat(60));
-
-            // 🔄 Tenta novamente após mais tempo se poucas funções carregaram
-            if (available < 4) {
-                console.log('⏳ Tentando carregar funções adicionais em 2 segundos...');
-                setTimeout(() => {
-                    const delayedFunctions = [
-                        'testUIComponents',
-                        'testLogicFunctions',
-                        'testSidebar',
-                        'testInitialization',
-                    ];
-                    let foundLater = 0;
-
-                    delayedFunctions.forEach((func) => {
-                        if (typeof window[func] === 'function') {
-                            foundLater++;
-                            console.log(`✅ ${func}: Carregada tardiamente`);
-                        }
-                    });
-
-                    if (foundLater > 0) {
-                        console.log(
-                            `🎉 ${foundLater} funções adicionais carregadas! Total agora: ${available + foundLater}`
-                        );
-                        console.log('🚀 Tente novamente: emergencyTest() ou quickTestAll()');
-                    }
-                }, 2000);
-            }
-        }, 3000); // Aguarda 3 segundos para garantir carregamento completo
-    </script>
-
-    <!-- 🛡️ SISTEMA DE PROTEÇÃO REENGENHARIA - VERSÃO SEGURA -->
-    <script type="module">
-        console.log('🛡️ Sistema de Proteção REENGENHARIA - Versão Segura v2.0');
-
-        // ================================================================
-        // 🚨 PROTEÇÃO CONTRA RECURSÃO INFINITA
-        // ================================================================
-        class SafeProtectionSystem {
-            constructor() {
-                this.isActive = false;
-                this.emergencyMode = false;
-                this.recursionDepth = 0;
-                this.maxRecursionDepth = 3;
-                this.timerIds = new Set();
-                this.intervalIds = new Set();
-            }
-
-            // Wrapper seguro para setTimeout
-            safeSetTimeout(callback, delay) {
-                // 🛡️ Verificação ultra-robusta de contexto
-                const safeThis = this || window.safeProtection;
-
-                if (
-                    !safeThis ||
-                    typeof safeThis.recursionDepth === 'undefined' ||
-                    !safeThis.isActive
-                ) {
-                    console.warn(
-                        '⚠️ SafeProtection contexto inválido - usando fallback direto'
-                    );
-
-                    // 🚑 Tentar acessar instância global como backup
-                    if (window.safeProtection && window.safeProtection !== safeThis) {
-                        try {
-                            return window.safeProtection.safeSetTimeout(callback, delay);
-                        } catch (globalError) {
-                            console.warn(
-                                '⚠️ Instância global também falhou:',
-                                globalError.message
-                            );
-                        }
-                    }
-
-                    // 🛡️ Último fallback: setTimeout nativo com proteção
-                    console.warn('❌ SafeProtection: Usando setTimeout nativo seguro');
-                    try {
-                        return setTimeout(() => {
-                            try {
-                                callback();
-                            } catch (callbackError) {
-                                console.error('❌ Erro no callback:', callbackError);
-                            }
-                        }, delay);
-                    } catch (setTimeoutError) {
-                        console.error('❌ Erro crítico no setTimeout:', setTimeoutError);
-                        return null;
-                    }
-                }
-
-                // 🔄 Usar contexto válido encontrado
-                const contextToUse = safeThis;
-
-                if (contextToUse.recursionDepth > contextToUse.maxRecursionDepth) {
-                    console.warn('🚨 Recursão detectada em setTimeout - abortando');
-                    return null;
-                }
-
-                const timerId = setTimeout(() => {
-                    contextToUse.recursionDepth++;
-                    try {
-                        callback();
-                    } catch (error) {
-                        console.error('❌ Erro em setTimeout:', error);
-                    } finally {
-                        contextToUse.recursionDepth--;
-                        if (contextToUse.timerIds) {
-                            contextToUse.timerIds.delete(timerId);
-                        }
-                    }
-                }, delay);
-
-                if (contextToUse.timerIds) {
-                    contextToUse.timerIds.add(timerId);
-                }
-                return timerId;
-            }
-
-            // Wrapper seguro para setInterval
-            safeSetInterval(callback, delay) {
-                // 🛡️ Verificação ultra-robusta de contexto
-                const safeThis = this || window.safeProtection;
-
-                if (
-                    !safeThis ||
-                    typeof safeThis.recursionDepth === 'undefined' ||
-                    !safeThis.isActive
-                ) {
-                    console.warn(
-                        '⚠️ SafeProtection contexto inválido - usando fallback direto'
-                    );
-
-                    // 🚑 Tentar acessar instância global como backup
-                    if (window.safeProtection && window.safeProtection !== safeThis) {
-                        try {
-                            return window.safeProtection.safeSetInterval(callback, delay);
-                        } catch (globalError) {
-                            console.warn(
-                                '⚠️ Instância global também falhou:',
-                                globalError.message
-                            );
-                        }
-                    }
-
-                    // 🛡️ Último fallback: setInterval nativo com proteção
-                    console.warn('❌ SafeProtection: Usando setInterval nativo seguro');
-                    try {
-                        return setInterval(() => {
-                            try {
-                                callback();
-                            } catch (callbackError) {
-                                console.error('❌ Erro no callback:', callbackError);
-                            }
-                        }, delay);
-                    } catch (setIntervalError) {
-                        console.error('❌ Erro crítico no setInterval:', setIntervalError);
-                        return null;
-                    }
-                }
-
-                // 🔄 Usar contexto válido encontrado
-                const contextToUse = safeThis;
-
-                if (contextToUse.recursionDepth > contextToUse.maxRecursionDepth) {
-                    console.warn('🚨 Recursão detectada em setInterval - abortando');
-                    return null;
-                }
-
-                const intervalId = setInterval(() => {
-                    contextToUse.recursionDepth++;
-                    try {
-                        callback();
-                    } catch (error) {
-                        console.error('❌ Erro em setInterval:', error);
-                        if (contextToUse.clearSafeInterval) {
-                            contextToUse.clearSafeInterval(intervalId);
-                        } else {
-                            clearInterval(intervalId);
-                        }
-                    } finally {
-                        contextToUse.recursionDepth--;
-                    }
-                }, delay);
-
-                if (contextToUse.intervalIds) {
-                    contextToUse.intervalIds.add(intervalId);
-                }
-                return intervalId;
-            }
-
-            clearSafeTimeout(timerId) {
-                if (timerId && this.timerIds.has(timerId)) {
-                    clearTimeout(timerId);
-                    this.timerIds.delete(timerId);
-                }
-            }
-
-            clearSafeInterval(intervalId) {
-                if (intervalId && this.intervalIds.has(intervalId)) {
-                    clearInterval(intervalId);
-                    this.intervalIds.delete(intervalId);
-                }
-            }
-
-            emergencyStop() {
-                console.log('🚨 EMERGENCY STOP - Parando todos os timers...');
-                this.emergencyMode = true;
-
-                // Para todos os timers conhecidos
-                this.timerIds.forEach((id) => clearTimeout(id));
-                this.intervalIds.forEach((id) => clearInterval(id));
-
-                this.timerIds.clear();
-                this.intervalIds.clear();
-                this.recursionDepth = 0;
-
-                console.log('✅ Emergency stop completo');
-            }
-
-            forceRecovery() {
-                console.log('🔄 Forçando recuperação do sistema...');
-                this.emergencyStop();
-
-                // Reinicia sistemas básicos se possível
-                this.safeSetTimeout(() => {
-                    if (window.ui && typeof window.ui.syncUIFromState === 'function') {
-                        try {
-                            window.ui.syncUIFromState();
-                            console.log('✅ UI sincronizada');
-                        } catch (error) {
-                            console.warn('⚠️ Erro ao sincronizar UI:', error.message);
-                        }
-                    }
-                }, 1000);
-            }
-
-            // 🚑 Forçar inicialização quando necessário
-            _forceInitialization() {
-                try {
-                    console.log('🔄 Forçando reinicialização do SafeProtection...');
-                    this.isActive = false;
-                    this.emergencyMode = false;
-                    this.recursionDepth = 0;
-                    this.maxRecursionDepth = 3;
-                    this.timerIds = new Set();
-                    this.intervalIds = new Set();
-                    this.isActive = true;
-                    console.log('✅ SafeProtection reinicializado com sucesso');
-                } catch (error) {
-                    console.error('❌ Erro na reinicialização do SafeProtection:', error);
-                }
-            }
-
-            // 📊 Método de diagnóstico
-            getStatus() {
-                return {
-                    isActive: this.isActive,
-                    emergencyMode: this.emergencyMode,
-                    recursionDepth: this.recursionDepth,
-                    activeTimers: this.timerIds.size,
-                    activeIntervals: this.intervalIds.size,
-                };
-            }
-        }
-
-        // 🚀 Instancia o sistema de proteção seguro com inicialização robusta
-        let safeProtection;
-        try {
-            safeProtection = new SafeProtectionSystem();
-            safeProtection.isActive = true;
-            console.log('✅ SafeProtectionSystem inicializado:', safeProtection.getStatus());
-        } catch (error) {
-            console.error('❌ Erro ao criar SafeProtectionSystem:', error);
-            // Fallback para o sistema simples
-            safeProtection = {
-                safeSetTimeout: (cb, delay) => setTimeout(cb, delay),
-                safeSetInterval: (cb, delay) => setInterval(cb, delay),
-                safeClearTimeout: (id) => clearTimeout(id),
-                safeClearInterval: (id) => clearInterval(id),
-                isActive: false,
-                getStatus: () => ({ isActive: false, fallbackMode: true }),
-            };
-            console.log('⚠️ SafeProtection em modo fallback');
-        }
-
-        // 🌐 Expõe funções globalmente com verificação
-        window.emergencyProtectionStop = () => {
-            if (safeProtection && typeof safeProtection.emergencyStop === 'function') {
-                return safeProtection.emergencyStop();
-            }
-            console.warn('⚠️ emergencyProtectionStop não disponível');
-        };
-
-        window.forceRecovery = () => {
-            if (safeProtection && typeof safeProtection.forceRecovery === 'function') {
-                return safeProtection.forceRecovery();
-            }
-            console.warn('⚠️ forceRecovery não disponível');
-        };
-
-        window.safeProtection = safeProtection;
-
-        // 📊 Função de diagnóstico global
-        window.checkSafeProtectionStatus = () => {
-            if (safeProtection && typeof safeProtection.getStatus === 'function') {
-                const status = safeProtection.getStatus();
-                console.log('📊 SafeProtection Status:', status);
-                return status;
-            }
-            console.warn('❌ SafeProtection não disponível');
-            return { available: false };
-        };
-
-        // Proteções automáticas
-        let errorCount = 0;
-        window.addEventListener('error', (event) => {
-            errorCount++;
-            if (errorCount > 10) {
-                console.warn('🚨 Muitos erros detectados - ativando modo de emergência');
-                safeProtection.emergencyStop();
-            }
-        });
-
-        // Reset do contador de erros periodicamente
-        safeProtection.safeSetInterval(() => {
-            if (errorCount > 0) {
-                errorCount = Math.max(0, errorCount - 1);
-            }
-        }, 30000); // Reset gradual a cada 30 segundos
-
-        console.log('🛡️ Sistema de Proteção Seguro ATIVO');
-        console.log('🚨 Funções de emergência disponíveis:');
-        console.log('  emergencyProtectionStop() - Para todos os sistemas');
-        console.log('  forceRecovery() - Recuperação forçada');
-        console.log('  safeProtection.safeSetTimeout() - setTimeout seguro');
-        console.log('  safeProtection.safeSetInterval() - setInterval seguro');
-    </script>
-
-
-
-    <!-- 🔍 TESTES DE CORES E GRÁFICOS REMOVIDOS -->
+    <!-- Sistema SafeProtection removido (CSP) -->
+    <!-- ðŸ” TESTES DE CORES E GRÃFICOS REMOVIDOS -->
     <!-- Arquivos movidos para testes-inuteis/ para evitar spam e problemas de performance -->
     <!-- Use teste-restauracao-limpo.js para testes limpos -->
 
-    <!-- 🎨 LAYOUTS ALTERNATIVOS PARA CENTRO DO GRÁFICO -->
+    <!-- 🎨 LAYOUTS ALTERNATIVOS PARA CENTRO DO GRÃFICO -->
     <script src="layouts-centro-grafico.js"></script>
 
 
-    <!-- 🧠 SISTEMA UNIFICADO DE GRÁFICOS - ARQUITETURA LENDÁRIA -->
+    <!-- ðŸ§  SISTEMA UNIFICADO DE GRÃFICOS - ARQUITETURA LENDÃRIA -->
     <script type="module" src="src/charts/UnifiedChartSystem.js"></script>
     <script type="module" src="src/charts/MigrationManager.js"></script>
 
@@ -1989,68 +1035,19 @@
     <script type="module" src="src/charts/tests/UnifiedChartSystemTests.js"></script>
 
 
-    <!-- 🧪 TESTE MANUAL CONSERVADOR -->
-    <script>
-        // Funções de teste inline para evitar arquivos externos
-        window.addEventListener('DOMContentLoaded', () => {
-            console.log('🧪 Teste manual carregado');
+    <script type="module" src="install-prompt.js"></script>
+    <!-- Service Worker registrado via boot.js (CSP compliant) -->
+    <!-- Help System Components -->
+    <script src="src/ui/components/help/glossary-data.js"></script>
+    <script type="module" src="src/ui/components/help/MetricTooltipManager.js"></script>
+    <script type="module" src="src/ui/components/help/HelpFAB.js"></script>
+    <script type="module" src="src/ui/components/help/AnalysisHelpIcons.js"></script>
+    <script type="module" src="src/ui/components/help/ModalsHelpIcons.js"></script>
+    <!-- Boot.js: Inicialização CSP-compliant (substitui scripts inline) -->
+    <script src="src/init/boot.js"></script>
+    <script src="src/ui/components/help/DashboardHelpIcons.js"></script>
+    <script src="fab-dock-manager.js"></script>
 
-            window.verificarCard = function () {
-                const metaProgress = document.getElementById('meta-progress-value');
-                const winValue = document.getElementById('win-current-value');
-                const lossValue = document.getElementById('loss-current-value');
-
-                console.log('📊 Card Status:');
-                console.log('  Meta:', metaProgress?.textContent, '| Classe:', metaProgress?.className);
-                console.log('  Win:', winValue?.textContent);
-                console.log('  Loss:', lossValue?.textContent);
-                console.log('  Operações:', window.state?.historicoCombinado?.length || 0);
-            };
-
-            window.testarOperacao = function () {
-                if (window.state?.historicoCombinado) {
-                    const antes = window.state.historicoCombinado.length;
-
-                    window.state.historicoCombinado.push({
-                        id: 'teste_' + Date.now(),
-                        isWin: true,
-                        resultado: 'win',
-                        valor: 100,
-                        entrada: 100,
-                        retorno: 180
-                    });
-
-                    console.log('🎯 Operação adicionada:', antes, '→', window.state.historicoCombinado.length);
-
-                    setTimeout(() => {
-                        console.log('📊 Verificando card após operação:');
-                        window.verificarCard();
-                    }, 2000);
-                }
-            };
-        });
-    </script>
-
-
-
-    <!-- 🚨 TESTE AUTOMÁTICO INICIAL -->
-    <script>
-        // Executar diagnóstico automático após carregamento
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                console.log('🚨 EXECUTANDO TESTE AUTOMÁTICO INICIAL...');
-                if (window.testGhostValues) {
-                    const ghostResults = window.testGhostValues();
-                    if (ghostResults.length > 0) {
-                        console.error('👻 GHOST VALUES DETECTADOS:', ghostResults);
-                    } else {
-                        console.log('✅ Nenhum ghost value detectado');
-                    }
-                }
-            }, 2000);
-        });
-    </script>
 </body>
 
 </html>
-                                                                                           

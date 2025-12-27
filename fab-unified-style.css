@@ -1,0 +1,105 @@
+/* ========================================
+   PADRONIZAÇÃO DOS BOTÕES FAB
+   Estilo unificado - posição controlada por JS
+   Fade-in FORÇADO igual para todos
+   ======================================== */
+
+/* ========= RESET COMPLETO DAS ANIMAÇÕES ORIGINAIS ========= */
+
+/* Forçar TODOS os FABs a começarem invisíveis e SEM animações originais */
+body .help-fab,
+body .trash-fab,
+body .trash-fab.visible,
+body .trash-fab.empty,
+body .trash-fab.has-items,
+body button.trader-settings-floating-btn,
+button#trader-settings-btn {
+    opacity: 0 !important;
+    transform: translateX(20px) !important;
+    animation: none !important;
+}
+
+/* ========= FADE-IN UNIFICADO ========= */
+
+/* Classe para fade-in - aplicada pelo JS */
+body .help-fab.fab-visible,
+body .trash-fab.fab-visible,
+body .trash-fab.visible.fab-visible,
+body button.trader-settings-floating-btn.fab-visible,
+button#trader-settings-btn.fab-visible {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+    animation: none !important;
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out !important;
+}
+
+/* ========= ESTILO BASE UNIFICADO ========= */
+
+body .help-fab,
+body .trash-fab,
+body button.trader-settings-floating-btn,
+button#trader-settings-btn {
+    /* Tamanho uniforme */
+    width: 50px !important;
+    height: 50px !important;
+
+    /* Formato arredondado */
+    border-radius: 12px !important;
+
+    /* Visual base - cinza escuro neutro */
+    background: rgba(55, 65, 81, 0.95) !important;
+    border: 2px solid rgba(255, 255, 255, 0.15) !important;
+
+    /* Sombra consistente */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+
+    /* Transição para hover */
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out, background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
+
+    /* Cor branca */
+    color: white !important;
+
+    /* Z-index */
+    z-index: 9999 !important;
+}
+
+/* ========= HOVER UNIFICADO ========= */
+
+body .help-fab.fab-visible:hover,
+body .trash-fab.fab-visible:hover,
+body button.trader-settings-floating-btn.fab-visible:hover,
+button#trader-settings-btn.fab-visible:hover {
+    background: rgba(75, 85, 99, 0.95) !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
+    transform: translateX(0) scale(1.05) !important;
+}
+
+/* ========= ACTIVE UNIFICADO ========= */
+
+body .help-fab.fab-visible:active,
+body .trash-fab.fab-visible:active,
+body button.trader-settings-floating-btn.fab-visible:active,
+button#trader-settings-btn.fab-visible:active {
+    transform: translateX(0) scale(0.95) !important;
+}
+
+/* ========= EXCEÇÃO: LIXEIRA COM ITENS ========= */
+
+body .trash-fab.has-items.fab-visible {
+    background: rgba(220, 38, 38, 0.95) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* ========= ÍCONES ========= */
+
+body .help-fab .fab-icon,
+body .trash-fab .trash-icon {
+    width: 22px !important;
+    height: 22px !important;
+}
+
+body button.trader-settings-floating-btn,
+button#trader-settings-btn {
+    font-size: 22px !important;
+}

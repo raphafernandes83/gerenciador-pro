@@ -27,10 +27,21 @@ import { SYSTEM_LIMITS } from '../constants/AppConstants.js';
  * Configurações de precisão contextual
  */
 const PRECISION_STRATEGY = Object.freeze({
-    monetary: { decimals: 2, rounding: 'bankers' },
-    intermediate: { decimals: 6, rounding: 'half-even' },
-    percentage: { decimals: 4, rounding: 'half-up' },
-    validation: { checkNaN: true, checkInfinity: true }
+    monetary: {
+        decimals: 2,
+        rounding: 'bankers',
+        validation: { checkNaN: true, checkInfinity: true }
+    },
+    intermediate: {
+        decimals: 6,
+        rounding: 'half-even',
+        validation: { checkNaN: true, checkInfinity: true }
+    },
+    percentage: {
+        decimals: 4,
+        rounding: 'half-up',
+        validation: { checkNaN: true, checkInfinity: true }
+    }
 });
 
 /**
@@ -41,13 +52,13 @@ const PERFORMANCE_SLA_TURBO = Object.freeze({
     calculateEntryAmount: 2,
     calculateReturnAmount: 1,
     calculateRecoveryEntry: 2,
-    
+
     // Tier 2: Análise Estatística (≤15ms)
     calculateExpectancy: 5,
     calculateDrawdown: 15,
     calculateSequences: 10,
     calculateProfitFactor: 8,
-    
+
     // Tier 3: Análise Avançada (≤100ms)
     monteCarlo: 100,
     calculateVaR: 25
@@ -86,11 +97,11 @@ class TurboCache {
         this.maxSize = config.maxSize || 1000;
         this.ttl = config.ttl || 300000;
         this.strategy = config.strategy || 'LRU';
-        
+
         this.cache = new Map();
         this.accessOrder = new Map();
         this.timestamps = new Map();
-        
+
         // Métricas de performance
         this.metrics = {
             hits: 0,
@@ -98,62 +109,62 @@ class TurboCache {
             evictions: 0,
             totalRequests: 0
         };
-        
+
         // Cleanup automático
         this.cleanupInterval = setInterval(() => this._cleanup(), this.ttl / 4);
     }
-    
+
     /**
      * Obtém valor do cache com validação TTL
      */
     get(key) {
         this.metrics.totalRequests++;
-        
+
         const now = Date.now();
         const timestamp = this.timestamps.get(key);
-        
+
         // Verifica TTL
         if (timestamp && (now - timestamp) > this.ttl) {
             this.delete(key);
             this.metrics.misses++;
             return undefined;
         }
-        
+
         if (this.cache.has(key)) {
             // Atualiza ordem de acesso para LRU
             if (this.strategy === 'LRU') {
                 this.accessOrder.set(key, now);
             }
-            
+
             this.metrics.hits++;
             return this.cache.get(key);
         }
-        
+
         this.metrics.misses++;
         return undefined;
     }
-    
+
     /**
      * Define valor no cache com eviction inteligente
      */
     set(key, value) {
         const now = Date.now();
-        
+
         // Remove entrada existente se houver
         if (this.cache.has(key)) {
             this.delete(key);
         }
-        
+
         // Eviction se necessário
         if (this.cache.size >= this.maxSize) {
             this._evict();
         }
-        
+
         this.cache.set(key, value);
         this.timestamps.set(key, now);
         this.accessOrder.set(key, now);
     }
-    
+
     /**
      * Remove entrada do cache
      */
@@ -162,13 +173,13 @@ class TurboCache {
         this.timestamps.delete(key);
         this.accessOrder.delete(key);
     }
-    
+
     /**
      * Estratégia de eviction baseada na configuração
      */
     _evict() {
         let keyToEvict;
-        
+
         switch (this.strategy) {
             case 'LRU':
                 keyToEvict = this._findLRUKey();
@@ -180,30 +191,30 @@ class TurboCache {
             default:
                 keyToEvict = this.cache.keys().next().value;
         }
-        
+
         if (keyToEvict) {
             this.delete(keyToEvict);
             this.metrics.evictions++;
         }
     }
-    
+
     /**
      * Encontra chave menos recentemente usada
      */
     _findLRUKey() {
         let oldestKey = null;
         let oldestTime = Infinity;
-        
+
         for (const [key, time] of this.accessOrder) {
             if (time < oldestTime) {
                 oldestTime = time;
                 oldestKey = key;
             }
         }
-        
+
         return oldestKey;
     }
-    
+
     /**
      * Encontra chave menos frequentemente usada (simplificado)
      */
@@ -211,31 +222,31 @@ class TurboCache {
         // Implementação simplificada - usa LRU como fallback
         return this._findLRUKey();
     }
-    
+
     /**
      * Limpeza automática de entradas expiradas
      */
     _cleanup() {
         const now = Date.now();
         const keysToDelete = [];
-        
+
         for (const [key, timestamp] of this.timestamps) {
             if ((now - timestamp) > this.ttl) {
                 keysToDelete.push(key);
             }
         }
-        
+
         keysToDelete.forEach(key => this.delete(key));
     }
-    
+
     /**
      * Obtém métricas de performance
      */
     getMetrics() {
-        const hitRate = this.metrics.totalRequests > 0 
-            ? (this.metrics.hits / this.metrics.totalRequests) * 100 
+        const hitRate = this.metrics.totalRequests > 0
+            ? (this.metrics.hits / this.metrics.totalRequests) * 100
             : 0;
-            
+
         return {
             ...this.metrics,
             hitRate: hitRate.toFixed(2),
@@ -243,7 +254,7 @@ class TurboCache {
             maxSize: this.maxSize
         };
     }
-    
+
     /**
      * Limpa cache completamente
      */
@@ -253,7 +264,7 @@ class TurboCache {
         this.accessOrder.clear();
         this.metrics = { hits: 0, misses: 0, evictions: 0, totalRequests: 0 };
     }
-    
+
     /**
      * Destrói cache e limpa recursos
      */
@@ -277,26 +288,26 @@ class ContextualMemoizer {
         this.cache = new TurboCache(cacheConfig);
         this.patterns = new Map();
     }
-    
+
     /**
      * Memoiza função com padrão de chave personalizado
      */
     memoize(fn, keyPattern = 'default') {
         return (...args) => {
             const key = this._generateKey(keyPattern, args);
-            
+
             let result = this.cache.get(key);
             if (result !== undefined) {
                 return result;
             }
-            
+
             result = fn.apply(this, args);
             this.cache.set(key, result);
-            
+
             return result;
         };
     }
-    
+
     /**
      * Gera chave baseada no padrão
      */
@@ -312,25 +323,25 @@ class ContextualMemoizer {
                 return `default_${JSON.stringify(args)}`;
         }
     }
-    
+
     /**
      * Hash simples para arrays grandes
      */
     _hashArray(arr) {
         if (arr.length === 0) return 'empty';
         if (arr.length <= 10) return JSON.stringify(arr);
-        
+
         // Hash baseado em primeiro, último e tamanho para arrays grandes
         return `${arr[0]}_${arr[arr.length - 1]}_${arr.length}`;
     }
-    
+
     /**
      * Limpa cache
      */
     clear() {
         this.cache.clear();
     }
-    
+
     /**
      * Obtém métricas
      */
@@ -350,18 +361,23 @@ function applyContextualPrecision(value, context = 'intermediate') {
     if (!isValidNumber(value)) {
         throw new Error('Valor deve ser um número válido para aplicar precisão');
     }
-    
+
     const config = PRECISION_STRATEGY[context] || PRECISION_STRATEGY.intermediate;
-    
-    // Validação IEEE 754
-    if (config.validation.checkNaN && isNaN(value)) {
+
+    // Validação robusta de entrada
+    const validation = config.validation || {
+        checkNaN: false,
+        checkInfinity: false
+    };
+
+    if (validation.checkNaN && isNaN(value)) {
         throw new Error('Valor NaN detectado - violação IEEE 754');
     }
-    
-    if (config.validation.checkInfinity && !isFinite(value)) {
+
+    if (validation.checkInfinity && !isFinite(value)) {
         throw new Error('Valor infinito detectado - violação IEEE 754');
     }
-    
+
     // Aplicar rounding strategy
     switch (config.rounding) {
         case 'bankers':
@@ -383,12 +399,12 @@ function bankersRound(value, decimals) {
     const shifted = value * factor;
     const floor = Math.floor(shifted);
     const fraction = shifted - floor;
-    
+
     if (fraction === 0.5) {
         // Round to even
         return (floor % 2 === 0 ? floor : floor + 1) / factor;
     }
-    
+
     return Math.round(shifted) / factor;
 }
 
@@ -420,13 +436,13 @@ class MathAuditSystem {
         this.maxLogs = 10000;
         this.enabled = true;
     }
-    
+
     /**
      * Registra operação matemática
      */
     logOperation(functionName, inputs, output, executionTime, metadata = {}) {
         if (!this.enabled) return;
-        
+
         const logEntry = {
             timestamp: Date.now(),
             microseconds: performance.now() * 1000,
@@ -437,20 +453,20 @@ class MathAuditSystem {
             metadata,
             stackTrace: this._captureStackTrace()
         };
-        
+
         this.logs.push(logEntry);
-        
+
         // Limita tamanho do log
         if (this.logs.length > this.maxLogs) {
             this.logs.shift();
         }
-        
+
         // Log crítico se performance ruim
         if (executionTime > PERFORMANCE_SLA_TURBO[functionName]) {
             console.warn(`⚠️ Performance SLA violado: ${functionName} levou ${executionTime}ms (limite: ${PERFORMANCE_SLA_TURBO[functionName]}ms)`);
         }
     }
-    
+
     /**
      * Sanitiza inputs para logging
      */
@@ -461,7 +477,7 @@ class MathAuditSystem {
             return String(input);
         });
     }
-    
+
     /**
      * Sanitiza output para logging
      */
@@ -471,7 +487,7 @@ class MathAuditSystem {
         if (typeof output === 'object') return JSON.stringify(output);
         return String(output);
     }
-    
+
     /**
      * Captura stack trace simplificado
      */
@@ -479,20 +495,20 @@ class MathAuditSystem {
         const stack = new Error().stack;
         return stack ? stack.split('\n').slice(2, 5).join(' | ') : 'N/A';
     }
-    
+
     /**
      * Obtém logs por função
      */
     getLogsByFunction(functionName) {
         return this.logs.filter(log => log.functionName === functionName);
     }
-    
+
     /**
      * Obtém estatísticas de performance
      */
     getPerformanceStats() {
         const stats = {};
-        
+
         for (const log of this.logs) {
             if (!stats[log.functionName]) {
                 stats[log.functionName] = {
@@ -504,28 +520,28 @@ class MathAuditSystem {
                     slaViolations: 0
                 };
             }
-            
+
             const stat = stats[log.functionName];
             stat.calls++;
             stat.totalTime += log.executionTime;
             stat.maxTime = Math.max(stat.maxTime, log.executionTime);
             stat.minTime = Math.min(stat.minTime, log.executionTime);
-            
+
             const slaLimit = PERFORMANCE_SLA_TURBO[log.functionName];
             if (slaLimit && log.executionTime > slaLimit) {
                 stat.slaViolations++;
             }
         }
-        
+
         // Calcula médias
         for (const stat of Object.values(stats)) {
             stat.avgTime = stat.totalTime / stat.calls;
             stat.slaCompliance = ((stat.calls - stat.slaViolations) / stat.calls) * 100;
         }
-        
+
         return stats;
     }
-    
+
     /**
      * Limpa logs
      */
@@ -558,20 +574,20 @@ const auditSystem = new MathAuditSystem();
  * Decorator que aplica otimizações automaticamente
  */
 function turboOptimize(tier, keyPattern = 'default') {
-    return function(target, propertyName, descriptor) {
+    return function (target, propertyName, descriptor) {
         const originalMethod = descriptor.value;
         const memoizer = tier === 1 ? tier1Memoizer : tier2Memoizer;
-        
-        descriptor.value = function(...args) {
+
+        descriptor.value = function (...args) {
             const startTime = performance.now();
-            
+
             try {
                 // Aplica memoização
                 const memoizedFn = memoizer.memoize(originalMethod, keyPattern);
                 const result = memoizedFn.apply(this, args);
-                
+
                 const executionTime = performance.now() - startTime;
-                
+
                 // Log da auditoria
                 auditSystem.logOperation(
                     propertyName,
@@ -580,11 +596,11 @@ function turboOptimize(tier, keyPattern = 'default') {
                     executionTime,
                     { tier, keyPattern }
                 );
-                
+
                 return result;
             } catch (error) {
                 const executionTime = performance.now() - startTime;
-                
+
                 // Log do erro
                 auditSystem.logOperation(
                     propertyName,
@@ -593,11 +609,11 @@ function turboOptimize(tier, keyPattern = 'default') {
                     executionTime,
                     { tier, keyPattern, error: true }
                 );
-                
+
                 throw error;
             }
         };
-        
+
         return descriptor;
     };
 }
@@ -648,7 +664,7 @@ function isValidPayout(payout) {
  */
 export function calculateEntryAmount(capital, entryPercentage) {
     const startTime = performance.now();
-    
+
     try {
         // Validação otimizada
         if (!isValidNumber(capital) || capital <= 0) {
@@ -663,12 +679,12 @@ export function calculateEntryAmount(capital, entryPercentage) {
 
         // Cálculo otimizado
         const result = capital * (entryPercentage / PERCENTAGE_DIVISOR);
-        
+
         // Aplica precisão monetária
         const preciseResult = applyContextualPrecision(result, 'monetary');
-        
+
         const executionTime = performance.now() - startTime;
-        
+
         // Auditoria
         auditSystem.logOperation(
             'calculateEntryAmount',
@@ -677,7 +693,7 @@ export function calculateEntryAmount(capital, entryPercentage) {
             executionTime,
             { tier: 1, precision: 'monetary' }
         );
-        
+
         return preciseResult;
     } catch (error) {
         const executionTime = performance.now() - startTime;
@@ -699,7 +715,7 @@ export function calculateEntryAmount(capital, entryPercentage) {
  */
 export function calculateReturnAmount(entryAmount, payout) {
     const startTime = performance.now();
-    
+
     try {
         // Validação otimizada
         if (!isValidNumber(entryAmount) || entryAmount <= 0) {
@@ -714,12 +730,12 @@ export function calculateReturnAmount(entryAmount, payout) {
 
         // Cálculo otimizado
         const result = entryAmount * (payout / PERCENTAGE_DIVISOR);
-        
+
         // Aplica precisão monetária
         const preciseResult = applyContextualPrecision(result, 'monetary');
-        
+
         const executionTime = performance.now() - startTime;
-        
+
         // Auditoria
         auditSystem.logOperation(
             'calculateReturnAmount',
@@ -728,7 +744,7 @@ export function calculateReturnAmount(entryAmount, payout) {
             executionTime,
             { tier: 1, precision: 'monetary' }
         );
-        
+
         return preciseResult;
     } catch (error) {
         const executionTime = performance.now() - startTime;
@@ -750,7 +766,7 @@ export function calculateReturnAmount(entryAmount, payout) {
  */
 export function calculateRecoveryEntry(targetRecovery, payout) {
     const startTime = performance.now();
-    
+
     try {
         // Validação otimizada
         if (!isValidNumber(targetRecovery) || targetRecovery <= 0) {
@@ -765,12 +781,12 @@ export function calculateRecoveryEntry(targetRecovery, payout) {
 
         // Cálculo otimizado
         const result = targetRecovery / (payout / PERCENTAGE_DIVISOR);
-        
+
         // Aplica precisão monetária
         const preciseResult = applyContextualPrecision(result, 'monetary');
-        
+
         const executionTime = performance.now() - startTime;
-        
+
         // Auditoria
         auditSystem.logOperation(
             'calculateRecoveryEntry',
@@ -779,7 +795,7 @@ export function calculateRecoveryEntry(targetRecovery, payout) {
             executionTime,
             { tier: 1, precision: 'monetary' }
         );
-        
+
         return preciseResult;
     } catch (error) {
         const executionTime = performance.now() - startTime;
@@ -805,7 +821,7 @@ export function calculateRecoveryEntry(targetRecovery, payout) {
  */
 export function calculateMathematicalExpectancy(winRate, avgPayout) {
     const startTime = performance.now();
-    
+
     try {
         // Validação otimizada
         if (!isValidPercentage(winRate)) {
@@ -824,12 +840,12 @@ export function calculateMathematicalExpectancy(winRate, avgPayout) {
         const payoutDecimal = applyContextualPrecision(avgPayout / 100, 'intermediate');
 
         const result = winRateDecimal * payoutDecimal - lossRateDecimal;
-        
+
         // Aplica precisão percentual ao resultado final
         const preciseResult = applyContextualPrecision(result, 'percentage');
-        
+
         const executionTime = performance.now() - startTime;
-        
+
         // Auditoria
         auditSystem.logOperation(
             'calculateMathematicalExpectancy',
@@ -838,7 +854,7 @@ export function calculateMathematicalExpectancy(winRate, avgPayout) {
             executionTime,
             { tier: 2, precision: 'percentage' }
         );
-        
+
         return preciseResult;
     } catch (error) {
         const executionTime = performance.now() - startTime;
@@ -860,7 +876,7 @@ export function calculateMathematicalExpectancy(winRate, avgPayout) {
  */
 export function calculateMaxDrawdown(operations) {
     const startTime = performance.now();
-    
+
     try {
         // Validação otimizada
         if (!Array.isArray(operations) || operations.length === 0) {
@@ -883,7 +899,7 @@ export function calculateMaxDrawdown(operations) {
 
         for (let i = 0; i < operations.length; i += chunkSize) {
             const chunk = operations.slice(i, i + chunkSize);
-            
+
             for (const operation of chunk) {
                 if (
                     !operation ||
@@ -894,7 +910,7 @@ export function calculateMaxDrawdown(operations) {
                 }
 
                 currentBalance = applyContextualPrecision(
-                    currentBalance + operation.resultado, 
+                    currentBalance + operation.resultado,
                     'intermediate'
                 );
 
@@ -911,9 +927,9 @@ export function calculateMaxDrawdown(operations) {
 
         // Aplica precisão monetária ao resultado final
         const preciseResult = applyContextualPrecision(-maxDrawdown, 'monetary');
-        
+
         const executionTime = performance.now() - startTime;
-        
+
         // Auditoria
         auditSystem.logOperation(
             'calculateMaxDrawdown',
@@ -922,7 +938,7 @@ export function calculateMaxDrawdown(operations) {
             executionTime,
             { tier: 2, precision: 'monetary', batchProcessed: true }
         );
-        
+
         return preciseResult;
     } catch (error) {
         const executionTime = performance.now() - startTime;
@@ -944,13 +960,13 @@ export function calculateMaxDrawdown(operations) {
  */
 export function calculateSequences(operations) {
     const startTime = performance.now();
-    
+
     try {
         // Validação otimizada
         if (!Array.isArray(operations) || operations.length === 0) {
             const result = { maxWins: 0, maxLosses: 0, currentStreak: 0, streakType: 'none' };
             const executionTime = performance.now() - startTime;
-            
+
             auditSystem.logOperation(
                 'calculateSequences',
                 [`Array(${operations?.length || 0})`],
@@ -958,7 +974,7 @@ export function calculateSequences(operations) {
                 executionTime,
                 { tier: 2, earlyReturn: true }
             );
-            
+
             return result;
         }
 
@@ -972,7 +988,7 @@ export function calculateSequences(operations) {
         const chunkSize = 1000;
         for (let i = 0; i < operations.length; i += chunkSize) {
             const chunk = operations.slice(i, i + chunkSize);
-            
+
             for (const operation of chunk) {
                 if (!operation || typeof operation.isWin !== 'boolean') {
                     continue;
@@ -1008,7 +1024,7 @@ export function calculateSequences(operations) {
 
         const result = { maxWins, maxLosses, currentStreak, streakType };
         const executionTime = performance.now() - startTime;
-        
+
         // Auditoria
         auditSystem.logOperation(
             'calculateSequences',
@@ -1017,7 +1033,7 @@ export function calculateSequences(operations) {
             executionTime,
             { tier: 2, batchProcessed: true }
         );
-        
+
         return result;
     } catch (error) {
         const executionTime = performance.now() - startTime;
@@ -1039,7 +1055,7 @@ export function calculateSequences(operations) {
  */
 export function calculateProfitFactor(operations) {
     const startTime = performance.now();
-    
+
     try {
         // Validação otimizada
         if (!Array.isArray(operations) || operations.length === 0) {
@@ -1061,7 +1077,7 @@ export function calculateProfitFactor(operations) {
         const chunkSize = 1000;
         for (let i = 0; i < operations.length; i += chunkSize) {
             const chunk = operations.slice(i, i + chunkSize);
-            
+
             for (const operation of chunk) {
                 if (!operation || !isValidNumber(operation.resultado)) {
                     continue;
@@ -1069,12 +1085,12 @@ export function calculateProfitFactor(operations) {
 
                 if (operation.resultado > 0) {
                     totalProfits = applyContextualPrecision(
-                        totalProfits + operation.resultado, 
+                        totalProfits + operation.resultado,
                         'intermediate'
                     );
                 } else if (operation.resultado < 0) {
                     totalLosses = applyContextualPrecision(
-                        totalLosses + Math.abs(operation.resultado), 
+                        totalLosses + Math.abs(operation.resultado),
                         'intermediate'
                     );
                 }
@@ -1082,12 +1098,12 @@ export function calculateProfitFactor(operations) {
         }
 
         // Cálculo final com precisão
-        const result = totalLosses === 0 
-            ? (totalProfits > 0 ? Infinity : 0) 
+        const result = totalLosses === 0
+            ? (totalProfits > 0 ? Infinity : 0)
             : applyContextualPrecision(totalProfits / totalLosses, 'intermediate');
-        
+
         const executionTime = performance.now() - startTime;
-        
+
         // Auditoria
         auditSystem.logOperation(
             'calculateProfitFactor',
@@ -1096,7 +1112,7 @@ export function calculateProfitFactor(operations) {
             executionTime,
             { tier: 2, precision: 'intermediate', batchProcessed: true }
         );
-        
+
         return result;
     } catch (error) {
         const executionTime = performance.now() - startTime;
@@ -1120,7 +1136,7 @@ export function calculateProfitFactor(operations) {
  */
 export function calculateStopValue(capital, stopPercentage) {
     const startTime = performance.now();
-    
+
     try {
         if (!isValidNumber(capital) || capital <= 0) {
             throw new Error('Capital deve ser um número positivo');
@@ -1136,7 +1152,7 @@ export function calculateStopValue(capital, stopPercentage) {
 
         const result = capital * (stopPercentage / PERCENTAGE_DIVISOR);
         const preciseResult = applyContextualPrecision(result, 'monetary');
-        
+
         const executionTime = performance.now() - startTime;
         auditSystem.logOperation(
             'calculateStopValue',
@@ -1145,7 +1161,7 @@ export function calculateStopValue(capital, stopPercentage) {
             executionTime,
             { tier: 'utility', precision: 'monetary' }
         );
-        
+
         return preciseResult;
     } catch (error) {
         const executionTime = performance.now() - startTime;
@@ -1211,7 +1227,7 @@ export function getTurboMetrics() {
 function _calculateSLACompliance() {
     const stats = auditSystem.getPerformanceStats();
     const compliance = {};
-    
+
     for (const [functionName, stat] of Object.entries(stats)) {
         compliance[functionName] = {
             slaLimit: PERFORMANCE_SLA_TURBO[functionName] || 'N/A',
@@ -1220,7 +1236,7 @@ function _calculateSLACompliance() {
             violations: stat.slaViolations || 0
         };
     }
-    
+
     return compliance;
 }
 
@@ -1234,7 +1250,7 @@ export function clearTurboCache() {
     tier1Memoizer.clear();
     tier2Memoizer.clear();
     auditSystem.clear();
-    
+
     console.log('🧹 Cache Turbo limpo completamente');
 }
 
@@ -1245,7 +1261,7 @@ export function destroyTurboSystem() {
     tier1Cache.destroy();
     tier2Cache.destroy();
     tier3Cache.destroy();
-    
+
     console.log('🗑️ Sistema Turbo destruído');
 }
 

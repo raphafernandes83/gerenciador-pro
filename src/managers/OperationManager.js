@@ -33,39 +33,34 @@ export const operationManager = {
         // VERIFICAÇÃO DE SEGURANÇA CRÍTICA
         if (!state.isSessionActive) {
             logger.error('❌ ERRO: Tentativa de registrar operação sem sessão ativa');
-            ui.showModal({
-                title: 'Sessão Inativa',
-                message:
-                    'Não é possível registrar operações sem uma sessão ativa. Clique em "Nova Sessão" para começar.',
-            });
+            logger.error('❌ ERRO: Tentativa de registrar operação sem sessão ativa');
+            window.toastManager?.error('Não é possível registrar operações sem uma sessão ativa.');
+            return;
             return;
         }
 
         if (!dadosOperacao || typeof dadosOperacao.isWin !== 'boolean') {
             logger.error('❌ ERRO: Dados de operação inválidos', { dadosOperacao });
-            ui.showModal({
-                title: 'Erro de Dados',
-                message: 'Dados da operação estão inválidos. Tente novamente.',
-            });
+            logger.error('❌ ERRO: Dados de operação inválidos', { dadosOperacao });
+            window.toastManager?.error('Dados da operação inválidos. Tente novamente.');
+            return;
             return;
         }
 
         if (!Array.isArray(state.planoDeOperacoes) || state.planoDeOperacoes.length === 0) {
             logger.error('❌ ERRO: Plano de operações não existe');
-            ui.showModal({
-                title: 'Erro de Plano',
-                message: 'Plano de operações não foi calculado. Reinicie a sessão.',
-            });
+            logger.error('❌ ERRO: Plano de operações não existe');
+            window.toastManager?.error('Plano de operações não calculado. Reinicie a sessão.');
+            return;
             return;
         }
 
         const etapa = state.planoDeOperacoes[dadosOperacao.index];
         if (!etapa) {
             logger.error('❌ ERRO: Etapa inválida no índice', { index: dadosOperacao.index });
-            ui.showModal({
-                title: 'Erro de Etapa',
-                message: `Etapa ${dadosOperacao.index} não encontrada no plano.`,
-            });
+            logger.error('❌ ERRO: Etapa inválida no índice', { index: dadosOperacao.index });
+            window.toastManager?.error(`Etapa ${dadosOperacao.index} não encontrada no plano.`);
+            return;
             return;
         }
 
@@ -112,10 +107,8 @@ export const operationManager = {
             await this._processPostOperation(operacao);
         } catch (error) {
             logger.error('Erro ao finalizar registro de operação', { error: String(error) });
-            ui.showModal({
-                title: 'Erro de Sistema',
-                message: 'Ocorreu um erro ao processar a operação. Tente novamente.',
-            });
+            logger.error('Erro ao finalizar registro de operação', { error: String(error) });
+            window.toastManager?.error('Erro ao processar operação. Tente novamente.');
         } finally {
             // Sempre limpa estado pendente
             this._cleanupPendingOperation();
@@ -141,11 +134,11 @@ export const operationManager = {
             logger.error('Erro: Tentativa de registrar operação para uma etapa inválida', {
                 index,
             });
-            ui.showModal({
-                title: 'Erro de Plano',
-                message:
-                    'A etapa do plano não foi encontrada. A sessão pode precisar ser reiniciada.',
+            logger.error('Erro: Tentativa de registrar operação para uma etapa inválida', {
+                index,
             });
+            window.toastManager?.error('Etapa do plano não encontrada.');
+            return false;
             return false;
         }
 
@@ -215,11 +208,12 @@ export const operationManager = {
                 valor: operacao?.valor
             });
 
-            ui.showModal({
-                title: 'Erro Crítico de Dados',
-                message:
-                    'O valor da operação é inválido. A operação foi cancelada para proteger a integridade dos dados.',
+            logger.error('❌ ERRO CRÍTICO: Valor da operação é inválido', {
+                operacao: operacao,
+                valor: operacao?.valor
             });
+
+            window.toastManager?.error('Valor da operação inválido. Operação cancelada.');
             throw new Error('Valor da operação inválido');
         }
 
@@ -423,7 +417,8 @@ export const operationManager = {
         state.alertaStopLoss80Mostrado = snapshot.alertaStopLoss80Mostrado;
 
         sessionManager.saveActiveSession();
-        ui.mostrarInsightPopup('Última operação desfeita.', '↶');
+        sessionManager.saveActiveSession();
+        window.toastManager?.info('Última operação desfeita', 3000, { subtitle: 'Estado anterior restaurado' });
         ui.analisarPerformanceRecente();
 
         ui.removerUltimoItemTimeline();
@@ -464,7 +459,8 @@ export const operationManager = {
             await dbManager.updateSession(sessao);
 
             await ui.showReplayModal(sessionId);
-            ui.mostrarInsightPopup('Operação editada com sucesso!', '✏️');
+            await ui.showReplayModal(sessionId);
+            window.toastManager?.success('Operação editada com sucesso!');
             try {
                 document.dispatchEvent(
                     new CustomEvent('sessionEdited', { detail: { sessionId } })
@@ -472,7 +468,8 @@ export const operationManager = {
             } catch (_) { }
         } catch (error) {
             logger.error('Erro ao editar operação arquivada', { error: String(error) });
-            ui.showModal({ title: 'Erro', message: 'Não foi possível editar a operação.' });
+            logger.error('Erro ao editar operação arquivada', { error: String(error) });
+            window.toastManager?.error('Não foi possível editar a operação.');
         }
     },
 
@@ -532,6 +529,8 @@ export const operationManager = {
         // Persiste e atualiza UI
         sessionManager.saveActiveSession();
         ui.atualizarTudo();
-        ui.mostrarInsightPopup('Operação editada.', '✏️');
+        sessionManager.saveActiveSession();
+        ui.atualizarTudo();
+        window.toastManager?.success('Operação editada com sucesso');
     }
 };

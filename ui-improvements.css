@@ -1,0 +1,221 @@
+/* ========================================
+   MELHORIAS DE UI - ÍCONES HEADER E ANÁLISE
+   ======================================== */
+
+/* ========================================
+   ÍCONES DO HEADER
+   ======================================== */
+
+/* Container dos ícones do header */
+.header-icons,
+.status-icons,
+.icon-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Estilo consistente para todos os ícones do header */
+.icon-btn,
+.status-icon,
+button[class*="icon"],
+button[title*="Modo"],
+button[title*="Zen"],
+button[title*="Configurações"] {
+    width: 36px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    cursor: pointer !important;
+    transition: all 200ms ease !important;
+    font-size: 18px !important;
+    padding: 0 !important;
+}
+
+.icon-btn:hover,
+.status-icon:hover,
+button[class*="icon"]:hover,
+button[title*="Modo"]:hover,
+button[title*="Zen"]:hover,
+button[title*="Configurações"]:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Estados específicos dos ícones */
+.icon-btn.active,
+.status-icon.active {
+    background: rgba(0, 230, 118, 0.1) !important;
+    border-color: rgba(0, 230, 118, 0.3) !important;
+}
+
+.icon-btn.warning,
+.status-icon.warning {
+    background: rgba(255, 193, 7, 0.1) !important;
+    border-color: rgba(255, 193, 7, 0.3) !important;
+}
+
+.icon-btn.error,
+.status-icon.error {
+    background: rgba(244, 67, 54, 0.1) !important;
+    border-color: rgba(244, 67, 54, 0.3) !important;
+}
+
+/* Remove círculos coloridos antigos */
+.icon-btn::before,
+.status-icon::before {
+    display: none !important;
+}
+
+/* ========================================
+   ABA ANÁLISE ESTRATÉGICA
+   ======================================== */
+
+/* Container principal da análise */
+#analise-content,
+.analise-content,
+[data-tab="analise"] {
+    background: linear-gradient(135deg,
+            rgba(0, 0, 0, 0.2) 0%,
+            rgba(0, 0, 0, 0.1) 100%) !important;
+}
+
+/* Painéis de análise */
+.analysis-panel,
+.analise-panel,
+.panel[class*="analise"] {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    padding: 24px !important;
+    margin-bottom: 20px !important;
+    transition: all 300ms ease !important;
+}
+
+.analysis-panel:hover,
+.analise-panel:hover {
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Títulos da análise */
+.analysis-panel h3,
+.analise-panel h3,
+#analise-content h3 {
+    color: var(--sidebar-accent, #00e676) !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    margin-bottom: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+/* Inputs e selects da análise */
+.analysis-panel select,
+.analysis-panel input,
+.analise-panel select,
+.analise-panel input,
+#analise-content select,
+#analise-content input[type="number"],
+#analise-content input[type="text"] {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+    padding: 10px 16px !important;
+    border-radius: 8px !important;
+    transition: all 200ms ease !important;
+}
+
+.analysis-panel select:focus,
+.analysis-panel input:focus,
+.analise-panel select:focus,
+.analise-panel input:focus,
+#analise-content select:focus,
+#analise-content input:focus {
+    outline: none !important;
+    border-color: var(--sidebar-accent, #00e676) !important;
+    box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.1) !important;
+}
+
+/* Botões da análise */
+.analysis-panel button,
+.analise-panel button,
+#analise-content button:not(.tab-button) {
+    background: var(--sidebar-accent, #00e676) !important;
+    color: #000 !important;
+    border: none !important;
+    padding: 12px 24px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 200ms ease !important;
+}
+
+.analysis-panel button:hover,
+.analise-panel button:hover,
+#analise-content button:not(.tab-button):hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 230, 118, 0.3) !important;
+}
+
+/* Resultados da análise */
+.analysis-results,
+.analise-results {
+    background: rgba(0, 230, 118, 0.05) !important;
+    border-left: 3px solid var(--sidebar-accent, #00e676) !important;
+    padding: 16px !important;
+    border-radius: 8px !important;
+    margin-top: 16px !important;
+}
+
+.analysis-results h4,
+.analise-results h4 {
+    color: var(--sidebar-accent, #00e676) !important;
+    margin-bottom: 12px !important;
+}
+
+/* Labels e textos */
+.analysis-panel label,
+.analise-panel label,
+#analise-content label {
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-weight: 500 !important;
+    margin-bottom: 8px !important;
+    display: block !important;
+}
+
+/* Grid de campos */
+.analysis-grid,
+.analise-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+    gap: 16px !important;
+}
+
+/* Form groups */
+.form-group {
+    margin-bottom: 16px !important;
+}
+
+/* Melhorias de contraste */
+#analise-content .text-muted {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+#analise-content .text-success {
+    color: var(--sidebar-accent, #00e676) !important;
+}
+
+#analise-content .text-danger {
+    color: #ef4444 !important;
+}
+
+#analise-content .text-warning {
+    color: #fbbf24 !important;
+}

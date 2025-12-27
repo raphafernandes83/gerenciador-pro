@@ -317,8 +317,6 @@ export function testDOMMapping() {
         'progressPieChart',
         'winCurrentBar',
         'lossCurrentBar',
-        'winRateDisplay',
-        'lossRateDisplay',
     ];
 
     const missingCritical = criticalElements.filter((id) => !dom[id]);

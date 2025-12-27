@@ -52,14 +52,11 @@ export function generateParametersCardHTML({ idPrefix = '', values = {} } = {}) 
         </div>
 
         <div class="input-group mt-10">
-            <label for="${id('estrategia-select')}" class="tooltip-container">
+            <label for="${id('estrategia-select')}">
                 Tipo de Estratégia
-                <i class="tooltip-icon">?
-                    <span class="tooltip-text w-280 text-left lh-14">
-                        <b>Ciclos de Recuperação:</b> Estratégia agressiva que aumenta o valor para recuperar perdas. Risco maior, potencial de retorno mais rápido.<br /><br />
-                        <b>Mão Fixa:</b> Estratégia conservadora. O valor da entrada é sempre o mesmo. Risco constante e limitado.
-                    </span>
-                </i>
+                <button class="help-icon" data-metric="settings-strategy-type" data-value="recovery" aria-label="Ajuda sobre Tipo de Estratégia" title="Clique para mais informações" type="button">
+                    <span class="icon">?</span>
+                </button>
             </label>
             <select id="${id('estrategia-select')}">
                 <option value="ciclos" ${isSelected('ciclos')}>Ciclos de Recuperação</option>

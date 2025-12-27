@@ -1,0 +1,26 @@
+/* ========================================
+   FIX: Oculta painel informativo quando sidebar está encolhida
+   ======================================== */
+
+/* Quando sidebar está colapsada (não tem classe 'expanded'), oculta o painel */
+.sidebar:not(.expanded) .info-panel {
+    display: none !important;
+}
+
+/* Garante que painel só aparece quando sidebar está expandida */
+.sidebar.expanded .info-panel {
+    display: block !important;
+}
+
+/* Alternativa: se a classe for diferente, use width como referência */
+@media (max-width: 100px) {
+    .info-panel {
+        display: none !important;
+    }
+}
+
+/* Se sidebar usar outra classe para estado colapsado */
+.sidebar.collapsed .info-panel,
+.sidebar.minimized .info-panel {
+    display: none !important;
+}

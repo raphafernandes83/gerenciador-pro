@@ -1,0 +1,401 @@
+/**
+ * =============================================================================
+ * TABLES.CSS - Estilos de Tabelas do Gerenciador PRO
+ * =============================================================================
+ * 
+ * Criado: 27/12/2025 - TAREFA 7B
+ * 
+ * Responsabilidade: Estilos base de tabelas, estados de linhas e classes
+ * utilitarias para substituir inline styles.
+ * 
+ * Classes Incluidas:
+ * - Estilos base (tabela, th, td, thead, tbody)
+ * - Estados de linha (fade-in-row, proxima-etapa, linha-concluida, etc.)
+ * - Classes utilitarias (text-center, text-muted, text-error)
+ * 
+ * =============================================================================
+ */
+
+/* ========================================== */
+/* ESTILOS BASE DE TABELA                     */
+/* ========================================== */
+
+#tabela-resultados,
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    background: var(--panel-color, rgba(30, 41, 59, 0.8));
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#tabela-resultados thead,
+.data-table thead {
+    background: var(--header-bg, rgba(15, 23, 42, 0.9));
+}
+
+#tabela-resultados th,
+.data-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted, #64748b);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#tabela-resultados td,
+.data-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--text-color, #f8fafc);
+    font-size: 0.95em;
+}
+
+#tabela-resultados tbody tr:hover,
+.data-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Zebra striping opcional */
+#tabela-resultados tbody tr:nth-child(even),
+.data-table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* ========================================== */
+/* CLASSES UTILITARIAS                        */
+/* ========================================== */
+
+/* Alinhamento de texto */
+.text-center {
+    text-align: center !important;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+.text-left {
+    text-align: left !important;
+}
+
+/* Cores de texto */
+.text-muted {
+    color: var(--text-muted, #64748b) !important;
+}
+
+.text-error {
+    color: var(--secondary-color, #ff3d00) !important;
+}
+
+.text-success {
+    color: var(--success-color, #059669) !important;
+}
+
+/* Outros utilitarios */
+.nowrap {
+    white-space: nowrap;
+}
+
+/* ========================================== */
+/* ESTADOS DE LINHA                           */
+/* ========================================== */
+
+/* Animacao de entrada */
+.fade-in-row {
+    animation: fadeInRow 0.3s ease-out forwards;
+}
+
+@keyframes fadeInRow {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Proxima etapa - destaque */
+.proxima-etapa {
+    background: rgba(14, 165, 233, 0.15) !important;
+    border-left: 3px solid var(--info-color, #0ea5e9);
+    position: relative;
+}
+
+.proxima-etapa::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--info-color, #0ea5e9);
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 4px var(--info-color, #0ea5e9);
+    }
+
+    50% {
+        box-shadow: 0 0 12px var(--info-color, #0ea5e9);
+    }
+}
+
+/* Linha concluida */
+.linha-concluida {
+    opacity: 0.6;
+    background: rgba(5, 150, 105, 0.08) !important;
+}
+
+.linha-concluida td {
+    text-decoration: line-through;
+    text-decoration-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Linha desfocada (modo guiado) */
+.linha-desfocada {
+    opacity: 0.4;
+    filter: blur(0.5px);
+}
+
+/* Linha desabilitada */
+.linha-desabilitada {
+    pointer-events: none;
+    user-select: none;
+}
+
+/* ========================================== */
+/* CELULAS ESPECIAIS                          */
+/* ========================================== */
+
+.valor-cell {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+}
+
+.acoes-cell {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+}
+
+.acoes-cell button {
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85em;
+    transition: all 0.2s ease;
+}
+
+.acoes-cell .copy-btn {
+    background: rgba(14, 165, 233, 0.15);
+    color: var(--info-color, #0ea5e9);
+}
+
+.acoes-cell .copy-btn:hover {
+    background: rgba(14, 165, 233, 0.3);
+}
+
+.acoes-cell .win-btn-linha {
+    background: rgba(5, 150, 105, 0.15);
+    color: var(--success-color, #059669);
+}
+
+.acoes-cell .win-btn-linha:hover {
+    background: rgba(5, 150, 105, 0.3);
+}
+
+.acoes-cell .loss-btn-linha {
+    background: rgba(220, 38, 38, 0.15);
+    color: var(--secondary-color, #ff3d00);
+}
+
+.acoes-cell .loss-btn-linha:hover {
+    background: rgba(220, 38, 38, 0.3);
+}
+
+/* ========================================== */
+/* RESPONSIVO                                 */
+/* ========================================== */
+
+@media (max-width: 768px) {
+
+    #tabela-resultados th,
+    #tabela-resultados td,
+    .data-table th,
+    .data-table td {
+        padding: 8px 10px;
+        font-size: 0.85em;
+    }
+
+    .acoes-cell {
+        flex-wrap: wrap;
+    }
+}
+
+/* Wrapper para scroll horizontal */
+.table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ========================================== */
+/* TABELA BLOQUEADA (operacoes-bloqueadas)    */
+/* ========================================== */
+
+.operacoes-bloqueadas {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.operacoes-bloqueadas::after {
+    content: '🔒 Operações Bloqueadas';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--text-muted, #64748b);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    z-index: 10;
+}
+
+/* ========================================== */
+/* COMPACT MODE - TAREFA 9A                   */
+/* ========================================== */
+
+/* Compact Mode: Reduz padding, margens e altura */
+body.compact-mode {
+    --compact-padding: 6px;
+    --compact-gap: 4px;
+}
+
+/* Tabelas em modo compacto */
+body.compact-mode #tabela-resultados th,
+body.compact-mode #tabela-resultados td,
+body.compact-mode .data-table th,
+body.compact-mode .data-table td {
+    padding: 6px 10px;
+    font-size: 0.85em;
+}
+
+body.compact-mode #tabela-resultados th,
+body.compact-mode .data-table th {
+    padding: 8px 10px;
+}
+
+/* Cards em modo compacto */
+body.compact-mode .card,
+body.compact-mode .preview-card,
+body.compact-mode .info-panel,
+body.compact-mode .session-info-card {
+    padding: 10px;
+    margin-bottom: 8px;
+}
+
+/* Gaps reduzidos */
+body.compact-mode .card-grid,
+body.compact-mode .panel-grid {
+    gap: 8px;
+}
+
+/* Header mais compacto */
+body.compact-mode .app-header {
+    padding: 8px 12px;
+}
+
+body.compact-mode .header-actions {
+    padding: 4px 8px;
+    gap: 6px;
+}
+
+/* Sidebar compacta */
+body.compact-mode .sidebar {
+    padding: 8px;
+}
+
+body.compact-mode .sidebar-item {
+    padding: 8px 10px;
+    margin-bottom: 2px;
+}
+
+/* Botões mais compactos */
+body.compact-mode .status-chip {
+    padding: 3px 6px !important;
+    height: 24px !important;
+    font-size: 9px !important;
+}
+
+/* Indicador visual do botão compact quando ativo */
+#compact-mode-btn.active {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+}
+
+/* ========================================== */
+/* ZEN MODE - TAREFA 9B                       */
+/* ========================================== */
+
+/* Zen Mode: Esconde elementos não essenciais para foco máximo */
+
+/* Esconde painéis auxiliares */
+body.zen-mode #mental-note-panel,
+body.zen-mode .strategy-recommendation,
+body.zen-mode .sidebar-hints,
+body.zen-mode .insight-popup {
+    display: none !important;
+}
+
+/* Simplifica header */
+body.zen-mode #status-indicators {
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+body.zen-mode #status-indicators:hover {
+    opacity: 1;
+}
+
+/* Reduz destaque de elementos secundários */
+body.zen-mode .trend-badge,
+body.zen-mode .status-badge:not(.critical) {
+    opacity: 0.4;
+}
+
+/* Timeline mais limpa */
+body.zen-mode .timeline-item .timeline-badge {
+    opacity: 0.6;
+}
+
+/* Cards com menos ruído visual */
+body.zen-mode .card::before,
+body.zen-mode .preview-card::before {
+    opacity: 0.3;
+}
+
+/* Esconde animações/glow desnecessários */
+body.zen-mode .pulse-glow,
+body.zen-mode .extreme-value-glow {
+    animation: none !important;
+}
+
+/* Indicador visual do botão zen quando ativo */
+#zen-mode-btn.active {
+    background: rgba(168, 85, 247, 0.2);
+    color: #a855f7;
+}

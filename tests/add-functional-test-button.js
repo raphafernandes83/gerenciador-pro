@@ -83,15 +83,15 @@ function addFunctionalTestButton() {
     return button;
 }
 
-// Execução automática se está no browser
-if (typeof window !== 'undefined') {
-    // Aguarda DOM estar pronto
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', addFunctionalTestButton);
-    } else {
-        addFunctionalTestButton();
-    }
-}
+// Execução automática DESABILITADA para produção
+// if (typeof window !== 'undefined') {
+//     // Aguarda DOM estar pronto
+//     if (document.readyState === 'loading') {
+//         document.addEventListener('DOMContentLoaded', addFunctionalTestButton);
+//     } else {
+//         addFunctionalTestButton();
+//     }
+// }
 
 // Exporta para uso programático
 if (typeof module !== 'undefined' && module.exports) {

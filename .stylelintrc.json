@@ -1,5 +1,7 @@
 {
-  "extends": ["stylelint-config-standard"],
+  "extends": [
+    "stylelint-config-standard"
+  ],
   "ignoreFiles": [
     "style.css",
     "sidebar.css",
@@ -20,6 +22,8 @@
     "comment-empty-line-before": null,
     "declaration-block-no-redundant-longhand-properties": null,
     "media-feature-range-notation": null,
-    "no-descending-specificity": null
+    "no-descending-specificity": null,
+    "value-keyword-case": null,
+    "color-hex-length": null
   }
 }

@@ -46,7 +46,7 @@ export class SidebarManager {
                 const item = this.container?.querySelector(`.sidebar-nav-item[data-section="${section}"]`);
                 if (item && typeof item.click === 'function') item.click();
                 return;
-            } catch (_) {}
+            } catch (_) { }
         }
 
         // Fecha modal se estiver aberto
@@ -107,7 +107,7 @@ export class SidebarManager {
                         <label>Nome do Trader</label>
                         <input type="text" id="sidebar-trader-name" value="${traderName}" />
                     </div>
-                    <button class="btn btn-primary" onclick="sidebarManager.saveProfile()">
+                    <button class="btn btn-primary btn-save-profile" type="button">
                         Salvar Perfil
                     </button>
                 </div>
@@ -247,7 +247,7 @@ export class SidebarManager {
                             <span class="tooltip-icon" title="Defina a agressividade da sua recuperação. Isto ajusta a percentagem do prejuízo que cada um dos dois aportes de recuperação tentará cobrir.">?</span>
                         </div>
                         <div class="slider-control">
-                            <button class="slider-btn" onclick="sidebarManager.adjustRecoverySlider(-5)">-</button>
+                            <button class="slider-btn slider-minus" type="button">-</button>
                             <input type="range" 
                                    id="sidebar-divisor-recuperacao" 
                                    min="10" 
@@ -255,7 +255,7 @@ export class SidebarManager {
                                    value="${config.divisorRecuperacao || 35}" 
                                    step="1"
                                    class="slider-input">
-                            <button class="slider-btn" onclick="sidebarManager.adjustRecoverySlider(5)">+</button>
+                            <button class="slider-btn slider-plus" type="button">+</button>
                         </div>
                         <div class="slider-value" id="sidebar-recovery-value">
                             <span>${config.divisorRecuperacao || 35}%</span> / <span>${100 - (config.divisorRecuperacao || 35)}%</span>
@@ -264,7 +264,7 @@ export class SidebarManager {
                 </div>
                 
                 <div class="settings-actions">
-                    <button class="btn btn-primary" onclick="sidebarManager.applyManagementSettings()">
+                    <button class="btn btn-primary btn-apply-management" type="button">
                         Aplicar Configurações
                     </button>
                 </div>
@@ -353,7 +353,7 @@ export class SidebarManager {
                 </div>
                 
                 <div class="settings-actions">
-                    <button class="btn btn-primary" onclick="sidebarManager.applyPreferencesSettings()">
+                    <button class="btn btn-primary btn-apply-preferences" type="button">
                         Aplicar Preferências
                     </button>
                 </div>
@@ -389,7 +389,7 @@ export class SidebarManager {
         modal.className = 'sidebar-content-modal';
         modal.innerHTML = `
             <div class="modal-content">
-                <button class="modal-close" onclick="sidebarManager.closeActiveModal()">×</button>
+                <button class="modal-close" type="button">×</button>
                 ${content}
             </div>
         `;
@@ -563,6 +563,42 @@ export class SidebarManager {
                 config.zenMode = e.target.checked;
                 ui.toggleZenMode();
             });
+        }
+
+        // 🔧 CSP FIX: Event listener para botão de fechar modal
+        if (this.activeModal) {
+            const closeBtn = this.activeModal.querySelector('.modal-close');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => this.closeActiveModal());
+            }
+
+            // 🔧 CSP FIX: Event listener para salvar perfil
+            const saveProfileBtn = this.activeModal.querySelector('.btn-save-profile');
+            if (saveProfileBtn) {
+                saveProfileBtn.addEventListener('click', () => this.saveProfile());
+            }
+
+            // 🔧 CSP FIX: Event listener para aplicar configurações de gerenciamento
+            const applyManagementBtn = this.activeModal.querySelector('.btn-apply-management');
+            if (applyManagementBtn) {
+                applyManagementBtn.addEventListener('click', () => this.applyManagementSettings());
+            }
+
+            // 🔧 CSP FIX: Event listener para aplicar preferências
+            const applyPreferencesBtn = this.activeModal.querySelector('.btn-apply-preferences');
+            if (applyPreferencesBtn) {
+                applyPreferencesBtn.addEventListener('click', () => this.applyPreferencesSettings());
+            }
+
+            // 🔧 CSP FIX: Event listeners para botões + e - do slider de recuperação
+            const sliderMinus = this.activeModal.querySelector('.slider-minus');
+            const sliderPlus = this.activeModal.querySelector('.slider-plus');
+            if (sliderMinus) {
+                sliderMinus.addEventListener('click', () => this.adjustRecoverySlider(-5));
+            }
+            if (sliderPlus) {
+                sliderPlus.addEventListener('click', () => this.adjustRecoverySlider(5));
+            }
         }
     }
 

@@ -15,13 +15,30 @@ import { logger } from '../utils/Logger.js';
 export class MetasUI extends BaseUI {
     constructor() {
         super();
+        this.data = null;
+        this.config = null;
     }
 
     /**
-     * Inicializa o componente
+     * Inicializa o componente e restaura estado salvo
      */
     init() {
         super.init();
+
+        // Restaura dados do localStorage
+        this._restoreFromLocalStorage();
+
+        // Se não tem dados no cache, sincroniza com state
+        if (!this.data) {
+            this._syncWithState();
+        }
+
+        // Atualiza UI se tiver dados
+        if (this.data) {
+            this.atualizarProgressoBarra();
+            logger.debug('📦 MetasUI: Dados restaurados do cache');
+        }
+
         logger.info('🎯 MetasUI pronto');
     }
 
@@ -30,6 +47,9 @@ export class MetasUI extends BaseUI {
      */
     atualizarProgressoBarra() {
         try {
+            // Sincroniza com state antes de atualizar
+            this._syncWithState();
+
             // Win Rate
             this._atualizarWinRate();
 
@@ -46,6 +66,92 @@ export class MetasUI extends BaseUI {
 
         } catch (error) {
             logger.error('Erro ao atualizar progress bars:', error);
+        } finally {
+            // Salva estado atualizado
+            this._saveToLocalStorage();
+        }
+    }
+
+    /**
+     * Salva dados e config no localStorage
+     * @private
+     */
+    _saveToLocalStorage() {
+        try {
+            if (this.data) {
+                localStorage.setItem('metasUI_data', JSON.stringify(this.data));
+            }
+            if (this.config) {
+                localStorage.setItem('metasUI_config', JSON.stringify(this.config));
+            }
+            logger.debug('💾 MetasUI: Dados salvos no localStorage');
+        } catch (error) {
+            logger.error('Erro ao salvar MetasUI no localStorage:', error);
+        }
+    }
+
+    /**
+     * Restaura dados e config do localStorage
+     * @private
+     */
+    _restoreFromLocalStorage() {
+        try {
+            const savedData = localStorage.getItem('metasUI_data');
+            const savedConfig = localStorage.getItem('metasUI_config');
+
+            if (savedData) {
+                this.data = JSON.parse(savedData);
+            }
+            if (savedConfig) {
+                this.config = JSON.parse(savedConfig);
+            }
+
+            if (savedData || savedConfig) {
+                logger.debug('📦 MetasUI: Dados carregados do localStorage');
+            }
+        } catch (error) {
+            logger.error('Erro ao carregar MetasUI do localStorage:', error);
+        }
+    }
+
+    /**
+     * Sincroniza this.data e this.config com window.state
+     * @private
+     * @returns {boolean} True se sincronização bem-sucedida
+     */
+    _syncWithState() {
+        if (!window.state) {
+            logger.warn('⚠️ MetasUI: window.state não disponível para sync');
+            return false;
+        }
+
+        try {
+            // Popula data com dados do state
+            this.data = {
+                capitalInicial: window.state.capitalInicial || window.state.capitalInicioSessao || 0,
+                capitalAtual: window.state.capitalAtual || 0,
+                wins: window.state.historicoCombinado?.filter(op => op.isWin).length || 0,
+                losses: window.state.historicoCombinado?.filter(op => !op.isWin).length || 0,
+                totalOperacoes: window.state.historicoCombinado?.length || 0
+            };
+
+            // Popula config com metas do config
+            this.config = {
+                stopWin: window.config?.metas?.stopWin || 0,
+                stopLoss: window.config?.metas?.stopLoss || 0,
+                metaWinRate: window.config?.metas?.winRate || 0
+            };
+
+            logger.debug('🔄 MetasUI: Sincronizado com state', {
+                capital: this.data.capitalAtual,
+                wins: this.data.wins,
+                losses: this.data.losses
+            });
+
+            return true;
+        } catch (error) {
+            logger.error('Erro ao sincronizar MetasUI com state:', error);
+            return false;
         }
     }
 
@@ -175,7 +281,12 @@ export class MetasUI extends BaseUI {
 
         logger.info(mensagem);
 
-        // Dispara evento customizado para notificação
+        // Notificação visual moderna
+        if (window.toastManager) {
+            window.toastManager.warning(mensagem, 5000);
+        }
+
+        // Dispara evento customizado para notificação (legado)
         if (window.CustomEvent) {
             const event = new CustomEvent('metaProxima', {
                 detail: { tipo, progresso, mensagem }

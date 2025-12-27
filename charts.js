@@ -27,12 +27,12 @@ import smartDebouncer from './src/performance/SmartDebouncer.js';
 // Helper function para validação de chartInstance
 function isValidChartInstance(chartInstance, functionName = 'charts') {
     if (!chartInstance) {
-        logger.debug(`� ${functionName}: chartInstance não fornecida`);
+        logger.debug(`[WARN] ${functionName}: chartInstance não fornecida`);
         return false;
     }
 
     if (!chartInstance.data || !chartInstance.data.datasets || !chartInstance.data.datasets[0]) {
-        logger.debug(`� ${functionName}: chartInstance mal configurada`);
+        logger.debug(`[WARN] ${functionName}: chartInstance mal configurada`);
         return false;
     }
 
@@ -40,7 +40,7 @@ function isValidChartInstance(chartInstance, functionName = 'charts') {
 }
 
 
-// ?? CHECKPOINT 2.2c: Helper de transi��o para DOMManager (CONSOLIDADO)
+// CHECKPOINT 2.2c: Helper de transicao para DOMManager (CONSOLIDADO)
 // Importa domHelper centralizado (anteriormente duplicado em 3 arquivos)
 import { domHelper } from './src/dom-helper.js';
 
@@ -49,7 +49,7 @@ export const charts = {
     dashboardPatrimonioChart: null,
     replayAssertividadeChart: null,
     replayPatrimonioChart: null,
-    // ===== GR�FICO DE PROGRESSO DE METAS (RECONSTRU�DO) =====
+    // ===== GRAFICO DE PROGRESSO DE METAS (RECONSTRUIDO) =====
     progressMetasChart: null,
 
     _rafId: 0,
@@ -162,7 +162,7 @@ export const charts = {
     scheduleProgressUpdate(history) {
         const historyData = Array.isArray(history) ? history : [];
 
-        // Usar sistema otimizado se dispon�vel
+        // Usar sistema otimizado se disponivel
         if (this._performanceOptimized && window.smartDebouncer) {
             smartDebouncer.scheduleUpdate(
                 'progress_chart_update',
@@ -236,7 +236,7 @@ export const charts = {
             // 🔧 CORREÇÃO: Usar state/config diretamente como no backup funcionando
             const stateRef = window.state || {};
             const configRef = window.config || {};
-            // Usando window.state/config para c�lculos
+            // Usando window.state/config para calculos
 
             const capitalAtual = Number(stateRef.capitalAtual) || Number(stateRef.capital) || 0;
             const capitalInicio =
@@ -260,7 +260,7 @@ export const charts = {
                 Number(dom.payoutAtivo?.value) ||
                 0;
 
-            // Usa funções puras se a flag estiver ativa e se existirem globalmente; senão, calcula inline m�nimo
+            // Usa funcoes puras se a flag estiver ativa e se existirem globalmente; senao, calcula inline minimo
             const goalsV2Enabled =
                 (window.Features && window.Features.FEATURE_goals_v2) || Features.FEATURE_goals_v2;
             const hasPure =
@@ -281,11 +281,11 @@ export const charts = {
                 const status = window.computeStopStatus(goals);
                 const hint = window.computeNextActionHint(goals, entryAmount, payoutPercent);
                 const lock = window.computeLockMode(goals);
-                // Lock ativado quando necess�rio
+                // Lock ativado quando necessario
                 return { goals, status, hint, lock };
             }
 
-            // Cálculo m�nimo inline
+            // Calculo minimo inline
             const swAmount = capitalInicio * (stopWinPerc / 100);
             const slAmount = capitalInicio * (stopLossPerc / 100);
             const lucro = capitalAtual - capitalInicio;
@@ -326,10 +326,10 @@ export const charts = {
                 return;
             }
 
-            // Fallback: aplicar diretamente no badge caso ui não esteja dispon�vel
+            // Fallback: aplicar diretamente no badge caso ui nao esteja disponivel
             const badge = dom.progressSoftLockBadge;
             if (badge) {
-                const icon = lock.type === 'STOP_WIN' ? '🎯' : '��';
+                const icon = lock.type === 'STOP_WIN' ? '🎯' : '⛔';
                 const msg =
                     lock.type === 'STOP_WIN'
                         ? 'Meta de ganhos atingida'
@@ -342,7 +342,7 @@ export const charts = {
                 badge.style.visibility = 'visible';
                 badge.style.opacity = '1';
 
-                // Dispara popup se dispon�vel
+                // Dispara popup se disponivel
                 if (window.ui && typeof window.ui.showInsight === 'function') {
                     window.ui.showInsight(lock.reason, 'warning', 3000);
                 }
@@ -353,46 +353,45 @@ export const charts = {
     },
 
     /**
-     * ?? Inicializa o gr�fico de pizza de progresso das metas
-     * ?? DESABILITADO: Este m�todo n�o deve mais criar gr�ficos
-     * O gr�fico � gerenciado exclusivamente pelo progress-card-module.js
+     * Inicializa o grafico de pizza de progresso das metas
+     * DESABILITADO: Este metodo nao deve mais criar graficos
+     * O grafico e gerenciado exclusivamente pelo progress-card-module.js
      */
     initProgressChart() {
-        logger.warn('?? initProgressChart() DESABILITADO - O gr�fico � gerenciado pelo progress-card-module.js');
+        logger.warn('initProgressChart() DESABILITADO - O grafico e gerenciado pelo progress-card-module.js');
 
-        // ??? PROTE��O: Sempre retorna true para n�o quebrar c�digo que depende deste m�todo
-        // Mas N�O cria nenhum gr�fico
+        // PROTECAO: Sempre retorna true para nao quebrar codigo que depende deste metodo
+        // Mas NAO cria nenhum grafico
         return true;
 
-        /* C�DIGO DESABILITADO PARA EVITAR GR�FICO DUPLICADO (verde escuro/vermelho escuro)
+        /* CODIGO DESABILITADO PARA EVITAR GRAFICO DUPLICADO (verde escuro/vermelho escuro)
         
-        logger.info('?? Inicializando gr�fico de progresso de metas...');
 
-        // ??? PROTE��O: Evita reinicializa��o se gr�fico j� existe
+        // PROTECAO: Evita reinicializacao se grafico ja existe
         if (this.progressMetasChart) {
-            logger.warn('?? Gr�fico j� existe, pulando inicializa��o para evitar duplica��o');
-            return true; // Retorna sucesso pois o gr�fico j� est� pronto
+            logger.warn('[INFO] Grafico ja existe, pulando inicializacao para evitar duplicacao');
+            return true; // Retorna sucesso pois o grafico ja esta pronto
         }
 
-        // ??? Valida��o robusta de DOM com diagn�stico
+        // Validacao robusta de DOM com diagnostico
         const canvasElement = dom.progressPieChart;
         if (!canvasElement) {
-            logger.error('? Canvas progressPieChart n�o encontrado no DOM');
-                    logger.debug('🔎 DOM dispon�vel:', {
+            logger.error('[ERROR] Canvas progressPieChart nao encontrado no DOM');
+                    logger.debug('[SEARCH] DOM disponivel:', {
                         keys: Object.keys(dom).filter((key) => key.includes('progress')),
                     });
                     return false;
                 }
         
-                // 🛡� Validação adicional de contexto Canvas
+                // [SHIELD] Validacao adicional de contexto Canvas
                 try {
                     const context = canvasElement.getContext('2d');
                     if (!context) {
-                        logger.error('� Falha ao obter contexto 2D do canvas');
+                        logger.error('[ERROR] Falha ao obter contexto 2D do canvas');
                         return false;
                     }
                 } catch (contextError) {
-                    logger.error('� Erro ao validar contexto canvas:', { error: String(contextError) });
+                    logger.error('[ERROR] Erro ao validar contexto canvas:', { error: String(contextError) });
                     return false;
                 }
         
@@ -439,7 +438,7 @@ export const charts = {
                                     display: false,
                                 },
                                 tooltip: {
-                                    enabled: false, // CORRE��O: Desabilitado para evitar sobreposi��o de gr�fico fantasma
+                                    enabled: false, // CORRECAO: Desabilitado para evitar sobreposicao de grafico fantasma
                                 },
                             },
                             animation: {
@@ -460,15 +459,15 @@ export const charts = {
         
                     // Plugin: texto central com WR atual
                     // REMOVIDO: O plugin centerText causava conflitos de propriedade readonly.
-                    // A exibi��o de texto central deve ser feita via HTML/CSS sobreposto ou plugin seguro.
+                    // A exibicao de texto central deve ser feita via HTML/CSS sobreposto ou plugin seguro.
         
         
-                    // 🛡� Validação pós-inicialização mais rigorosa
+                    // [SHIELD] Validacao pos-inicializacao mais rigorosa
                     if (!this.progressMetasChart ||
                         typeof this.progressMetasChart.update !== 'function' ||
                         !this.progressMetasChart.data ||
                         !this.progressMetasChart.data.datasets) {
-                        logger.error('� Gráfico criado mas com interface inválida');
+                        logger.error('[ERROR] Grafico criado mas com interface invalida');
                         return false;
                     }
         
@@ -476,14 +475,14 @@ export const charts = {
                     try {
                         this.progressMetasChart.update('none');
                     } catch (updateError) {
-                        logger.warn('�� Erro na primeira renderização:', { error: updateError.message });
+                        logger.warn('[WARN] Erro na primeira renderizacao:', { error: updateError.message });
                     }
         
                     logger.info('✅ Gráfico de progresso inicializado com sucesso');
                     return true;
                 } catch (error) {
-                    // � Diagnóstico detalhado do erro
-                    logger.error('� Erro ao inicializar gráfico de progresso:', {
+                    // [ERROR] Diagnostico detalhado do erro
+                    logger.error('[ERROR] Erro ao inicializar grafico de progresso:', {
                         message: error.message,
                         stack: error.stack?.substring(0, 200),
                         canvasElement: !!canvasElement,
@@ -491,13 +490,13 @@ export const charts = {
                         chartJsAvailable: typeof Chart !== 'undefined',
                     });
         
-                    // 🛡� Cleanup em caso de falha parcial
+                    // [SHIELD] Cleanup em caso de falha parcial
                     if (this.progressMetasChart) {
                         try {
                             this.progressMetasChart.destroy();
                             this.progressMetasChart = null;
                         } catch (cleanupError) {
-                            logger.warn('�� Erro durante cleanup', { error: cleanupError.message });
+                            logger.warn('[WARN] Erro durante cleanup', { error: cleanupError.message });
                         }
                     }
         
@@ -505,11 +504,11 @@ export const charts = {
                 }
             }
         
-            FIM DO C�DIGO DESABILITADO */
+            FIM DO CODIGO DESABILITADO */
     },
 
     /**
-     * ?? Atualiza o progresso das metas com hist�rico da sess�o
+     * [INFO] Atualiza o progresso das metas com historico da sessao
      */
     updateProgressChart(sessionHistory = []) {
         const requestId = generateRequestId('update_progress');
@@ -524,7 +523,7 @@ export const charts = {
             });
 
         if (!Array.isArray(sessionHistory)) {
-            logger.withRequest(requestId).warn('�� Histórico inválido, usando array vazio');
+            logger.withRequest(requestId).warn('[WARN] Historico invalido, usando array vazio');
             sessionHistory = [];
         }
 
@@ -551,7 +550,7 @@ export const charts = {
                     performanceTracker.finishOperation(requestId, 'error', {
                         reason: 'chart_init_failed',
                     });
-                    logger.withRequest(requestId).error('� Falha ao inicializar gráfico');
+                    logger.withRequest(requestId).error('[ERROR] Falha ao inicializar grafico');
                     return false;
                 }
                 // Garante assinatura quando o gráfico é (re)criado
@@ -569,12 +568,12 @@ export const charts = {
             // 🔧 CORREÇÃO: Usa novo sistema de cálculos integrado
             const stats = this.calculateProgressStats(normalizedHistory);
 
-            // Disponibiliza últimas estat�sticas para utilitários/diagnósticos leves
+            // Disponibiliza ultimas estatisticas para utilitarios/diagnosticos leves
             try {
                 this.lastStats = stats;
             } catch { }
 
-            // 🔧 CORREÇÃO: Calcula dados completos do card se função dispon�vel
+            // CORRECAO: Calcula dados completos do card se funcao disponivel
             let cardData = null;
             try {
                 if (typeof window.calculateProgressCardData === 'function') {
@@ -589,7 +588,7 @@ export const charts = {
                     );
                 }
             } catch (error) {
-                logger.warn('�� Erro ao calcular dados completos do card:', { error: error.message });
+                logger.warn('[WARN] Erro ao calcular dados completos do card:', { error: error.message });
             }
 
             // Calcula metas/gaps/hints a partir do contexto do app (sem travar se faltar dado)
@@ -597,7 +596,7 @@ export const charts = {
 
             performanceTracker.addMarker(requestId, 'ui_updates_start');
 
-            // 🔧 CORREÇÃO: Usa novo sistema de atualização se dispon�vel
+            // CORRECAO: Usa novo sistema de atualizacao se disponivel
             if (cardData && cardData.isValid && typeof window.updateProgressCardComplete === 'function') {
                 try {
                     const updateSuccess = window.updateProgressCardComplete(cardData, this.progressMetasChart);
@@ -615,7 +614,7 @@ export const charts = {
                         this.updateProgressStatusNew(stats, targets, goalsSummary);
                     }
                 } catch (updateError) {
-                    logger.warn('�� Erro no novo sistema, usando fallback:', { error: updateError.message });
+                    logger.warn('[WARN] Erro no novo sistema, usando fallback:', { error: updateError.message });
                     // Fallback para sistema antigo
                     this.updateProgressPieChart(stats, goalsSummary);
                     this.updateProgressStatusNew(stats, targets, goalsSummary);
@@ -635,14 +634,14 @@ export const charts = {
             performanceTracker.finishOperation(requestId, 'error', { error: error.message });
             logger
                 .withRequest(requestId)
-                .error('� Erro ao atualizar progresso:', { error: String(error) });
+                .error('[ERROR] Erro ao atualizar progresso:', { error: String(error) });
             return false;
         }
     },
 
     /**
-     * 📊 Calcula estat�sticas do progresso (VERSÃO MELHORADA)
-     * Integra com o novo sistema de cálculos reais
+     * Calcula estatisticas do progresso (VERSAO MELHORADA)
+     * Integra com o novo sistema de calculos reais
      */
     calculateProgressStats(sessionHistory) {
         try {
@@ -651,16 +650,16 @@ export const charts = {
                 return window.calculateRealStats(sessionHistory);
             }
 
-            // Fallback para cálculo local se função externa não dispon�vel
+            // Fallback para calculo local se funcao externa nao disponivel
             return this._calculateProgressStatsLocal(sessionHistory);
         } catch (error) {
-            logger.error('� Erro ao calcular estat�sticas de progresso:', { error: String(error) });
+            logger.error('[ERROR] Erro ao calcular estatisticas de progresso:', { error: String(error) });
             return this._calculateProgressStatsLocal(sessionHistory);
         }
     },
 
     /**
-     * 📊 Cálculo local de estat�sticas (fallback)
+     * Calculo local de estatisticas (fallback)
      * @private
      */
     _calculateProgressStatsLocal(sessionHistory) {
@@ -705,7 +704,7 @@ export const charts = {
                 losses++;
             }
 
-            // Soma lucro/preju�zo se dispon�vel
+            // Soma lucro/prejuizo se disponivel
             if (typeof operacao.valor === 'number' && !isNaN(operacao.valor)) {
                 totalProfit += operacao.valor;
             }
@@ -856,7 +855,7 @@ export const charts = {
                     } else {
                         msg = 'Aprimorar assertividade';
                         level = 'warning';
-                        icon = '��';
+                        icon = '[!]';
                     }
                 }
                 const meta = targets.winTarget || 80;
@@ -900,7 +899,7 @@ export const charts = {
                     } else {
                         msg = 'Risco alto';
                         level = 'warning';
-                        icon = '��';
+                        icon = '[!]';
                     }
                 }
                 const meta = targets.lossTarget || 20;
@@ -926,7 +925,7 @@ export const charts = {
                 setCard(lossEl, `${icon} ${msg}`, level, sub);
             }
         } catch (error) {
-            logger.warn('�� _updateStatusCards: falha ao atualizar cartões', {
+            logger.warn('[WARN] _updateStatusCards: falha ao atualizar cartoes', {
                 error: String(error),
             });
         }
@@ -944,7 +943,7 @@ export const charts = {
                     const reinitOk = this.initProgressChart();
                     if (!reinitOk) return false;
                 } else {
-                    // Canvas indispon�vel no DOM; não atualizar agora
+                    // Canvas indisponivel no DOM; nao atualizar agora
                     return false;
                 }
             } catch {
@@ -979,7 +978,7 @@ export const charts = {
 
             return true;
         } catch (error) {
-            logger.error('� Erro ao atualizar gráfico de pizza', { error: String(error) });
+            logger.error('[ERROR] Erro ao atualizar grafico de pizza', { error: String(error) });
             return false;
         }
     },
@@ -995,7 +994,7 @@ export const charts = {
         if (winDisplay) winDisplay.textContent = `${stats.winRate.toFixed(1)}%`;
         if (lossDisplay) lossDisplay.textContent = `${stats.lossRate.toFixed(1)}%`;
 
-        // Refer�ncias aos elementos percentuais removidas - campos n�o existem mais
+        // Referencias aos elementos percentuais removidas - campos nao existem mais
 
         // Atualiza valores em R$ 
         try {
@@ -1069,7 +1068,7 @@ export const charts = {
                 }
             }
         } catch (error) {
-            logger.warn('�� Erro ao atualizar valores monetários:', error.message);
+            logger.warn('[WARN] Erro ao atualizar valores monetarios:', error.message);
         }
     },
 
@@ -1080,7 +1079,7 @@ export const charts = {
         this.updateProgressBarSafe('win', stats.winRate, targets.winTarget);
         this.updateProgressBarSafe('loss', stats.lossRate, targets.lossTarget);
 
-        // Atualiza valores em R$ abaixo das barras, quando poss�vel
+        // Atualiza valores em R$ abaixo das barras, quando possivel
         try {
             const summary = this._buildGoalsProgressSummarySafe();
             if (summary?.goals) {
@@ -1089,7 +1088,7 @@ export const charts = {
                     dom.winTargetAmount.textContent =
                         ui?._formatarMoedaInternal?.(g.stopWinAmount) ||
                         `R$ ${Number(g.stopWinAmount || 0).toFixed(2)}`;
-                // Usa falta com recuperação (considera preju�zo atual)
+                // Usa falta com recuperacao (considera prejuizo atual)
                 const faltaRec =
                     typeof g.restanteWinRecoveryAmount === 'number'
                         ? g.restanteWinRecoveryAmount
@@ -1153,7 +1152,7 @@ export const charts = {
             }
         } catch { }
 
-        // Badges de tendência (não intrusivo; usa prevWinRate/prevLossRate se dispon�veis)
+        // Badges de tendencia (nao intrusivo; usa prevWinRate/prevLossRate se disponiveis)
         try {
             const wrPrev = typeof stats.prevWinRate === 'number' ? stats.prevWinRate : null;
             const lrPrev = typeof stats.prevLossRate === 'number' ? stats.prevLossRate : null;
@@ -1202,7 +1201,7 @@ export const charts = {
         Object.entries(elements).forEach(([key, element]) => {
             if (!element) {
                 if (isDevelopment && isDevelopment()) {
-                    logger.warn(`�� Elemento ${type}${key} não encontrado`);
+                    logger.warn('[WARN] Elemento ' + type + key + ' nao encontrado');
                 } else {
                     logger.debug && logger.debug(`Elemento ${type}${key} não encontrado`);
                 }
@@ -1246,7 +1245,7 @@ export const charts = {
                 }
             } catch (error) {
                 if (isDevelopment && isDevelopment()) {
-                    logger.error(`� Erro ao atualizar ${type}.${key}:`, { error: String(error) });
+                    logger.error('[ERROR] Erro ao atualizar ' + type + '.' + key + ':', { error: String(error) });
                 } else {
                     logger.debug && logger.debug(`Erro silencioso em ${type}.${key}`);
                 }
@@ -1301,7 +1300,7 @@ export const charts = {
             targetMarker.style.left = `${targetPx}px`;
             currentMarker.style.left = `${currentPx}px`;
 
-            // Mostra valores em R$ (se dispon�veis no contexto global formatador)
+            // Mostra valores em R$ (se disponiveis no contexto global formatador)
             try {
                 const summary = this._buildGoalsProgressSummarySafe();
                 const progressV2 =
@@ -1335,14 +1334,14 @@ export const charts = {
                 }
             } catch { }
         } catch (e) {
-            logger.warn('�� Falha ao posicionar marcadores de progresso', { error: String(e) });
+            logger.warn('[WARN] Falha ao posicionar marcadores de progresso', { error: String(e) });
         }
     },
 
     updateAssertividadeChart(historico, chartInstance) {
-        // Valida��o defensiva dos par�metros
+        // Validacao defensiva dos parametros
         if (!Array.isArray(historico)) {
-            logger.warn('?? updateAssertividadeChart: hist�rico n�o � array, usando array vazio');
+            logger.warn('[INFO] updateAssertividadeChart: historico nao e array, usando array vazio');
             historico = [];
         }
 
@@ -1360,7 +1359,7 @@ export const charts = {
 
             const total = wins + losses;
 
-            // Cores fixas para consist�ncia (definidas em updateColors, mas refor�adas aqui)
+            // Cores fixas para consistencia (definidas em updateColors, mas reforcadas aqui)
             const winColor = '#00d9a6';
             const lossColor = '#ff6b6b';
 
@@ -1384,11 +1383,11 @@ export const charts = {
                 chartInstance.data.datasets[0].data = [wins, losses];
                 chartInstance.data.datasets[0].backgroundColor = [winColor, lossColor];
 
-                // Restaura borda padr�o (ser� sobrescrita pelo updateColors, mas define aqui por garantia)
+                // Restaura borda padrao (sera sobrescrita pelo updateColors, mas define aqui por garantia)
                 const style = getComputedStyle(document.body);
                 const surface = style.getPropertyValue('--surface-color').trim();
                 chartInstance.data.datasets[0].borderColor = surface;
-                chartInstance.data.datasets[0].borderWidth = 0; // Borda padr�o � 0 ou controlada pelo tema
+                chartInstance.data.datasets[0].borderWidth = 0; // Borda padrao e 0 ou controlada pelo tema
 
                 // Habilita tooltip
                 if (chartInstance.options.plugins.tooltip) {
@@ -1410,7 +1409,7 @@ export const charts = {
 
     updatePatrimonioChart(historico, capitalInicial, chartInstance, isGlobal = false) {
         try {
-            logger.debug('📊 ATUALIZANDO GR�FICO DE PATRIMÔNIO:', {
+            logger.debug('ATUALIZANDO GRAFICO DE PATRIMONIO:', {
                 historico: historico?.length || 0,
                 capitalInicial,
                 isGlobal,
@@ -1422,12 +1421,12 @@ export const charts = {
             }
 
             if (!Array.isArray(historico)) {
-                logger.warn('�� Histórico não é array:', { type: typeof historico });
+                logger.warn('[WARN] Historico nao e array:', { type: typeof historico });
                 historico = [];
             }
 
             if (typeof capitalInicial !== 'number' || isNaN(capitalInicial)) {
-                logger.warn('�� Capital inicial inválido:', { capitalInicial });
+                logger.warn('[WARN] Capital inicial invalido:', { capitalInicial });
                 capitalInicial = 0;
             }
 
@@ -1462,25 +1461,25 @@ export const charts = {
                             // Usar 0 para valores desconhecidos para manter continuidade
                             val = 0;
                             logger.debug(
-                                `�� Operação ${index} com formato não reconhecido, usando valor 0:`,
+                                '[WARN] Operacao ' + index + ' com formato nao reconhecido, usando valor 0:',
                                 { op }
                             );
                         } else {
-                            logger.warn(`�� Operação ${index} inválida:`, { op });
+                            logger.warn('[WARN] Operacao ' + index + ' invalida:', { op });
                             return; // Skip esta operação
                         }
                         runningCapital += val;
                         capitalHistory.push(runningCapital);
                     } else {
-                        logger.warn(`�� Operação ${index} inválida:`, { op });
+                        logger.warn('[WARN] Operacao ' + index + ' invalida:', { op });
                     }
                 }
             });
 
             // Labels mais informativos
             const labels = isGlobal
-                ? capitalHistory.map((_, i) => (i === 0 ? 'In�cio' : `Op ${i}`))
-                : capitalHistory.map((_, i) => (i === 0 ? 'In�cio' : `Op ${i}`));
+                ? capitalHistory.map((_, i) => (i === 0 ? 'Inicio' : `Op ${i}`))
+                : capitalHistory.map((_, i) => (i === 0 ? 'Inicio' : `Op ${i}`));
 
             chartInstance.data.labels = labels;
 
@@ -1502,7 +1501,7 @@ export const charts = {
             chartInstance.update('none');
             return true;
         } catch (error) {
-            logger.error('� updatePatrimonioChart: erro ao atualizar dados', {
+            logger.error('[ERROR] updatePatrimonioChart: erro ao atualizar dados', {
                 error: String(error),
             });
             return false;
@@ -1510,13 +1509,13 @@ export const charts = {
     },
 
     /**
-     * Atualiza os charts da modal de Replay com dados de uma sessão espec�fica
+     * Atualiza os charts da modal de Replay com dados de uma sessao especifica
      */
     updateReplayCharts(sessao) {
         try {
             if (!sessao || !Array.isArray(sessao.historicoCombinado)) return false;
             const historico = sessao.historicoCombinado;
-            // Estat�sticas para o texto central do plugin
+            // Estatisticas para o texto central do plugin
             const wins = historico.filter((op) => op && (op.resultado === 'win' || op.isWin === true)).length;
             const totalOps = historico.length;
             const winRatePct = totalOps > 0 ? (wins / totalOps) * 100 : 0;
@@ -1554,7 +1553,7 @@ export const charts = {
     updateGlobal(aggregatedData) {
         try {
             if (!aggregatedData) {
-                logger.warn('�� updateGlobal: dados agregados não fornecidos');
+                logger.warn('[WARN] updateGlobal: dados agregados nao fornecidos');
                 return false;
             }
 
@@ -1562,12 +1561,12 @@ export const charts = {
 
             // Validação defensiva
             if (!Array.isArray(historico)) {
-                logger.warn('�� updateGlobal: histórico não é array, usando array vazio');
+                logger.warn('[WARN] updateGlobal: historico nao e array, usando array vazio');
                 historico = [];
             }
 
             if (typeof capitalInicial !== 'number' || isNaN(capitalInicial)) {
-                logger.warn('�� updateGlobal: capital inicial inválido, usando 0');
+                logger.warn('[WARN] updateGlobal: capital inicial invalido, usando 0');
                 capitalInicial = 0;
             }
 
@@ -1610,7 +1609,7 @@ export const charts = {
 
             return true;
         } catch (error) {
-            logger.error('� updateGlobal: erro ao atualizar gráficos globais', {
+            logger.error('[ERROR] updateGlobal: erro ao atualizar graficos globais', {
                 error: String(error),
             });
             return false;
@@ -1623,22 +1622,22 @@ export const charts = {
         const border = style.getPropertyValue('--border-color').trim();
         const muted = style.getPropertyValue('--text-muted').trim();
 
-        // ?? Cores fixas do Progresso das Metas (consist�ncia visual)
-        const winColor = '#00d9a6';  // Verde para vit�rias
+        // Cores fixas do Progresso das Metas (consistencia visual)
+        const winColor = '#00d9a6';  // Verde para vitorias
         const lossColor = '#ff6b6b'; // Vermelho/rosa para derrotas
 
         // Cores para modo vazio (iguais ao enhanced-donut-chart-system.js)
         const emptyColor = '#374151';
         const emptyBorderColor = '#4b5563';
 
-        // Atualiza gr�ficos de Assertividade (Donut) com cores fixas
+        // Atualiza graficos de Assertividade (Donut) com cores fixas
         [this.dashboardAssertividadeChart, this.replayAssertividadeChart].forEach((chart) => {
             if (chart) {
-                // Verifica se est� em modo vazio (data = [1])
+                // Verifica se esta em modo vazio (data = [1])
                 const isEmpty = chart.data.datasets[0].data.length === 1;
 
                 if (isEmpty) {
-                    // Mant�m cores de placeholder
+                    // Mantem cores de placeholder
                     chart.data.datasets[0].backgroundColor = [emptyColor];
                     chart.data.datasets[0].borderColor = emptyBorderColor;
                 } else {
@@ -1652,11 +1651,11 @@ export const charts = {
             }
         });
 
-        // Atualiza gr�ficos de Patrim�nio (Line) com cor verde
+        // Atualiza graficos de Patrimonio (Line) com cor verde
         [this.dashboardPatrimonioChart, this.replayPatrimonioChart].forEach((chart) => {
             if (chart) {
                 chart.data.datasets[0].borderColor = winColor;
-                chart.data.datasets[0].backgroundColor = 'rgba(0, 217, 166, 0.1)'; // Verde com transpar�ncia
+                chart.data.datasets[0].backgroundColor = 'rgba(0, 217, 166, 0.1)'; // Verde com transparencia
                 chart.data.datasets[0].pointBackgroundColor = winColor;
                 chart.data.datasets[0].fill = true;
                 if (chart.options.scales?.y?.ticks) chart.options.scales.y.ticks.color = muted;
@@ -1703,7 +1702,7 @@ export const charts = {
             this._performanceOptimized = true;
             console.log('✅ Otimizações de performance inicializadas');
         } catch (error) {
-            console.error('� Erro ao inicializar otimizações:', error);
+            console.error('[ERROR] Erro ao inicializar otimizacoes:', error);
             this._performanceOptimized = false;
         }
     },

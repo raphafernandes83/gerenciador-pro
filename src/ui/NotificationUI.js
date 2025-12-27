@@ -39,6 +39,9 @@ export class NotificationUI extends BaseUI {
         const container = document.createElement('div');
         container.id = 'notifications-container';
         container.className = 'notifications-container';
+        container.setAttribute('aria-live', 'polite');
+        container.setAttribute('aria-atomic', 'false');
+        container.setAttribute('role', 'status');
         document.body.appendChild(container);
     }
 
@@ -129,6 +132,8 @@ export class NotificationUI extends BaseUI {
         const el = document.createElement('div');
         el.className = `notification notification-${notificacao.tipo}`;
         el.dataset.id = notificacao.id;
+        el.setAttribute('role', 'alert');
+        el.setAttribute('aria-live', 'assertive');
 
         const icones = {
             success: '✓',
@@ -140,9 +145,9 @@ export class NotificationUI extends BaseUI {
         const icone = icones[notificacao.tipo] || icones.info;
 
         el.innerHTML = `
-            <div class="notification-icon">${icone}</div>
+            <div class="notification-icon" aria-hidden="true">${icone}</div>
             <div class="notification-message">${notificacao.mensagem}</div>
-            <button class="notification-close" aria-label="Fechar">&times;</button>
+            <button class="notification-close" aria-label="Fechar notificação">&times;</button>
         `;
 
         // Event listener no botão fechar
@@ -277,6 +282,22 @@ export class NotificationUI extends BaseUI {
      */
     setMaxSimultaneas(max) {
         this.maxSimultaneas = max;
+    }
+
+    /**
+     * Exibe aviso discreto de bloqueio quando metas sao atingidas (modo suave)
+     * @param {'STOP_WIN'|'STOP_LOSS'|null} type - Tipo de bloqueio
+     * @param {string|null} reason - Motivo do bloqueio
+     */
+    sinalizarBloqueioSuave(type, reason = null) {
+        const isWin = type === 'STOP_WIN';
+        const icon = isWin ? '🏁' : '⛔';
+        const msg = isWin ? 'Meta de ganhos atingida' : 'Limite de perda atingido';
+
+        // Mostra insight popup
+        this.mostrarInsightPopup(`${msg}${reason ? ` · ${reason}` : ''}`, icon);
+
+        logger.debug(`Sinalização de bloqueio: ${type} - ${msg}`);
     }
 }
 

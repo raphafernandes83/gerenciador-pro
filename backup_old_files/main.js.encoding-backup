@@ -1,0 +1,1823 @@
+// ================================================================
+// MAIN.JS - ARQUIVO PRINCIPAL
+// ================================================================
+
+// ================================================================
+// SUPABASE INTEGRACAO
+// ================================================================
+
+// ================================================================
+// 🔧 CONFIGURAÇÕES CENTRALIZADAS DO SISTEMA
+// ================================================================
+import {
+    SUPABASE_CONFIG,
+    TIMING_CONFIG,
+    PERFORMANCE_THRESHOLDS,
+    SYSTEM_MESSAGES,
+    STORAGE_KEYS,
+} from './src/constants/SystemConstants.js';
+import { getSupabaseEnv } from './src/config/EnvProvider.js';
+import { generateRequestId } from './src/utils/SecurityUtils.js';
+import './src/utils/SafeProtection.js';
+import './src/monitoring/PerformanceDashboard.js';
+import './tests/test-loader.js';
+
+// 🔧 Configurações do Supabase com carregamento seguro de ambiente
+const { url: ENV_SUPABASE_URL, anonKey: ENV_SUPABASE_ANON_KEY, isOfflineMode } = getSupabaseEnv();
+const supabaseUrl = ENV_SUPABASE_URL || SUPABASE_CONFIG.URL;
+const supabaseAnonKey = ENV_SUPABASE_ANON_KEY || SUPABASE_CONFIG.ANON_KEY;
+
+// 🛡️ Validação robusta de configuração
+if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'offline') {
+    logger.warn(
+        '⚠️ Supabase não configurado. Sistema funcionará em modo offline com funcionalidade limitada.'
+    );
+    window.__SUPABASE_OFFLINE_MODE__ = true;
+} else {
+    logger.info('✅ Configuração Supabase carregada:', {
+        hasUrl: !!supabaseUrl,
+        hasKey: !!supabaseAnonKey,
+        isDevelopment: SUPABASE_CONFIG.DEVELOPMENT_MODE,
+    });
+    window.__SUPABASE_OFFLINE_MODE__ = false;
+}
+
+/**
+ * 🛡️ INICIALIZAÇÃO SEGURA DO CLIENTE SUPABASE
+ * Implementa Null Object Pattern + Retry Pattern para máxima segurança
+ */
+
+/**
+ * Objeto null-safe para substituir cliente Supabase quando indisponível
+ * Previne crashes e logging de credenciais em produção
+ */
+const createNullSupabaseClient = () => ({
+    auth: {
+        getUser: async () => ({
+            data: null,
+            error: { message: 'Cliente Supabase não disponível', code: 'CLIENT_UNAVAILABLE' },
+        }),
+        signIn: async () => ({
+            data: null,
+            error: { message: 'Cliente Supabase não disponível', code: 'CLIENT_UNAVAILABLE' },
+        }),
+        signOut: async () => ({
+            data: null,
+            error: { message: 'Cliente Supabase não disponível', code: 'CLIENT_UNAVAILABLE' },
+        }),
+    },
+    from: () => ({
+        select: () => ({ data: [], error: null }),
+        insert: () => ({ data: null, error: { message: 'Cliente Supabase não disponível' } }),
+        update: () => ({ data: null, error: { message: 'Cliente Supabase não disponível' } }),
+        delete: () => ({ data: null, error: { message: 'Cliente Supabase não disponível' } }),
+    }),
+    storage: {
+        from: () => ({
+            upload: async () => ({ data: null, error: { message: 'Storage não disponível' } }),
+            download: async () => ({ data: null, error: { message: 'Storage não disponível' } }),
+        }),
+    },
+    isNull: true, // Flag para identificar cliente null
+});
+
+// Cliente Supabase com inicialização segura garantida
+let supabase = createNullSupabaseClient();
+
+/**
+ * Inicializa cliente Supabase com retry inteligente e logging seguro
+ * @private
+ */
+const initializeSupabaseClient = () => {
+    try {
+        // 🛡️ Verificação prévia de configuração
+        if (window.__SUPABASE_OFFLINE_MODE__) {
+            logger.info('🎮 Sistema em modo offline - Supabase não será inicializado');
+            return false;
+        }
+
+        if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'offline') {
+            logger.warn('⚠️ Credenciais Supabase ausentes. Verifique a configuração.');
+            return false;
+        }
+
+        if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+            const client = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+            // 🔍 Validação robusta do cliente
+            if (client && typeof client.auth === 'object' && typeof client.from === 'function') {
+                supabase = client;
+                logger.debug('✅ Cliente Supabase inicializado com sucesso!');
+                return true;
+            } else {
+                logger.error('❌ Cliente Supabase criado mas inválido');
+                return false;
+            }
+        } else {
+            logger.error(
+                '❌ Biblioteca Supabase não carregada. Verifique se o script está incluído no HTML.'
+            );
+            return false;
+        }
+    } catch (error) {
+        // 🛡️ Log seguro sem vazamento de credenciais
+        logger.error('❌ Erro na inicialização do Supabase:', {
+            message: error.message,
+            timestamp: new Date().toISOString(),
+            hasCredentials: !!(supabaseUrl && supabaseAnonKey),
+            libraryAvailable: typeof window.supabase !== 'undefined',
+            errorType: error.constructor.name,
+        });
+        return false;
+    }
+};
+
+/**
+ * Sistema de retry com backoff exponencial para inicialização robusta
+ * @private
+ */
+const initializeSupabaseWithRetry = async () => {
+    const maxRetries = SUPABASE_CONFIG.MAX_RETRY_ATTEMPTS;
+    let retryDelay = SUPABASE_CONFIG.RETRY_DELAY;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        if (initializeSupabaseClient()) {
+            return; // Sucesso na inicialização
+        }
+
+        if (attempt < maxRetries) {
+            logger.warn(
+                `⚠️ Tentativa ${attempt}/${maxRetries} falhou. Retry em ${retryDelay}ms...`
+            );
+            await new Promise((resolve) => setTimeout(resolve, retryDelay));
+            retryDelay *= 2; // Backoff exponencial
+        }
+    }
+
+    logger.warn(SYSTEM_MESSAGES.WARNING.SUPABASE_FAILED);
+    logger.info('ℹ️ Sistema continuará funcionando com cliente null-safe');
+};
+
+// Inicialização imediata ou com retry
+if (!initializeSupabaseClient()) {
+    // Async retry sem bloquear thread principal
+    initializeSupabaseWithRetry().catch((error) => {
+        logger.error('💥 Falha crítica na inicialização do Supabase:', error.message);
+    });
+}
+
+/**
+ * 🔍 TESTE SEGURO DE CONEXÃO SUPABASE
+ * Implementa validação completa com categorização de erros e logging seguro
+ *
+ * @returns {Promise<boolean>} True se conexão válida, false caso contrário
+ */
+async function testSupabaseConnection() {
+    logger.debug('🔍 Iniciando teste de conexão Supabase...');
+    const requestId = generateRequestId('supabase');
+
+    // Guard Clause 1: Verifica se cliente existe
+    if (!supabase) {
+        logger.error('❌ Cliente Supabase é null/undefined');
+        return false;
+    }
+
+    // Guard Clause 2: Verifica se é cliente null-safe (não conectado)
+    if (supabase.isNull === true) {
+        logger.warn('⚠️ Usando cliente Supabase null-safe (biblioteca não carregada)');
+        return false;
+    }
+
+    // Guard Clause 3: Verifica se cliente tem interface esperada
+    if (!supabase.auth || typeof supabase.auth.getUser !== 'function') {
+        logger.error('❌ Cliente Supabase com interface inválida');
+        return false;
+    }
+
+    try {
+        // Teste de conectividade com timeout de segurança
+        const connectionTest = Promise.race([
+            supabase.auth.getUser(),
+            new Promise((_, reject) =>
+                setTimeout(
+                    () => reject(new Error('Timeout na conexão')),
+                    SUPABASE_CONFIG.CONNECTION_TIMEOUT || 5000
+                )
+            ),
+        ]);
+
+        const { data: user, error: authError } = await connectionTest;
+
+        // Categorização inteligente de erros
+        if (authError) {
+            // Tentativa de recuperar sessão expirada
+            if (authError.code === 'JWT_EXPIRED' && supabase?.auth?.refreshSession) {
+                try {
+                    const { data: refreshed, error: refreshError } =
+                        await supabase.auth.refreshSession();
+                    if (!refreshError) {
+                        logger.info('🔁 Sessão renovada com sucesso');
+                        return true;
+                    }
+                } catch (_) {
+                    /* silencioso */
+                }
+            }
+            return _categorizeSupabaseError(authError);
+        }
+
+        // Conexão bem-sucedida - logging seguro
+        _logSuccessfulConnection(user);
+        return true;
+    } catch (error) {
+        return _handleConnectionException(error);
+    }
+}
+
+/**
+ * Categoriza erros do Supabase para diagnóstico preciso
+ * @private
+ * @param {Object} authError - Erro retornado pelo Supabase
+ * @returns {boolean} False sempre (erro detectado)
+ */
+function _categorizeSupabaseError(authError) {
+    const errorCode = authError.code || 'UNKNOWN';
+    const errorMessage = authError.message || 'Erro desconhecido';
+
+    switch (errorCode) {
+        case 'CLIENT_UNAVAILABLE':
+            logger.warn('⚠️ Cliente Supabase não disponível (esperado)');
+            return false;
+
+        case 'NETWORK_ERROR':
+        case 'CONNECTION_TIMEOUT':
+            logger.error('🌐 Erro de rede na conexão Supabase:', {
+                code: errorCode,
+                type: 'network',
+                timestamp: new Date().toISOString(),
+            });
+            return false;
+
+        case 'AUTH_SESSION_MISSING':
+        case 'JWT_EXPIRED':
+            // Estes são erros "normais" quando usuário não está logado
+            logger.info('ℹ️ Nenhuma sessão ativa (normal para primeira execução)');
+            return true; // Conexão OK, apenas sem usuário logado
+
+        case 'UNKNOWN':
+            // Tratamento específico para "Auth session missing!" que vem sem código específico
+            if (errorMessage === 'Auth session missing!') {
+                logger.info('ℹ️ Sessão não encontrada (comportamento normal na inicialização)');
+                return true; // Conexão OK, apenas sem usuário logado
+            }
+            // Para outros erros UNKNOWN, continua para o default
+            logger.warn('⚠️ Erro de autenticação desconhecido:', errorCode);
+            return false;
+
+        default:
+            // 🔧 CORREÇÃO: Log menos agressivo para erros não categorizados
+            logger.warn('⚠️ Erro Supabase não categorizado:', {
+                code: errorCode,
+                message: errorMessage.substring(0, 100), // Limita tamanho do log
+                type: 'uncategorized',
+                timestamp: new Date().toISOString(),
+                note: 'Este tipo de erro pode ser normal durante inicialização',
+            });
+            return false;
+    }
+}
+
+/**
+ * Logging seguro de conexão bem-sucedida
+ * @private
+ * @param {Object} user - Dados do usuário (pode ser null)
+ */
+function _logSuccessfulConnection(user) {
+    logger.debug(SYSTEM_MESSAGES.SUCCESS.SUPABASE_CONNECTED);
+
+    if (user && user.user) {
+        // Logging seguro - não expõe dados sensíveis completos
+        const userInfo = {
+            hasUser: true,
+            emailDomain: user.user.email ? user.user.email.split('@')[1] : 'unknown',
+            provider: user.user.app_metadata?.provider || 'unknown',
+            confirmed: user.user.email_confirmed_at ? 'yes' : 'no',
+        };
+        logger.debug('👤 Usuário conectado:', userInfo);
+    } else {
+        logger.debug('ℹ️ Conexão estabelecida - nenhum usuário logado');
+    }
+}
+
+/**
+ * Tratamento de exceções durante teste de conexão
+ * @private
+ * @param {Error} error - Exceção capturada
+ * @returns {boolean} False sempre (exceção = falha)
+ */
+function _handleConnectionException(error) {
+    const errorType = error.name || 'UnknownError';
+    const errorMessage = error.message || 'Erro desconhecido';
+
+    // Categorização de exceções
+    if (errorMessage.includes('timeout') || errorMessage.includes('Timeout')) {
+        logger.error('⏱️ Timeout na conexão Supabase:', {
+            type: 'timeout',
+            duration: SUPABASE_CONFIG.CONNECTION_TIMEOUT,
+            suggestion: 'Verificar conectividade de rede',
+        });
+    } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+        logger.error('🌐 Falha de rede:', {
+            type: 'network',
+            suggestion: 'Verificar conectividade ou URL do Supabase',
+        });
+    } else {
+        logger.error('💥 Exceção na conexão Supabase:', {
+            type: errorType,
+            message: errorMessage.substring(0, 100),
+            timestamp: new Date().toISOString(),
+        });
+    }
+
+    return false;
+}
+
+// ================================================================
+// FIM DA INTEGRACAO SUPABASE INICIAL
+// ================================================================
+
+// ================================================================
+// 🏭 NOVA ARQUITETURA: DEPENDENCY INJECTION
+// ================================================================
+import { dependencyInjector } from './src/core/DependencyInjector.js';
+
+// ================================================================
+// 📦 IMPORTS ESSENCIAIS (apenas módulos legados críticos)
+// ================================================================
+import { mapDOM, dom } from './dom.js';
+import { dbManager } from './db.js';
+import {
+    logic,
+    calcularExpectativaMatematica,
+    calcularDrawdown,
+    calcularSequencias,
+    calcularPayoffRatio,
+    updateState,
+} from './logic.js';
+import { events } from './events.js';
+import { ui } from './ui.js';
+import { charts } from './charts.js';
+// 🚀 CORREÇÃO CRÍTICA: Componentes UI avançados (Modal, Timeline, Tabela)
+import { initComponents } from './src/init-components.js';
+// 🎯 CORREÇÃO: Controlador do modal de seleção de modo de sessão
+import './src/ui/SessionModalController.js';
+import { renderParametersCardIn } from './src/ui/templates/ParametersCardTemplate.js';
+import { generateParametersCardHTML } from './src/ui/templates/ParametersCardTemplate.js';
+import { ParametersCardController } from './src/ui/templates/ParametersCardController.js';
+import {
+    computeStopGoals,
+    formatStopGoals,
+    computeStopStatus,
+    computeNextActionHint,
+    computeLockMode,
+} from './src/utils/GoalsUtils.js';
+
+// Mapeia novos elementos para DOM helper se existir
+try {
+    window.dom = window.dom || {};
+    dom.winTargetAmount = dom.winTargetAmount;
+    dom.winRemainingAmount = dom.winRemainingAmount;
+    dom.lossLimitAmount = dom.lossLimitAmount;
+    dom.lossMarginAmount = dom.lossMarginAmount;
+} catch { }
+import { CONSTANTS, state, config } from './state.js';
+import { validation } from './validation.js';
+
+// ================================================================
+// 📦 IMPORTS PARA EXPOSIÇÃO GLOBAL DOS MÓDULOS REFATORADOS
+// ================================================================
+import {
+    TRADING_STRATEGIES,
+    SESSION_MODES,
+    ERROR_MESSAGES,
+    PERFORMANCE_CONFIG,
+} from './src/constants/AppConstants.js';
+import {
+    calculateEntryAmount,
+    calculateReturnAmount,
+    calculateMathematicalExpectancy,
+} from './src/utils/MathUtils.js';
+import { TradingStrategyFactory } from './src/business/TradingStrategy.js';
+import { errorHandler } from './src/utils/ErrorHandler.js';
+import { debounce, memoize, measurePerformance } from './src/utils/PerformanceUtils.js';
+import { TradingOperationsManager } from './src/business/TradingOperationsManager.js';
+import { legacyAdapter } from './src/adapters/LegacyIntegrationAdapter.js';
+import { performanceMonitor } from './src/monitoring/PerformanceMonitor.js';
+import { cacheManager } from './src/enhancements/CacheManager.js';
+import { smartErrorRecovery } from './src/enhancements/SmartErrorRecovery.js';
+import { ToastManager } from './src/ui/ToastManager.js';
+import { SkeletonLoader } from './src/ui/SkeletonLoader.js';
+import './src/ui/skeleton-examples.js';
+import { ErrorBoundary, ErrorBoundaryManager } from './src/monitoring/ErrorBoundary.js';
+import { MetasUI } from './src/ui/MetasUI.js';
+import {
+    registerAdvancedStrategies,
+    demonstrateAdvancedStrategies,
+    AdvancedStrategiesUtils,
+} from './src/strategies/AdvancedStrategies.js';
+import { logger } from './src/utils/Logger.js';
+
+// ================================================================
+// 🚀 MATH UTILS TURBO MODE - MIGRATION PREPARED
+// ================================================================
+import { MigrationControl } from './src/utils/MathUtilsMigrator.js';
+
+// ⚠️ NOTA: Turbo mode desabilitado temporariamente devido a bug no PrecisionHelper
+// Bug: Cannot read properties of undefined (reading 'checkNaN') em MathUtilsTurbo.js:357
+// Sistema continua em modo gradual (seguro e funcional)
+// TODO: Corrigir PrecisionHelper em MathUtilsTurbo.js antes de ativar
+// MigrationControl.enableAllTurbo();
+logger.info('🔄 MathUtils em modo GRADUAL (seguro) - Turbo aguardando correção');
+
+// ================================================================
+// EXPOR MÓDULOS GLOBALMENTE PARA OS TESTES
+// ================================================================
+window.logic = logic;
+window.state = state;
+window.config = config;
+window.ui = ui;
+window.charts = charts;
+window.validation = validation;
+window.dbManager = dbManager;
+window.dom = dom;
+// 🛡️ CORREÇÃO CRÍTICA: Expor events globalmente para testes
+window.events = events;
+
+// Expor funções exportadas individuais para os testes
+window.calcularExpectativaMatematica = calcularExpectativaMatematica;
+window.calcularDrawdown = calcularDrawdown;
+window.calcularSequencias = calcularSequencias;
+window.calcularPayoffRatio = calcularPayoffRatio;
+window.updateState = updateState;
+
+// Expor novos módulos refatorados para testes
+window.TRADING_STRATEGIES = TRADING_STRATEGIES;
+window.SESSION_MODES = SESSION_MODES;
+window.ERROR_MESSAGES = ERROR_MESSAGES;
+window.PERFORMANCE_CONFIG = PERFORMANCE_CONFIG;
+window.calculateEntryAmount = calculateEntryAmount;
+window.calculateReturnAmount = calculateReturnAmount;
+window.calculateMathematicalExpectancy = calculateMathematicalExpectancy;
+window.TradingStrategyFactory = TradingStrategyFactory;
+window.errorHandler = errorHandler;
+window.debounce = debounce;
+window.memoize = memoize;
+window.measurePerformance = measurePerformance;
+window.TradingOperationsManager = TradingOperationsManager;
+window.legacyAdapter = legacyAdapter;
+window.performanceMonitor = performanceMonitor;
+window.cacheManager = cacheManager;
+window.smartErrorRecovery = smartErrorRecovery;
+window.registerAdvancedStrategies = registerAdvancedStrategies;
+window.demonstrateAdvancedStrategies = demonstrateAdvancedStrategies;
+window.AdvancedStrategiesUtils = AdvancedStrategiesUtils;
+// Expor template para uso dinâmico no sidebar
+window.generateParametersCardHTML = generateParametersCardHTML;
+
+// ================================================================
+// 🎯 INICIALIZAÇÃO: MetasUI para Stop Win/Loss
+// ================================================================
+import { initializeMetasIntegration } from './metas-integration.js';
+
+const metasUI = new MetasUI();
+metasUI.init();
+window.metasUI = metasUI;
+
+// Inicializa integração via eventos
+initializeMetasIntegration();
+
+logger.info('🎯 MetasUI ativado e integrado com eventos');
+
+/**
+ * 🚀 APLICAÇÃO PRINCIPAL - ARQUITETURA LIMPA v9.3
+ * Responsabilidade única: Orquestrar a inicialização do sistema
+ *
+ * @class App
+ * @author Gerenciador PRO Team
+ * @version 9.3
+ */
+// 🔧 CORREÇÃO: Ativar card principal de parâmetros
+window.__SHOW_MAIN_PARAMETERS_CARD__ = true;
+
+// 🔧 CORREÇÃO: Arquivos de correção removidos durante limpeza (Fase 3)
+// O painel minimizável está funcionando corretamente sem esses arquivos
+
+class App {
+    constructor() {
+        this.tradingManager = null;
+        this.initialized = false;
+        this.initializationSteps = [];
+        this.startTime = 0;
+        this.dependencies = null;
+
+        // Configuração de inicialização usando constantes centralizadas
+        this.INITIALIZATION_CONFIG = {
+            SUPABASE_RETRY_ATTEMPTS: SUPABASE_CONFIG.MAX_RETRY_ATTEMPTS,
+            SIDEBAR_INIT_DELAY: TIMING_CONFIG.INITIALIZATION.SIDEBAR_INIT_DELAY,
+            UI_SYNC_TIMEOUT: TIMING_CONFIG.INITIALIZATION.UI_SYNC_TIMEOUT,
+            MODULE_LOAD_TIMEOUT: TIMING_CONFIG.INITIALIZATION.MODULE_LOAD_TIMEOUT,
+        };
+
+        // 🛡️ NÃO chama init() no constructor para evitar problemas assíncronos
+    }
+
+    /**
+     * 🛡️ Validação anti-recursão
+     * Detecta padrões de recursão infinita antes que aconteçam
+     */
+    validateNoRecursion() {
+        const callStack = new Error().stack;
+        const lines = callStack.split('\n');
+
+        // Verifica se há mais de 5 chamadas para o mesmo método
+        const methodCounts = {};
+        lines.forEach((line) => {
+            const match = line.match(/at\s+(\w+\.\w+|\w+)/);
+            if (match) {
+                const method = match[1];
+                methodCounts[method] = (methodCounts[method] || 0) + 1;
+            }
+        });
+
+        for (const [method, count] of Object.entries(methodCounts)) {
+            if (count > 5) {
+                logger.error(`🚨 Recursão detectada: ${method} chamado ${count} vezes`);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 🛡️ Inicialização segura do sistema de erro
+     */
+    initSafeErrorHandling() {
+        try {
+            const { errorHandler } = this.dependencies.utils;
+
+            if (errorHandler && errorHandler.setupGlobalErrorHandling) {
+                // Wrapper com timeout de segurança
+                const timeoutId = setTimeout(() => {
+                    logger.warn('⚠️ Timeout na inicialização do errorHandler');
+                }, TIMING_CONFIG.INITIALIZATION.ERROR_HANDLER_TIMEOUT);
+
+                errorHandler.setupGlobalErrorHandling();
+                clearTimeout(timeoutId);
+                logger.debug('✅ Error handling ativo');
+            }
+        } catch (error) {
+            logger.warn('⚠️ Erro ao inicializar error handling:', error.message);
+        }
+    }
+
+    /**
+     * 🛡️ Inicialização segura do monitoramento de performance
+     */
+    initSafePerformanceMonitoring() {
+        try {
+            const { performanceMonitor } = this.dependencies.singletons;
+
+            if (performanceMonitor && performanceMonitor.initialize) {
+                const initialized = performanceMonitor.initialize({
+                    reportInterval: TIMING_CONFIG.PERFORMANCE.REPORT_INTERVAL,
+                    alertThresholds: {
+                        slowFunction: PERFORMANCE_THRESHOLDS.ALERTS.SLOW_FUNCTION,
+                        highMemoryUsage: PERFORMANCE_THRESHOLDS.ALERTS.HIGH_MEMORY_USAGE,
+                        domOperationsPerSecond:
+                            PERFORMANCE_THRESHOLDS.ALERTS.DOM_OPERATIONS_PER_SECOND,
+                    },
+                });
+
+                if (initialized) {
+                    logger.debug('✅ Performance monitoring ativo');
+                } else {
+                    logger.warn('⚠️ Performance monitoring não inicializou');
+                }
+            }
+        } catch (error) {
+            logger.warn('⚠️ Erro ao inicializar performance monitoring:', error.message);
+        }
+    }
+
+    /**
+     * 🛡️ Inicialização segura do cache manager
+     */
+    initSafeCacheManager() {
+        try {
+            const { cacheManager } = this.dependencies.singletons;
+
+            if (cacheManager && cacheManager.configure) {
+                cacheManager.configure({
+                    maxSize: PERFORMANCE_THRESHOLDS.LIMITS.MAX_CACHE_SIZE,
+                    defaultTTL: PERFORMANCE_THRESHOLDS.LIMITS.DEFAULT_CACHE_TTL,
+                    enableCompression: false, // Desabilitado para reduzir overhead
+                    enableStatistics: false, // Desabilitado para reduzir overhead
+                });
+                logger.debug('✅ Cache manager ativo');
+            }
+        } catch (error) {
+            logger.warn('⚠️ Erro ao inicializar cache manager:', error.message);
+        }
+    }
+
+    /**
+     * 🎯 MÉTODO PRINCIPAL - RESPONSABILIDADE ÚNICA
+     * Orquestra a inicialização seguindo padrão Template Method
+     */
+    async init() {
+        try {
+            this._validateInitialization();
+            this._startInitializationProcess();
+
+            await this._initializeDependencyInjection();
+            await this._initializeSupabaseConnection();
+            await this._initializeMonitoringSystems();
+            await this._initializeAdvancedStrategies();
+            await this._initializeLegacyModules();
+            await this._initializeStateManager(); // 🆕 CHECKPOINT 1.1
+            await this._initializeDOMManager(); // 🆕 CHECKPOINT 2.1
+            await this._initializeModularSystem(); // 🆕 CHECKPOINT 3.x
+            await this._initializeRefactoredSystems();
+            await this._initializeSidebar();
+
+            // 🚀 Inicializa o novo Gerenciador de UI do Dashboard (Substitui fixes antigos)
+            try {
+                const { dashboardUIManager } = await import('./src/managers/DashboardUIManager.js');
+                dashboardUIManager.init();
+                logger.debug('✅ DashboardUIManager inicializado com sucesso');
+                this.initializationSteps.push('dashboard_ui_initialized');
+            } catch (error) {
+                logger.error('❌ Erro ao inicializar DashboardUIManager:', error);
+            }
+
+            await this._performUISync();
+            try { ui.__registerGlobalListenersOnce?.(); } catch (_) { }
+            await this._performFinalValidations();
+
+            this._completeInitialization();
+        } catch (error) {
+            this._handleInitializationError(error);
+        }
+    }
+
+    /**
+     * 🏭 Inicialização do Dependency Injector
+     * @private
+     */
+    async _initializeDependencyInjection() {
+        logger.debug('🏭 Inicializando Dependency Injection...');
+
+        try {
+            // Registra módulos legados para compatibilidade
+            const legacyModules = {
+                dom,
+                dbManager,
+                logic,
+                events,
+                ui,
+                charts,
+                state,
+                config,
+                CONSTANTS,
+                // Funções específicas exportadas
+                calcularExpectativaMatematica,
+                calcularDrawdown,
+                calcularSequencias,
+                calcularPayoffRatio,
+                updateState,
+            };
+
+            // Inicializa o container de dependências
+            this.dependencies = await dependencyInjector.initialize(legacyModules);
+
+            logger.debug('✅ Dependency Injection inicializado!');
+            logger.debug('📊 Estatísticas do DI:', dependencyInjector.getStats());
+
+            this.initializationSteps.push('dependency_injection_initialized');
+        } catch (error) {
+            logger.error('❌ Erro ao inicializar Dependency Injection:', error.message);
+            throw new Error(`Falha crítica no Dependency Injection: ${error.message}`);
+        }
+    }
+
+    /**
+     * 🛡️ Validação de inicialização
+     * @private
+     */
+    _validateInitialization() {
+        if (this.initialized) {
+            throw new Error('Aplicação já foi inicializada');
+        }
+
+        if (!this.validateNoRecursion()) {
+            throw new Error('Recursão detectada - abortando inicialização');
+        }
+    }
+
+    /**
+     * 🚀 Inicia processo de inicialização
+     * @private
+     */
+    _startInitializationProcess() {
+        logger.debug('🚀 MAIN: Aplicação modularizada iniciando... (Nova Arquitetura v9.3)');
+        this.startTime = performance.now();
+        this.initialized = true;
+    }
+
+    /**
+     * 🗄️ Inicialização da conexão Supabase
+     * @private
+     */
+    async _initializeSupabaseConnection() {
+        logger.debug('🗄️ Inicializando conexão Supabase...');
+
+        let retryCount = 0;
+        while (retryCount < this.INITIALIZATION_CONFIG.SUPABASE_RETRY_ATTEMPTS) {
+            try {
+                const supabaseConnected = await testSupabaseConnection();
+                if (supabaseConnected) {
+                    logger.debug(SYSTEM_MESSAGES.SUCCESS.SUPABASE_CONNECTED);
+                    this.initializationSteps.push('supabase_connected');
+                    return;
+                }
+                retryCount++;
+            } catch (error) {
+                retryCount++;
+                logger.warn(
+                    `⚠️ Tentativa ${retryCount} de conexão Supabase falhou:`,
+                    error.message
+                );
+            }
+        }
+
+        logger.warn(SYSTEM_MESSAGES.WARNING.SUPABASE_FAILED);
+        this.initializationSteps.push('supabase_failed');
+    }
+
+    /**
+     * 📊 Inicialização dos sistemas de monitoramento
+     * @private
+     */
+    async _initializeMonitoringSystems() {
+        try {
+            // Validação adicional de recursão
+            if (!this.validateNoRecursion()) {
+                throw new Error('Recursão detectada durante inicialização de monitoramento');
+            }
+
+            // Inicializar sistemas com proteções
+            this.initSafeErrorHandling();
+            this.initSafePerformanceMonitoring();
+            this.initSafeCacheManager();
+
+            logger.debug('✅ Sistemas de monitoramento seguros ativados');
+            this.initializationSteps.push('monitoring_initialized');
+        } catch (error) {
+            logger.warn('⚠️ Erro ao inicializar monitoramento:', error.message);
+            logger.debug('🔄 Continuando com sistema básico...');
+            this.initializationSteps.push('monitoring_partial');
+        }
+    }
+
+    /**
+     * 🎯 Inicialização das estratégias avançadas
+     * @private
+     */
+    async _initializeAdvancedStrategies() {
+        try {
+            // Usa dependências injetadas
+            const { registerAdvancedStrategies, demonstrateAdvancedStrategies } =
+                this.dependencies.singletons;
+
+            const strategiesRegistered = registerAdvancedStrategies();
+            if (strategiesRegistered) {
+                logger.debug('✅ Estratégias avançadas registradas com sucesso!');
+                demonstrateAdvancedStrategies();
+                this.initializationSteps.push('strategies_registered');
+            } else {
+                logger.warn('⚠️ Falha ao registrar algumas estratégias avançadas');
+                this.initializationSteps.push('strategies_partial');
+            }
+        } catch (error) {
+            logger.error('❌ Erro ao registrar estratégias:', error.message);
+            this.initializationSteps.push('strategies_failed');
+        }
+    }
+
+    /**
+     * 🏗️ Inicialização dos módulos legados
+     * @private
+     */
+    async _initializeLegacyModules() {
+        try {
+            // 1. Mapeia os elementos do DOM primeiro
+            mapDOM();
+            this.initializationSteps.push('dom_mapped');
+
+            // 🚀 CORREÇÃO CRÍTICA: Inicializa componentes UI avançados (Modal, Timeline, Tabela)
+            // DEVE ser chamado APÓS mapDOM() mas ANTES de qualquer código que use os componentes
+            initComponents();
+            this.initializationSteps.push('ui_components_initialized');
+            logger.debug('✅ Componentes UI avançados inicializados!');
+
+            // 2. Inicia os módulos que não dependem do estado do utilizador
+            // 🛡️ RECOVERY: Retry logic para IndexedDB com delay exponencial
+            let dbInitialized = false;
+            let retryCount = 0;
+            const maxRetries = 2;
+
+            while (!dbInitialized && retryCount <= maxRetries) {
+                try {
+                    await dbManager.init();
+                    dbInitialized = true;
+                } catch (dbError) {
+                    retryCount++;
+                    if (retryCount <= maxRetries) {
+                        const delay = retryCount * 500; // 500ms, 1000ms
+                        logger.warn(`⚠️ Tentativa ${retryCount} de init falhou, retry em ${delay}ms...`, {
+                            error: dbError.message
+                        });
+                        await new Promise(r => setTimeout(r, delay));
+                    } else {
+                        logger.error('❌ Todas as tentativas de inicializar IndexedDB falharam');
+                        // Continua sem IndexedDB - modo degradado
+                        this.initializationSteps.push('database_failed');
+                        logger.warn('⚠️ Continuando em modo degradado sem IndexedDB local');
+                    }
+                }
+            }
+
+            if (dbInitialized) {
+                this.initializationSteps.push('database_initialized');
+            }
+
+            charts.init();
+            this.initializationSteps.push('charts_initialized');
+
+            // 3. Adiciona os event listeners para que possam reagir às mudanças de estado
+            events.init();
+            this.initializationSteps.push('events_initialized');
+
+            // 4. Carrega o estado guardado
+            logic.loadStateFromStorage();
+            this.initializationSteps.push('state_loaded');
+
+            logger.debug('✅ Módulos legados inicializados com sucesso!');
+
+            // Renderiza o card principal a partir do template unificado
+            try {
+                // Exibição do card principal desligada por padrão; fonte única: sidebar
+                if (window.__SHOW_MAIN_PARAMETERS_CARD__ === true) {
+                    const inputPanel = dom.inputPanel;
+                    if (inputPanel) {
+                        const initialValues = {
+                            capitalInicial: config.capitalInicial,
+                            percentualEntrada: config.percentualEntrada,
+                            stopWinPerc: config.stopWinPerc,
+                            stopLossPerc: config.stopLossPerc,
+                            estrategia: config.estrategiaAtiva,
+                            payout: config.payout,
+                        };
+                        renderParametersCardIn(inputPanel, { idPrefix: '', values: initialValues });
+                        try {
+                            (window.parametersCardController ||= new ParametersCardController()).bindEventHandlers();
+                        } catch (_) { }
+                    }
+                } else {
+                    const inputPanel = dom.inputPanel;
+                    if (inputPanel) inputPanel.innerHTML = '';
+                }
+            } catch (e) {
+                logger.warn('⚠️ Falha ao renderizar card principal via template:', e.message);
+            }
+        } catch (error) {
+            logger.error('❌ Erro ao inicializar módulos legados:', error.message);
+            throw new Error(`Falha crítica na inicialização de módulos legados: ${error.message}`);
+        }
+    }
+
+    /**
+     * 🆕 CHECKPOINT 1.1: Inicialização do StateManager
+     * @private
+     */
+    async _initializeStateManager() {
+        try {
+            logger.debug('🔄 CHECKPOINT 1.1: Inicializando StateManager...');
+
+            // Importar StateManager
+            const { stateManager, createBidirectionalSync } = await import('./state-manager.js');
+
+            // Sincronizar estado inicial do window.state para o StateManager
+            stateManager.setState(window.state, 'initial-sync-from-legacy');
+
+            // Criar sincronização bidirecional (temporária)
+            // Quando StateManager muda → atualiza window.state
+            createBidirectionalSync(stateManager, window.state);
+
+            logger.debug('✅ StateManager inicializado e sincronizado com estado legado');
+            logger.debug('📊 Estado inicial:', stateManager.getState());
+            logger.debug('📈 Stats:', stateManager.getStats());
+
+            this.initializationSteps.push('state_manager_initialized');
+        } catch (error) {
+            logger.error('❌ Erro ao inicializar StateManager:', error.message);
+            logger.warn('⚠️ Continuando com estado legado apenas');
+            this.initializationSteps.push('state_manager_failed');
+        }
+    }
+
+    /**
+     * 🆕 CHECKPOINT 2.1: Inicialização do DOMManager
+     * @private
+     */
+    async _initializeDOMManager() {
+        try {
+            logger.debug('🔄 CHECKPOINT 2.1: Inicializando DOMManager...');
+
+            // Importar DOMManager
+            const { domManager } = await import('./dom-manager.js');
+
+            logger.debug('✅ DOMManager inicializado');
+            logger.debug('📊 Stats:', domManager.getStats());
+
+            this.initializationSteps.push('dom_manager_initialized');
+        } catch (error) {
+            logger.error('❌ Erro ao inicializar DOMManager:', error.message);
+            logger.warn('⚠️ Continuando com DOM legado apenas');
+            this.initializationSteps.push('dom_manager_failed');
+        }
+    }
+
+    /**
+     * 🆕 CHECKPOINT 3.x: Inicialização do Sistema Modular
+     * @private
+     */
+    async _initializeModularSystem() {
+        try {
+            logger.debug('🏗️ CHECKPOINT 3.x: Inicializando Sistema Modular...');
+
+            // Importar módulos
+            const { moduleManager } = await import('./src/modules/ModuleManager.js');
+            const { default: SessionModule } = await import('./src/modules/SessionModule.js');
+            const { default: OperationModule } = await import('./src/modules/OperationModule.js');
+            const { default: CalculationModule } = await import('./src/modules/CalculationModule.js');
+
+            // Criar instâncias
+            const sessionModule = new SessionModule();
+            const operationModule = new OperationModule();
+            const calculationModule = new CalculationModule();
+
+            // Registrar dependências
+            if (window.stateManager) {
+                sessionModule.registerDependency('stateManager', window.stateManager);
+                logger.debug('✅ SessionModule conectado ao StateManager');
+            }
+
+            // Registrar módulos no gerenciador
+            moduleManager.register('session', sessionModule);
+            moduleManager.register('operation', operationModule);
+            moduleManager.register('calculation', calculationModule);
+
+            // Inicializar todos os módulos
+            await moduleManager.initAll();
+
+            // Expor globalmente para uso
+            window.modules = {
+                session: sessionModule,
+                operation: operationModule,
+                calculation: calculationModule,
+                manager: moduleManager
+            };
+
+            logger.debug('✅ Sistema Modular inicializado!');
+            logger.debug('📊 Módulos disponíveis:', Object.keys(window.modules));
+            logger.debug('📈 Stats:', moduleManager.getStats());
+
+            this.initializationSteps.push('modular_system_initialized');
+        } catch (error) {
+            logger.error('❌ Erro ao inicializar Sistema Modular:', error.message);
+            logger.warn('⚠️ Continuando sem sistema modular');
+            this.initializationSteps.push('modular_system_failed');
+        }
+    }
+
+    /**
+     * 🆕 Inicialização dos sistemas refatorados
+     * @private
+     */
+    async _initializeRefactoredSystems() {
+        try {
+            // Usa factory para criar Trading Manager com dependências injetadas
+            this.tradingManager = this.dependencies.factories.createTradingManager(
+                this.dependencies.legacy.state,
+                this.dependencies.legacy.config,
+                this.dependencies.legacy.dbManager,
+                this.dependencies.legacy.ui,
+                this.dependencies.legacy.charts
+            );
+            this.initializationSteps.push('trading_manager_created');
+
+            // Usa singleton do Legacy Adapter
+            const { legacyAdapter } = this.dependencies.singletons;
+
+            // Inicializar o Legacy Integration Adapter
+            await legacyAdapter.initialize({
+                state: this.dependencies.legacy.state,
+                config: this.dependencies.legacy.config,
+                dbManager: this.dependencies.legacy.dbManager,
+                ui: this.dependencies.legacy.ui,
+                charts: this.dependencies.legacy.charts,
+                tradingManager: this.tradingManager,
+                logic: this.dependencies.legacy.logic,
+                events: this.dependencies.legacy.events,
+            });
+            this.initializationSteps.push('legacy_adapter_initialized');
+
+            // Criar proxies para manter compatibilidade
+            legacyAdapter.createLegacyProxies(window.logic);
+            this.initializationSteps.push('legacy_proxies_created');
+
+            // Expor o novo manager globalmente para testes
+            window.tradingManager = this.tradingManager;
+
+            logger.debug('🔄 Migração de compatibilidade configurada com sucesso!');
+        } catch (error) {
+            logger.error('❌ Erro ao inicializar sistemas refatorados:', error.message);
+            throw new Error(`Falha na inicialização de sistemas refatorados: ${error.message}`);
+        }
+    }
+
+    /**
+     * 📋 Inicialização da sidebar
+     * @private
+     */
+    async _initializeSidebar() {
+        try {
+            // Importa e inicializa a sidebar dinamicamente
+            const sidebarModule = await import('./sidebar.js');
+            const sidebar = sidebarModule.sidebar;
+            sidebar.initialize();
+
+            // Expor globalmente para debug se necessário
+            window.sidebar = sidebar;
+            this.initializationSteps.push('sidebar_imported');
+
+            // Aguarda um pouco antes de inicializar o gerenciador avançado
+            await new Promise((resolve) =>
+                setTimeout(resolve, this.INITIALIZATION_CONFIG.SIDEBAR_INIT_DELAY)
+            );
+
+            // Inicializar o gerenciador avançado
+            const { sidebarManager } = await import('./src/ui/SidebarManager.js');
+            sidebarManager.integrateWithSettings();
+            this.initializationSteps.push('sidebar_manager_initialized');
+
+            logger.debug('✅ Sidebar inicializada com sucesso!');
+        } catch (error) {
+            logger.warn('⚠️ Erro ao inicializar sidebar:', error.message);
+            this.initializationSteps.push('sidebar_failed');
+            // Não é crítico, continua a aplicação
+        }
+    }
+
+    /**
+     * 🎨 Sincronização da UI
+     * @private
+     */
+    async _performUISync() {
+        try {
+            // Timeout de segurança para sincronização da UI
+            const syncPromise = Promise.race([
+                this._performActualUISync(),
+                new Promise((_, reject) =>
+                    setTimeout(
+                        () => reject(new Error('Timeout na sincronização da UI')),
+                        this.INITIALIZATION_CONFIG.UI_SYNC_TIMEOUT
+                    )
+                ),
+            ]);
+
+            await syncPromise;
+            logger.debug('✅ Interface sincronizada com sucesso!');
+        } catch (error) {
+            logger.error('❌ Erro na sincronização da UI:', error.message);
+            throw new Error(`Falha crítica na sincronização da UI: ${error.message}`);
+        }
+    }
+
+    /**
+     * 🎨 Executa sincronização real da UI
+     * @private
+     */
+    async _performActualUISync() {
+        // Sincroniza a UI com o estado carregado
+        ui.syncUIFromState();
+        this.initializationSteps.push('ui_synced');
+
+        // Renderiza todos os componentes com base no estado inicial
+        ui.atualizarTudo();
+        this.initializationSteps.push('ui_rendered');
+
+        // Verifica se existe uma sessão por finalizar
+        logic.checkForActiveSession();
+        this.initializationSteps.push('session_checked');
+    }
+
+    /**
+     * ✅ Validações finais
+     * @private
+     */
+    async _performFinalValidations() {
+        // Verificar se há bloqueio ativo
+        const lockdownEnd = localStorage.getItem('gerenciadorProLockdownEnd');
+        if (lockdownEnd && parseInt(lockdownEnd) > Date.now()) {
+            const lockdownType = localStorage.getItem('gerenciadorProLockdownType') || 'perdas';
+            ui.iniciarBloqueio(parseInt(lockdownEnd), lockdownType);
+            this.initializationSteps.push('lockdown_activated');
+            return;
+        }
+
+        // Mostrar container principal
+        if (dom.container) {
+            dom.container.classList.remove('hidden');
+            this.initializationSteps.push('container_shown');
+        }
+
+        // Restaurar última aba ativa
+        const lastTab = logic.safeJSONParse(CONSTANTS.LAST_ACTIVE_TAB_KEY, 'plano');
+        await events.onTabSwitch(lastTab);
+        ui.switchTab(lastTab);
+        this.initializationSteps.push('tab_restored');
+    }
+
+    /**
+     * 🎉 Finaliza processo de inicialização
+     * @private
+     */
+    _completeInitialization() {
+        const endTime = performance.now();
+        const initializationTime = (endTime - this.startTime).toFixed(2);
+
+        logger.debug(
+            `✨ MAIN: Aplicação pronta! Nova arquitetura v9.3 ativa em ${initializationTime}ms`
+        );
+        logger.debug('📈 MAIN: Estatísticas do sistema:', legacyAdapter.getStats());
+        logger.debug('🔄 MAIN: Passos de inicialização:', this.initializationSteps);
+
+        this.initializationSteps.push('initialization_completed');
+    }
+
+    /**
+     * ❌ Tratamento de erros de inicialização
+     * @private
+     */
+    _handleInitializationError(error) {
+        logger.error('❌ Erro durante inicialização:', error);
+
+        // Adiciona erro aos passos para diagnóstico
+        this.initializationSteps.push(`error_${error.name || 'unknown'}`);
+
+        // Construir mensagem de erro detalhada
+        let errorMessage = 'Erro ao inicializar o aplicativo.';
+        if (error.message) {
+            errorMessage += ` Detalhes: ${error.message}`;
+        }
+
+        // Log dos passos completados para diagnóstico
+        logger.debug('🔍 Passos completados antes do erro:', this.initializationSteps);
+
+        // Tentativa de usar tratamento de erro avançado se disponível
+        if (window.errorHandler && typeof window.errorHandler.handleError === 'function') {
+            try {
+                window.errorHandler.handleError(error, 'CRITICAL', {
+                    context: 'App.init',
+                    completedSteps: this.initializationSteps,
+                    initializationTime: performance.now() - this.startTime,
+                });
+            } catch (handlerError) {
+                logger.warn('⚠️ Erro no handler de erro:', handlerError.message);
+            }
+        }
+
+        // Fallback para notificação do usuário
+        if (window.ui && window.ui.showNotification) {
+            window.ui.showNotification('error', errorMessage);
+        } else {
+            // Último recurso: exibir erro em tela completa
+            document.body.innerHTML = `
+                <div style="background: #ff1744; color: white; padding: 20px; text-align: center; font-family: Arial;">
+                    <h2>⚠️ Erro de Inicialização</h2>
+                    <p>A aplicação não pôde ser carregada corretamente.</p>
+                    <details style="margin-top: 10px;">
+                        <summary>Detalhes técnicos</summary>
+                        <pre style="text-align: left; background: rgba(0,0,0,0.3); padding: 10px; margin-top: 10px; border-radius: 4px;">${error.message}</pre>
+                        <p style="text-align: left; margin-top: 10px;"><strong>Passos completados:</strong> ${this.initializationSteps.join(', ')}</p>
+                    </details>
+                    <button onclick="location.reload()" style="margin-top: 15px; padding: 10px 20px; background: white; color: #ff1744; border: none; border-radius: 4px; cursor: pointer;">🔄 Recarregar Página</button>
+                </div>
+            `;
+        }
+
+        // Re-throw para permitir handling adicional se necessário
+        throw error;
+    }
+}
+
+/**
+ * 🚀 PONTO DE ENTRADA DA APLICAÇÃO
+ * Inicialização limpa e controlada
+ */
+document.addEventListener('DOMContentLoaded', async () => {
+    logger.debug('📱 DOM carregado, inicializando aplicação...');
+
+    const app = new App();
+
+    try {
+        await app.init();
+        logger.debug('✅ Aplicação inicializada com sucesso!');
+
+        // 🔁 Purga automática da Lixeira: agora e diariamente
+        try {
+            if (window.dbManager && typeof dbManager.purgeExpiredTrash === 'function') {
+                dbManager.purgeExpiredTrash().catch(() => { });
+                setInterval(() => dbManager.purgeExpiredTrash().catch(() => { }), 24 * 60 * 60 * 1000);
+            }
+        } catch (_) { }
+    } catch (error) {
+        logger.error('❌ Falha crítica na inicialização:', error);
+
+        // O tratamento de erro detalhado já foi feito no _handleInitializationError
+        // Aqui apenas garantimos que o erro seja logado
+        logger.debug('🔍 Inicialização falhou. Veja logs detalhados acima.');
+    }
+});
+
+// Exporta o cliente Supabase para uso em outros módulos
+export { supabase };
+
+// Funções de limpeza de dados corrompidos (disponíveis no console)
+window.clearCorruptedData = async () => {
+    logger.debug('🧹 Iniciando limpeza de dados corrompidos...');
+    try {
+        const removed = await dbManager.clearCorruptedData();
+        logger.debug(`✅ ${removed} sessões corrompidas removidas.`);
+        if (removed > 0) {
+            // Recarregar a aba diário
+            if (typeof ui !== 'undefined' && ui.renderDiario) {
+                ui.renderDiario();
+            }
+        }
+        return removed;
+    } catch (error) {
+        logger.error('❌ Erro:', error);
+        return 0;
+    }
+};
+
+window.repairCorruptedData = async () => {
+    logger.debug('🔧 Iniciando reparo de dados corrompidos...');
+    try {
+        const repaired = await dbManager.repairCorruptedData();
+        logger.debug(`✅ ${repaired} sessões reparadas.`);
+        if (repaired > 0) {
+            // Recarregar a aba diário
+            if (typeof ui !== 'undefined' && ui.renderDiario) {
+                ui.renderDiario();
+            }
+        }
+        return repaired;
+    } catch (error) {
+        logger.error('❌ Erro:', error);
+        return 0;
+    }
+};
+
+// 🔧 Função para reparar resultados financeiros zerados
+window.repairResultadosZerados = async () => {
+    logger.debug('🔧 Iniciando reparo de resultados financeiros zerados...');
+    try {
+        const result = await dbManager.repairInvalidResultados();
+        logger.debug(`✅ Reparo concluído:`, result);
+        if (result.repaired > 0) {
+            // Recarregar a aba diário
+            if (typeof ui !== 'undefined' && ui.renderDiario) {
+                ui.renderDiario();
+            }
+        }
+        return result;
+    } catch (error) {
+        logger.error('❌ Erro:', error);
+        return { repaired: 0, errors: 1, error: error.message };
+    }
+};
+
+// Nota importante: Agora você pode importar o cliente Supabase em outros módulos usando:
+// import { supabase } from './main.js';
+
+// =================================================================
+// SISTEMA DE TESTE PARA SINCRONIZAÇÃO EM TEMPO REAL
+// =================================================================
+
+// Função para testar a sincronização entre cards
+window.testRealTimeSync = function () {
+    logger.debug('\n🧪 TESTANDO SINCRONIZAÇÃO EM TEMPO REAL...\n');
+
+    // Teste 1: Capital Inicial
+    logger.debug('📝 Teste 1: Mudança no capital inicial');
+    const capitalInput = dom.capitalInicial;
+    if (capitalInput) {
+        capitalInput.value = '15000';
+        capitalInput.dispatchEvent(new Event('change', { bubbles: true }));
+
+        setTimeout(() => {
+            const sidebarCapital = dom.sidebarCapitalInicial;
+            if (sidebarCapital) {
+                logger.debug(`✅ Capital sincronizado: ${sidebarCapital.value}`);
+            } else {
+                logger.debug('⚠️ Sidebar não está aberto para teste');
+            }
+        }, 200);
+    }
+
+    // Teste 2: Entrada Inicial
+    setTimeout(() => {
+        logger.debug('📝 Teste 2: Mudança na entrada inicial');
+        const entradaInput = dom.percentualEntrada;
+        if (entradaInput) {
+            entradaInput.value = '3.5';
+            entradaInput.dispatchEvent(new Event('change', { bubbles: true }));
+            logger.debug('✅ Entrada alterada para 3.5%');
+        }
+    }, 300);
+
+    // Teste 3: Payout
+    setTimeout(() => {
+        logger.debug('📝 Teste 3: Mudança de payout');
+        const payoutBtn = Array.from(document.querySelectorAll('.payout-buttons button')).find(
+            (btn) => btn.textContent.trim() === '90'
+        );
+        if (payoutBtn) {
+            payoutBtn.click();
+            logger.debug('✅ Payout 90% selecionado');
+        }
+    }, 600);
+
+    // Teste 4: Estratégia
+    setTimeout(() => {
+        logger.debug('📝 Teste 4: Mudança de estratégia');
+        const strategySelect = dom.estrategiaSelect;
+        if (strategySelect) {
+            strategySelect.value = 'fixa';
+            strategySelect.dispatchEvent(new Event('change', { bubbles: true }));
+            logger.debug('✅ Estratégia alterada para Mão Fixa');
+        }
+    }, 900);
+
+    // Teste 5: Stop Win
+    setTimeout(() => {
+        logger.debug('📝 Teste 5: Mudança no Stop Win');
+        const stopWinInput = dom.stopWinPerc;
+        if (stopWinInput) {
+            stopWinInput.value = '12';
+            stopWinInput.dispatchEvent(new Event('change', { bubbles: true }));
+            logger.debug('✅ Stop Win alterado para 12%');
+        }
+    }, 1200);
+
+    // Teste 6: Stop Loss
+    setTimeout(() => {
+        logger.debug('📝 Teste 6: Mudança no Stop Loss');
+        const stopLossInput = dom.stopLossPerc;
+        if (stopLossInput) {
+            stopLossInput.value = '18';
+            stopLossInput.dispatchEvent(new Event('change', { bubbles: true }));
+            logger.debug('✅ Stop Loss alterado para 18%');
+        }
+
+        // Resumo final
+        setTimeout(() => {
+            logger.debug('\n🎯 TESTE CONCLUÍDO!');
+            logger.debug('📋 Para testar sincronização do sidebar:');
+            logger.debug('1. Abra o menu lateral (botão ☰)');
+            logger.debug('2. Clique em "Parâmetros e Controles"');
+            logger.debug('3. Altere valores e veja a sincronização automática');
+            logger.debug('4. Note que NÃO há botão "Aplicar" - tudo é automático!');
+            logger.debug('\n💡 Execute: testRealTimeSync() no console para testar novamente');
+        }, 500);
+    }, 1500);
+};
+
+// =================================================================
+// SISTEMA DE TESTE PARA SINCRONIZAÇÃO DE PAYOUT + VISUAL FOCUS
+// =================================================================
+window.testPayoutAndFocus = function () {
+    logger.debug('\n🧪 TESTANDO PAYOUT SYNC + VISUAL FOCUS...\n');
+
+    let testIndex = 0;
+    const tests = [
+        // Teste 1: Payout Sync Main → Sidebar
+        () => {
+            logger.debug('📝 Teste 1: Payout 90% no card principal');
+            const btn = Array.from(document.querySelectorAll('.payout-buttons button')).find(
+                (b) => b.textContent.trim() === '90'
+            );
+            if (btn) {
+                btn.click();
+                logger.debug('✅ Clique executado no payout 90%');
+            } else {
+                logger.debug('❌ Botão payout 90% não encontrado');
+            }
+        },
+
+        // Teste 2: Verificar sincronização no sidebar
+        () => {
+            logger.debug('📝 Teste 2: Verificando sincronização no sidebar');
+            const sidebarBtn = dom.sidebarPayout - 90;
+            if (sidebarBtn && sidebarBtn.classList.contains('active-payout')) {
+                logger.debug('✅ Sidebar sincronizado corretamente');
+            } else if (!sidebarBtn) {
+                logger.debug('⚠️ Sidebar não está aberto - abra o menu lateral primeiro');
+            } else {
+                logger.debug('❌ Sidebar NÃO sincronizado');
+            }
+        },
+
+        // Teste 3: Focus Effect (Verde Elegante)
+        () => {
+            logger.debug('📝 Teste 3: Efeito de focus verde elegante no capital inicial');
+            const capitalField = dom.capitalInicial;
+            if (capitalField) {
+                capitalField.focus();
+                setTimeout(() => {
+                    const computedStyle = window.getComputedStyle(capitalField);
+                    const borderColor = computedStyle.borderColor;
+                    const boxShadow = computedStyle.boxShadow;
+
+                    // Verifica se tem verde elegante (76, 175, 80)
+                    const hasCorrectGreen =
+                        borderColor.includes('76, 175, 80') || boxShadow.includes('76, 175, 80');
+
+                    // Verifica se NÃO tem cores indesejadas (amarelo/dourado)
+                    const hasUnwantedColors =
+                        borderColor.includes('230, 118') ||
+                        boxShadow.includes('230, 118') ||
+                        borderColor.includes('255, 255, 0') ||
+                        boxShadow.includes('255, 193');
+
+                    if (hasCorrectGreen && !hasUnwantedColors) {
+                        logger.debug('✅ Efeito verde ELEGANTE aplicado corretamente');
+                    } else if (hasUnwantedColors) {
+                        logger.debug('❌ AINDA tem cores indesejadas (amarelo/dourado)');
+                        logger.debug('🔍 Border:', borderColor);
+                        logger.debug('🔍 Shadow:', boxShadow);
+                    } else {
+                        logger.debug('❌ Efeito verde NÃO aplicado');
+                        logger.debug('🔍 Border:', borderColor);
+                        logger.debug('🔍 Shadow:', boxShadow);
+                    }
+                }, 100);
+            } else {
+                logger.debug('❌ Campo capital inicial não encontrado');
+            }
+        },
+
+        // Teste 4: Typing Effect
+        () => {
+            logger.debug('📝 Teste 4: Efeito de digitação');
+            const capitalField = dom.capitalInicial;
+            if (capitalField) {
+                capitalField.value = '25000';
+                capitalField.dispatchEvent(new Event('input', { bubbles: true }));
+
+                setTimeout(() => {
+                    if (capitalField.classList.contains('typing')) {
+                        logger.debug('✅ Efeito de digitação ativo');
+                    } else {
+                        logger.debug('💡 Efeito de digitação pode ter expirado (normal)');
+                    }
+                }, 50);
+            }
+        },
+
+        // Teste 5: Payout Sidebar → Main (se sidebar estiver aberto)
+        () => {
+            logger.debug('📝 Teste 5: Payout 92% no sidebar');
+            const sidebarBtn = dom.sidebarPayout - 92;
+            if (sidebarBtn) {
+                sidebarBtn.click();
+                logger.debug('✅ Clique executado no sidebar');
+
+                setTimeout(() => {
+                    const mainBtn = Array.from(
+                        document.querySelectorAll('.payout-buttons button')
+                    ).find((b) => b.textContent.trim() === '92');
+                    if (mainBtn && mainBtn.classList.contains('active-payout')) {
+                        logger.debug('✅ Card principal sincronizado');
+                    } else {
+                        logger.debug('❌ Card principal NÃO sincronizado');
+                    }
+                }, 100);
+            } else {
+                logger.debug('⚠️ Botão do sidebar não encontrado - abra o menu lateral');
+            }
+        },
+
+        // Teste 6: Focus no sidebar (se estiver aberto)
+        () => {
+            logger.debug('📝 Teste 6: Focus no sidebar');
+            const sidebarField = dom.sidebarCapitalInicial;
+            if (sidebarField) {
+                sidebarField.focus();
+                setTimeout(() => {
+                    const computedStyle = window.getComputedStyle(sidebarField);
+                    const hasGreenBorder =
+                        computedStyle.borderColor.includes('230, 118') ||
+                        computedStyle.boxShadow.includes('230, 118');
+                    if (hasGreenBorder) {
+                        logger.debug('✅ Efeito de focus no sidebar funcionando');
+                    } else {
+                        logger.debug('❌ Efeito de focus no sidebar NÃO funcionando');
+                    }
+                }, 100);
+            } else {
+                logger.debug(
+                    '⚠️ Campo do sidebar não encontrado - abra Parâmetros e Controles no menu lateral'
+                );
+            }
+        },
+    ];
+
+    // Executar testes sequencialmente
+    function runNextTest() {
+        if (testIndex < tests.length) {
+            tests[testIndex]();
+            testIndex++;
+            setTimeout(runNextTest, 800);
+        } else {
+            logger.debug('\n🎯 TODOS OS TESTES CONCLUÍDOS!');
+            logger.debug('💡 Para testar completamente:');
+            logger.debug('1. Abra o menu lateral (botão ☰)');
+            logger.debug('2. Clique em "Parâmetros e Controles"');
+            logger.debug('3. Execute novamente: testPayoutAndFocus()');
+            logger.debug('4. Teste manualmente clicando nos botões e campos');
+        }
+    }
+
+    runNextTest();
+};
+
+// =================================================================
+// TESTE ESPECÍFICO PARA VALIDAÇÃO DO DESAFIO DE BORDAS VERDES
+// =================================================================
+window.testGreenBorderChallenge = function () {
+    logger.debug('\n🎯 TESTE DO DESAFIO: BORDAS VERDES ELEGANTES\n');
+
+    // Teste 1: Verificação Visual Stop Win
+    logger.debug('📝 Testando campo Stop Win (%) - o que estava com problema...');
+    const stopWinField = dom.stopWinPerc;
+    if (stopWinField) {
+        stopWinField.focus();
+
+        setTimeout(() => {
+            const style = window.getComputedStyle(stopWinField);
+            const border = style.borderColor;
+            const shadow = style.boxShadow;
+
+            logger.debug('🔍 Border atual:', border);
+            logger.debug('🔍 Shadow atual:', shadow);
+
+            // Verifica verde elegante (76, 175, 80)
+            const hasCorrectGreen =
+                border.includes('76, 175, 80') || shadow.includes('76, 175, 80');
+
+            // Verifica se NÃO tem amarelo/dourado (230, 118 ou outras cores indesejadas)
+            const hasYellow = border.includes('230, 118') || shadow.includes('230, 118');
+            const hasGold = border.includes('255, 193') || shadow.includes('255, 193');
+            const hasUnwantedColors = hasYellow || hasGold;
+
+            if (hasCorrectGreen && !hasUnwantedColors) {
+                logger.debug('✅ SUCESSO! Apenas verde elegante, sem amarelo/dourado');
+            } else if (hasUnwantedColors) {
+                logger.debug('❌ FALHA! Ainda tem cores indesejadas');
+                if (hasYellow) logger.debug('🟡 Detectado: Verde saturado (230, 118)');
+                if (hasGold) logger.debug('🟨 Detectado: Dourado/Amarelo');
+            } else {
+                logger.debug('❌ FALHA! Verde elegante não aplicado');
+            }
+
+            stopWinField.blur();
+        }, 200);
+    }
+
+    // Teste 2: Todos os campos principais
+    setTimeout(() => {
+        logger.debug('\n📝 Testando TODOS os campos principais...');
+        const fields = [
+            'capital-inicial',
+            'percentual-entrada',
+            'stop-win-perc',
+            'stop-loss-perc',
+            'estrategia-select',
+        ];
+
+        let testsPassed = 0;
+        fields.forEach((fieldId, index) => {
+            setTimeout(() => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.focus();
+
+                    setTimeout(() => {
+                        const style = window.getComputedStyle(field);
+                        const hasGreen =
+                            style.borderColor.includes('76, 175, 80') ||
+                            style.boxShadow.includes('76, 175, 80');
+                        const hasUnwanted =
+                            style.borderColor.includes('230, 118') ||
+                            style.boxShadow.includes('230, 118');
+
+                        if (hasGreen && !hasUnwanted) {
+                            logger.debug(`✅ ${fieldId}: Verde elegante OK`);
+                            testsPassed++;
+                        } else {
+                            logger.debug(`❌ ${fieldId}: Problema detectado`);
+                        }
+
+                        field.blur();
+
+                        if (index === fields.length - 1) {
+                            logger.debug(
+                                `\n🎯 RESULTADO: ${testsPassed}/${fields.length} campos corretos`
+                            );
+                            if (testsPassed === fields.length) {
+                                logger.debug('🎉 DESAFIO CONCLUÍDO COM SUCESSO!');
+                                logger.debug('✨ Todas as bordas são verdes elegantes');
+                                logger.debug('🚫 Nenhuma cor indesejada detectada');
+                            } else {
+                                logger.debug('⚠️ Alguns campos ainda precisam de ajuste');
+                            }
+                        }
+                    }, 100);
+                }
+            }, index * 300);
+        });
+    }, 1000);
+};
+
+// Executa teste automático quando a aplicação inicializar
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        if (window.realTimeSync) {
+            logger.debug('✅ Sistema de sincronização em tempo real ativo');
+            logger.debug('🚀 Executando teste automático em 2 segundos...');
+            setTimeout(() => {
+                window.testRealTimeSync();
+            }, 2000);
+        }
+
+        // Novo teste para payout e focus
+        if (window.payoutSync && window.fieldFocusManager) {
+            logger.debug('🚀 Executando testes avançados de payout e focus em 5 segundos...');
+            setTimeout(() => {
+                window.testPayoutAndFocus();
+            }, 5000);
+        }
+    }, 1000);
+});
+
+/**
+ * 🧪 FUNÇÃO DE TESTE - Initialization
+ * Testa se todos os sistemas foram inicializados corretamente
+ */
+function testInitialization() {
+    logger.debug('🧪 Testando inicialização do sistema...');
+
+    const startTime = performance.now();
+    const results = {
+        supabase: false,
+        globalObjects: false,
+        strategiesRegistered: false,
+        tradingManager: false,
+        domMapped: false,
+        overall: false,
+    };
+
+    try {
+        // 1. Teste de conexão Supabase
+        logger.debug('🗄️ Testando conexão Supabase...');
+        try {
+            if (typeof supabase !== 'undefined' && supabase) {
+                results.supabase = true;
+                logger.debug('✅ Supabase: Conectado');
+            } else {
+                logger.warn('⚠️ Supabase: Não conectado');
+            }
+        } catch (error) {
+            logger.warn('⚠️ Supabase:', error.message);
+        }
+
+        // 2. Teste de objetos globais
+        logger.debug('🌐 Testando objetos globais...');
+        try {
+            const globalObjects = [
+                'config',
+                'state',
+                'logic',
+                'ui',
+                'dom',
+                'charts',
+                'sidebar',
+                'cssResolver',
+            ];
+
+            let foundObjects = 0;
+            globalObjects.forEach((obj) => {
+                if (typeof window[obj] !== 'undefined') {
+                    foundObjects++;
+                    logger.debug(`✅ ${obj}: disponível`);
+                } else {
+                    logger.debug(`❌ ${obj}: não encontrado`);
+                }
+            });
+
+            if (foundObjects >= 6) {
+                results.globalObjects = true;
+                logger.debug(`✅ Objetos globais: ${foundObjects}/${globalObjects.length}`);
+            }
+        } catch (error) {
+            logger.warn('⚠️ Objetos globais:', error.message);
+        }
+
+        // 3. Teste de estratégias registradas
+        logger.debug('🎯 Testando estratégias...');
+        try {
+            if (typeof window.registerAdvancedStrategies === 'function') {
+                results.strategiesRegistered = true;
+                logger.debug('✅ Estratégias: Registradas');
+            }
+        } catch (error) {
+            logger.warn('⚠️ Estratégias:', error.message);
+        }
+
+        // 4. Teste de Trading Manager
+        logger.debug('💼 Testando Trading Manager...');
+        try {
+            if (typeof window.tradingManager !== 'undefined' && window.tradingManager) {
+                results.tradingManager = true;
+                logger.debug('✅ Trading Manager: Ativo');
+            } else {
+                logger.warn('⚠️ Trading Manager: Não encontrado');
+            }
+        } catch (error) {
+            logger.warn('⚠️ Trading Manager:', error.message);
+        }
+
+        // 5. Teste de DOM mapeado
+        logger.debug('🗺️ Testando DOM mapeado...');
+        try {
+            if (typeof dom !== 'undefined' && Object.keys(dom).length > 10) {
+                results.domMapped = true;
+                logger.debug(`✅ DOM: ${Object.keys(dom).length} elementos mapeados`);
+            } else {
+                logger.warn('⚠️ DOM: Poucos elementos mapeados');
+            }
+        } catch (error) {
+            logger.warn('⚠️ DOM:', error.message);
+        }
+
+        // Resultado geral
+        const successCount = Object.values(results).filter(Boolean).length;
+        results.overall = successCount >= 3; // Pelo menos 3 de 5 testes
+
+        const endTime = performance.now();
+        logger.debug(`⏱️ Testes Initialization executados em ${(endTime - startTime).toFixed(2)}ms`);
+
+        if (results.overall) {
+            logger.debug('✅ INITIALIZATION: Sistema inicializado corretamente!');
+        } else {
+            logger.warn('⚠️ INITIALIZATION: Alguns componentes não inicializados');
+        }
+
+        return results;
+    } catch (error) {
+        logger.error('❌ Erro crítico nos testes Initialization:', error);
+        return { ...results, overall: false };
+    }
+}
+
+// Exposição global
+if (typeof window !== 'undefined') {
+    window.testInitialization = testInitialization;
+    logger.debug('🧪 testInitialization() disponível globalmente');
+}

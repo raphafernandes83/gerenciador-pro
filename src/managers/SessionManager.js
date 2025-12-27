@@ -44,7 +44,11 @@ export const sessionManager = {
                 state[key] = savedSession[key];
             }
         });
-        ui.mostrarInsightPopup('Sessão retomada com sucesso!', '🔄');
+        if (window.toastManager) {
+            window.toastManager.success('Sessão retomada com sucesso!', 4000, { subtitle: 'Dados recuperados do armazenamento local' });
+        } else {
+            ui.mostrarInsightPopup('Sessão retomada com sucesso!', '🔄');
+        }
         ui.atualizarTudo();
     },
 

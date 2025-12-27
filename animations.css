@@ -1,0 +1,503 @@
+/**
+ * 🎨 Sistema de Animações - Gerenciador PRO v9.3
+ * Animações e transições modernas para melhorar a UX
+ */
+
+/* ============================================
+   VARIÁVEIS DE TIMING
+   ============================================ */
+
+:root {
+    /* Duração das transições */
+    --transition-fast: 150ms;
+    --transition-base: 250ms;
+    --transition-slow: 350ms;
+    --transition-slower: 500ms;
+
+    /* Curvas de easing */
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ============================================
+   TRANSIÇÕES GLOBAIS OTIMIZADAS
+   ============================================ */
+
+/* Transições suaves para elementos interativos */
+button,
+.tab-button,
+.modal-action-btn,
+.checklist-option {
+    transition: all var(--transition-base) var(--ease-in-out);
+}
+
+/* Transições para backgrounds e cores */
+.panel,
+.stat-card,
+.theme-card {
+    transition: background-color var(--transition-base) var(--ease-in-out),
+        border-color var(--transition-base) var(--ease-in-out),
+        box-shadow var(--transition-base) var(--ease-in-out);
+}
+
+/* ============================================
+   MICRO-INTERAÇÕES - BOTÕES
+   ============================================ */
+
+/* Efeito de hover refinado */
+button:hover:not(:disabled),
+.tab-button:hover,
+.modal-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Efeito de active (click) */
+button:active:not(:disabled),
+.tab-button:active,
+.modal-action-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all var(--transition-fast) var(--ease-in-out);
+}
+
+/* Focus visível para acessibilidade */
+button:focus-visible,
+.tab-button:focus-visible,
+.modal-action-btn:focus-visible {
+    outline: 2px solid var(--primary-color, #1a73e8);
+    outline-offset: 2px;
+    animation: pulse-focus 1.5s infinite;
+}
+
+@keyframes pulse-focus {
+    0%,
+    100% {
+        outline-color: var(--primary-color, #1a73e8);
+    }
+    50% {
+        outline-color: rgba(26, 115, 232, 0.5);
+    }
+}
+
+/* ============================================
+   ANIMAÇÕES DE ENTRADA - MODALS E PAINÉIS
+   ============================================ */
+
+/* Fade in suave */
+.modal-overlay {
+    animation: fadeIn var(--transition-base) var(--ease-out);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Modal content com scale e fade */
+.modal-content {
+    animation: scaleIn var(--transition-slow) var(--ease-bounce);
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Slide in from bottom (notificações) */
+.slide-in-up {
+    animation: slideInUp var(--transition-base) var(--ease-out);
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Slide in from right (sidebar) */
+.slide-in-right {
+    animation: slideInRight var(--transition-base) var(--ease-out);
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ============================================
+   LOADING STATES
+   ============================================ */
+
+/* Shimmer effect para skeleton loaders */
+.skeleton-loader {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.05) 25%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0.05) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Pulse para indicadores de loading */
+.pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Spinner rotativo */
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ============================================
+   HOVER EFFECTS - CARDS E TABELAS
+   ============================================ */
+
+/* Cards com elevação suave */
+.stat-card:hover,
+.panel:hover,
+.theme-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Linhas de tabela com highlight */
+#tabela-resultados tbody tr:hover,
+#tabela-historico-sessoes tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    transition: background-color var(--transition-fast) var(--ease-in-out);
+}
+
+/* ============================================
+   INDICADORES DE STATUS
+   ============================================ */
+
+/* Pulse para status ativos */
+.status-indicator.active::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: inherit;
+    transform: translate(-50%, -50%);
+    animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+    0% {
+        opacity: 0.6;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.5);
+    }
+}
+
+/* Badge bounce para notificações */
+.badge.new {
+    animation: bounce 0.5s var(--ease-bounce);
+}
+
+@keyframes bounce {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+/* ============================================
+   TOAST NOTIFICATIONS
+   ============================================ */
+
+.toast {
+    animation: toastIn var(--transition-base) var(--ease-out);
+}
+
+.toast.removing {
+    animation: toastOut var(--transition-base) var(--ease-in);
+}
+
+@keyframes toastIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes toastOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+/* ============================================
+   TRANSITIONS DE TEMA
+   ============================================ */
+
+/* Smooth transition ao mudar tema */
+body[data-theme],
+body[data-theme] * {
+    transition: background-color var(--transition-slower) var(--ease-in-out),
+        color var(--transition-slower) var(--ease-in-out),
+        border-color var(--transition-slower) var(--ease-in-out);
+}
+
+/* Evitar transição em elementos de input */
+input,
+textarea,
+select {
+    transition: background-color var(--transition-base) var(--ease-in-out),
+        border-color var(--transition-base) var(--ease-in-out) !important;
+}
+
+/* ============================================
+   SKELETON LOADERS
+   ============================================ */
+
+.skeleton-header {
+    height: 24px;
+    width: 60%;
+    margin-bottom: 12px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.skeleton-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.skeleton-line {
+    height: 16px;
+    width: 100%;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.skeleton-line.short {
+    width: 70%;
+}
+
+/* Aplicar shimmer a todos os skeletons */
+.skeleton-header,
+.skeleton-line {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.05) 25%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0.05) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* ============================================
+   SCROLL SUAVE
+   ============================================ */
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom scrollbar com animação */
+::-webkit-scrollbar-thumb {
+    transition: background-color var(--transition-base) var(--ease-in-out);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--primary-color, #1a73e8);
+}
+
+/* ============================================
+   ACCESSIBILIDADE - REDUCED MOTION
+   ============================================ */
+
+/* Respeitar preferência de movimento reduzido */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ============================================
+   PROGRESS INDICATORS
+   ============================================ */
+
+/* Barra de progresso animada */
+.progress-bar-current {
+    transition: width var(--transition-slow) var(--ease-out);
+}
+
+/* Glow effect para progresso */
+.progress-bar-win {
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+    transition: box-shadow var(--transition-base) var(--ease-in-out),
+        width var(--transition-slow) var(--ease-out);
+}
+
+.progress-bar-loss {
+    box-shadow: 0 0 8px rgba(244, 67, 54, 0.4);
+    transition: box-shadow var(--transition-base) var(--ease-in-out),
+        width var(--transition-slow) var(--ease-out);
+}
+
+/* ============================================
+   TOOLTIPS
+   ============================================ */
+
+.tooltip-text {
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: opacity var(--transition-base) var(--ease-out),
+        transform var(--transition-base) var(--ease-out);
+}
+
+.tooltip-container:hover .tooltip-text {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 300ms;
+}
+
+/* ============================================
+   FADE EFFECTS
+   ============================================ */
+
+/* Fade out para elementos sendo removidos */
+.fade-out {
+    animation: fadeOut var(--transition-base) var(--ease-in);
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* Fade in para novos elementos */
+.fade-in {
+    animation: fadeIn var(--transition-base) var(--ease-out);
+}
+
+/* ============================================
+   SHAKE EFFECT (PARA ERROS)
+   ============================================ */
+
+.shake {
+    animation: shake 0.5s var(--ease-in-out);
+}
+
+@keyframes shake {
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: translateX(-5px);
+    }
+    20%,
+    40%,
+    60%,
+    80% {
+        transform: translateX(5px);
+    }
+}
+
+/* ============================================
+   UTILIDADES
+   ============================================ */
+
+/* Classe para desabilitar todas as animações */
+.no-animation,
+.no-animation * {
+    animation: none !important;
+    transition: none !important;
+}
+
+/* Classe para animação lenta (debug) */
+.slow-animation,
+.slow-animation * {
+    animation-duration: 3s !important;
+    transition-duration: 3s !important;
+}

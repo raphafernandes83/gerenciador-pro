@@ -1,22 +1,88 @@
+# ====================================
+# GERENCIADOR PRO - .gitignore
+# ====================================
+
+# === DEPENDÊNCIAS ===
 node_modules/
+bower_components/
+package-lock.json
+yarn.lock
+
+# === LOGS ===
 *.log
 npm-debug.log*
-.DS_Store
-Thumbs.db
-*.swp
-*.swo
-*~
-.vscode/
-.idea/
-*.sublime-*
-dist/
-build/
+yarn-debug.log*
+logs/
+
+# === AMBIENTE ===
 .env
 .env.local
 .env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# === CACHE & TEMP ===
+.cache/
+.temp/
+*.tmp
+*.swp
+*.swo
+*~
+
+# === BUILD ===
+dist/
+build/
+out/
+
+# === IDEs ===
+.vscode/
+.idea/
+*.sublime-*
+*.iml
+
+# === SISTEMA ===
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# === TESTES ===
 coverage/
 .nyc_output/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# === DATABASES ===
+*.db
+*.sqlite
+*.db-journal
+
+# === BACKUP ===
 *.rar
 *.zip
 *.7z
+*.backup
+*.bak
 BACKUP/
+backup/
+deprecated/scripts/
+
+# === SENSÍVEL ===
+src/config/credentials.js
+src/config/secrets.json
+supabase-keys.json
+*.pem
+*.key
+*.cert
+
+# === NPM ===
+.npm
+.eslintcache
+.stylelintcache
+
+# === MISC ===
+*.pid
+.serverless/
+.vercel
+.netlify

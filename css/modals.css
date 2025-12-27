@@ -1,0 +1,435 @@
+/**
+ * =============================================================================
+ * MODALS.CSS - Estilos de Modais e Popups
+ * =============================================================================
+ * 
+ * Projeto: Gerenciador PRO v9.3
+ * Criado: 25/12/2025
+ * Origem: Extraído de style.css (linhas 2230-2409, 3785-3967)
+ * 
+ * REGRA: Este arquivo contém SOMENTE estilos relacionados a modais.
+ *        Não adicionar estilos de outros componentes aqui.
+ * 
+ * Blocos a serem migrados:
+ * - Bloco 1 (style.css 567-568): .preview-modal, .modal.hidden
+ * - Bloco 2 (style.css 2230-2409): Seção MODAIS E POPUPS
+ * - Bloco 3 (style.css 3785-3967): MODALUI - Componente Avançado
+ * 
+ * Variáveis CSS utilizadas (definidas em :root do style.css):
+ * --surface-color, --border-color, --text-color, --text-muted,
+ * --primary-color, --secondary-color, --panel-color, --accent-color,
+ * --bg-color, --shadow-lg, --shadow-md
+ * 
+ * =============================================================================
+ */
+
+/* ============================================= */
+/* BLOCO 2: MODAIS E POPUPS                      */
+/* Origem: style.css linhas 2230-2409            */
+/* Copiado: 25/12/2025 - PASSO 5                 */
+/* ============================================= */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: var(--surface-color);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    width: 90%;
+    max-width: 500px;
+    transform: scale(0.9);
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.modal-overlay.show .modal-content {
+    transform: scale(1);
+}
+
+.modal-content h2,
+.modal-content h3 {
+    margin-bottom: 1rem;
+}
+
+.modal-content p {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.modal-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.modal-action-btn {
+    flex-basis: 120px;
+}
+
+#modal-confirm-btn {
+    background-color: var(--primary-color);
+}
+
+#modal-cancel-btn {
+    background-color: var(--secondary-color);
+}
+
+#session-mode-modal .modal-content {
+    max-width: 600px;
+    background-color: rgba(var(--panel-color-rgb, 22, 24, 28), 0.5);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#session-mode-modal .options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.checklist-option {
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-color);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    text-align: center;
+    font-weight: 600;
+}
+
+.checklist-option:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+#tags-modal .input-group textarea {
+    width: 100%;
+    height: 80px;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-size: 1rem;
+    resize: vertical;
+    margin-top: 1rem;
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.tags-container button {
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    background: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tags-container button:hover {
+    background-color: var(--accent-color);
+    color: var(--text-dark);
+    border-color: var(--accent-color);
+}
+
+#settings-modal .modal-content,
+#risk-lab-modal .modal-content,
+#replay-modal .modal-content {
+    text-align: left;
+}
+
+#replay-modal .modal-content {
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.settings-tabs {
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+    display: flex;
+}
+
+.settings-tab-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+.settings-tab-content {
+    display: none;
+}
+
+.settings-tab-content.active {
+    display: block;
+}
+
+#insight-popup {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translate(-50%, -150%);
+    background-color: var(--info-color);
+    color: #fff;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: var(--shadow-md);
+    transition: transform 0.4s ease-in-out;
+    visibility: hidden;
+}
+
+#insight-popup.show {
+    transform: translate(-50%, 0);
+    visibility: visible;
+}
+
+#risk-lab-modal .modal-content {
+    max-width: 600px;
+}
+
+#simulation-results,
+#goal-simulation-results {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 8px;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+}
+
+/* ============================================= */
+/* BLOCO 3: MODALUI - COMPONENTE DE MODAIS AVANÇADOS */
+/* Origem: style.css linhas 3785-3967             */
+/* Copiado: 25/12/2025 - PASSO 2                  */
+/* ============================================= */
+
+/* Container principal do modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Modal visível */
+.modal.show {
+    display: flex !important;
+}
+
+/* Overlay escuro de fundo */
+.modal .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease;
+}
+
+/* Container central do modal */
+.modal-container {
+    position: relative;
+    background: var(--surface-color, #2a2a2a);
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 500px;
+    width: 90%;
+    z-index: 10000;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    animation: slideIn 0.3s ease;
+    border: 1px solid var(--border-color, #3f444e);
+}
+
+/* Header do modal */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color, #3f444e);
+}
+
+.modal-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color, #f0f2f5);
+    margin: 0;
+}
+
+/* Botão fechar */
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: var(--text-muted, #a8b3cf);
+    line-height: 1;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-color, #f0f2f5);
+}
+
+/* Corpo do modal */
+.modal-body {
+    margin: 16px 0;
+    color: var(--text-color, #f0f2f5);
+    line-height: 1.6;
+}
+
+.modal-body p {
+    margin: 0;
+}
+
+/* Footer com botões */
+.modal-footer {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color, #3f444e);
+}
+
+/* Botões do modal */
+.modal-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.938rem;
+    transition: all 0.2s ease;
+    min-width: 80px;
+}
+
+.modal-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.modal-btn:active {
+    transform: translateY(0);
+}
+
+/* Botão primário */
+.btn-primary {
+    background: var(--primary-color, #00e676);
+    color: #000;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background: var(--primary-color, #00e676);
+    filter: brightness(1.1);
+}
+
+/* Botão secundário */
+.btn-secondary {
+    background: var(--panel-color, #2b2e34);
+    color: var(--text-color, #f0f2f5);
+    border: 1px solid var(--border-color, #3f444e);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+    .modal-container {
+        width: 95%;
+        max-width: none;
+        padding: 20px;
+    }
+
+    .modal-footer {
+        flex-direction: column;
+    }
+
+    .modal-btn {
+        width: 100%;
+    }
+}
