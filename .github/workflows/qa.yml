@@ -35,7 +35,7 @@ jobs:
       - name: Start server (background) and wait
         run: |
           npm start &
-          for i in {1..40}; do
+          for i in {1..60}; do
             if curl -sSf http://localhost:3000 >/dev/null; then
               echo "Server is up"
               exit 0

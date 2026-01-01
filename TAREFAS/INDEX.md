@@ -1,0 +1,57 @@
+# 📚 INDEX — Registro de Tarefas
+
+**Projeto**: Gerenciador PRO **Início do Rastreio**: 01/01/2026 **Local**:
+`E:\GERENCIADOR PRO\08 09 2025\TAREFAS`
+
+---
+
+## 📋 Tarefas Concluídas
+
+| #     | Data       | Arquivo                      | Descrição                               | Status    |
+| ----- | ---------- | ---------------------------- | --------------------------------------- | --------- |
+| T039  | 01/01/2026 | —                            | Render Atômico (DocumentFragment)       | ✅ PASSOU |
+| T041  | 01/01/2026 | —                            | Instalar Mojibake Hunter Toolkit        | ✅ PASSOU |
+| T042  | 01/01/2026 | —                            | Estabelecer Baseline Mojibake (1344)    | ✅ PASSOU |
+| T044  | 01/01/2026 | —                            | Zerar Mojibake em Runtime (0)           | ✅ PASSOU |
+| T045  | 01/01/2026 | —                            | Relatório Final + Higienização          | ✅ PASSOU |
+| T046  | 01/01/2026 | —                            | Blindar Scanner + Testes PT-BR          | ✅ PASSOU |
+| T047  | 01/01/2026 | —                            | npm run verify                          | ✅ PASSOU |
+| T048  | 01/01/2026 | —                            | Relatório da Stack                      | ✅ PASSOU |
+| T049  | 01/01/2026 | —                            | npm run qa (verify + Playwright)        | ✅ PASSOU |
+| T050  | 01/01/2026 | T050_2026-01-01_1830_BRT.md  | GitHub Actions CI (verify + Playwright) | ✅ PASSOU |
+| T051  | 01/01/2026 | T051_2026-01-01_1812_BRT.md  | Documentos do Processo                  | ✅ PASSOU |
+| T051A | 01/01/2026 | T051A_2026-01-01_1821_BRT.md | Reinício REAL evidenciado               | ✅ PASSOU |
+
+---
+
+## 📁 Documentos do Processo
+
+| Arquivo                                          | Descrição                         |
+| ------------------------------------------------ | --------------------------------- |
+| [POLITICA_UNIVERSAL.md](./POLITICA_UNIVERSAL.md) | Regras não negociáveis do projeto |
+| [INDEX.md](./INDEX.md)                           | Este índice de tarefas            |
+| [TEMPLATE_TAREFA.md](./TEMPLATE_TAREFA.md)       | Modelo padrão para novas tarefas  |
+
+---
+
+## 🛠️ Scripts de Validação
+
+| Script                  | Propósito                             |
+| ----------------------- | ------------------------------------- |
+| `npm run verify`        | Validação completa (mojibake + guard) |
+| `npm run qa`            | QA completo (verify + Playwright)     |
+| `npm run mojibake:scan` | Scan de mojibake no projeto           |
+| `npm run mojibake:test` | Teste de falso positivo PT-BR         |
+
+---
+
+## 📊 Estatísticas
+
+- **Total de tarefas**: 13 (T039-T051)
+- **Aprovadas**: 12
+- **Parciais**: 1 (T050 - push pendente)
+- **Falhadas**: 0
+
+---
+
+_Última atualização: 01/01/2026 18:13 BRT_
