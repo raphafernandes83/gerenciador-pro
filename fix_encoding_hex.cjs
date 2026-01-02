@@ -47,10 +47,10 @@ const fixes = [
     [/\u00F0\u0178/g, ''],
     [/\u00C3\u00B0\u00C5\u00B8/g, ''],
     // Specific broken sequences
-    [/Ã"/g, 'O'],
-    [/Ã‰/g, 'E'],
-    [/ÃƒO/g, 'AO'],
-    [/Ãš/g, 'U'],
+    [/Ó/g, 'O'],
+    [/É/g, 'E'],
+    [/ÃO/g, 'AO'],
+    [/Ú/g, 'U'],
 ];
 
 for (const [pattern, replacement] of fixes) {
