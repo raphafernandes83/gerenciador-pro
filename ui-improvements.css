@@ -219,3 +219,67 @@ button[title*="Configurações"]:hover {
 #analise-content .text-warning {
     color: #fbbf24 !important;
 }
+/* ========================================
+   THEME HOVER EFFECTS (T61B - Consolidated)
+   ======================================== */
+
+/* Limited to 3 targets only: .theme-card, .panel/.card, header buttons */
+
+/* Target 1: Theme Selector Cards */
+.theme-card {
+    transition: 
+        background-color 150ms ease,
+        border-color 150ms ease,
+        box-shadow 150ms ease,
+        transform 150ms ease;
+}
+
+.theme-card:not(.active):hover {
+    transform: translateY(-1px);
+}
+
+body[data-theme='claro'] .theme-card:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+body[data-theme='moderno'] .theme-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme='matrix'] .theme-card:hover {
+    border-color: var(--default-primary-color);
+    box-shadow: 0 0 12px rgba(0, 255, 65, 0.2);
+}
+
+body[data-theme='daltonismo'] .theme-card:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Target 2: Panels and Cards */
+.panel,
+.card {
+    transition: box-shadow 150ms ease;
+}
+
+body[data-theme='claro'] .panel:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+body[data-theme='moderno'] .panel:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme='daltonismo'] .panel:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Matrix discrete neon on panels */
+body[data-theme='matrix'] .panel {
+    box-shadow: none;
+}
+
+body[data-theme='matrix'] .panel:hover {
+    box-shadow: 0 0 8px rgba(0, 255, 65, 0.15);
+}
+
+/* Target 3: Header Buttons - already styled in lines 39-48, no duplication needed */
