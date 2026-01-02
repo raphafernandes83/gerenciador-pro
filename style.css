@@ -740,7 +740,7 @@ body[data-theme='moderno'] {
     --bg-color: #1a1c20;
     --surface-color: #2b2e34;
     --panel-color: #16181c;
-    --border-color: #3f444e;
+    --border-color: #4a4f5e; /* Slightly lighter for better definition */
     --text-color: #f0f2f5;
     --text-muted: #a8b3cf;
     --text-dark: #111;
@@ -755,7 +755,8 @@ body[data-theme='claro'] {
     --bg-color: #f0f2f5;
     --surface-color: #ffffff;
     --panel-color: #f8fafc;
-    --border-color: #e2e8f0;
+    --border-color: #f1f5f9; /* Lighter than panel for subtle highlight */
+    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); /* Subtle definition */
     --text-color: #1e293b;
     --text-muted: #64748b;
     --text-dark: #fff;
@@ -770,11 +771,11 @@ body[data-theme='matrix'] {
     --bg-color: #020b03;
     --surface-color: #0a1f0c;
     --panel-color: #000000;
-    --border-color: #0a3b0c;
-    --text-color: #00ff41;
-    --text-muted: #00a82b;
+    --border-color: #0f4d10; /* Lighter for subtle highlight */
+    --text-color: #c8e6c9; /* Muted green for readability */
+    --text-muted: #81c784; /* Softer muted green */
     --text-dark: #000;
-    --default-primary-color: #00ff41;
+    --default-primary-color: #00ff41; /* Neon green for icons/LEDs only */
     --default-secondary-color: #ff0000;
     --default-accent-color: #c4ff00;
     --default-info-color: #00c8ff;

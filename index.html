@@ -30,6 +30,8 @@
     <link rel="stylesheet" href="fab-unified-style.css" />
     <link rel="stylesheet" href="src/ui/components/notifications.css" />
     <link rel="stylesheet" href="src/validation/validation-styles.css" />
+    <link rel="stylesheet" href="css/theme-unified-pro.css" />
+    <link rel="stylesheet" href="css/theme-hover.css" />
     <link rel="manifest" href="manifest.json" />
 </head>
 
@@ -89,8 +91,9 @@
                 <button id="compact-mode-btn" title="Modo Compacto" aria-label="Ativar Modo Compacto">
                     ⤡
                 </button>
-                <button id="settings-btn" title="Configurações" aria-label="Abrir Configurações">
-                    ⚙️
+                <button id="settings-btn" title="Configurações" aria-label="Abrir Configurações" aria-expanded="false"
+                    aria-controls="settings-modal">
+                    ⚙️
                 </button>
                 <button id="install-app-btn" class="hidden" title="Instalar App" aria-label="Instalar como aplicativo">
                     📱
@@ -662,9 +665,10 @@
         </div>
     </div>
 
-    <div id="settings-modal" class="modal-overlay">
+    <div id="settings-modal" class="modal-overlay" role="dialog" aria-modal="true"
+        aria-labelledby="settings-modal-title" aria-hidden="true">
         <div class="modal-content">
-            <h2>Configurações</h2>
+            <h2 id="settings-modal-title">Configurações</h2>
             <nav class="settings-tabs">
                 <button class="settings-tab-button tab-button active" data-tab="settings-gerenciamento">
                     📊 Gerenciamento
@@ -785,6 +789,14 @@
                             <div class="theme-preview-col"></div>
                         </div>
                         <p>Contraste</p>
+                    </div>
+                    <div class="theme-card" data-theme="unified-pro">
+                        <div class="theme-preview unified-pro-preview">
+                            <div class="theme-preview-col"></div>
+                            <div class="theme-preview-col"></div>
+                            <div class="theme-preview-col"></div>
+                        </div>
+                        <p>Unified Pro</p>
                     </div>
                 </div>
             </div>
@@ -965,7 +977,7 @@
 
 
 
-    <!-- 🗑️ SISTEMA DE LIXEIRA PROFISSIONAL - ETAPAS 1, 2, 3, 4 & 5 -->
+    <!-- 🗑️ SISTEMA DE LIXEIRA PROFISSIONAL - ETAPAS 1, 2, 3, 4 & 5 -->
     <script type="module" src="src/trash/TrashManager.js"></script>
     <script type="module" src="src/trash/TrashFAB.js"></script>
     <script type="module" src="src/trash/TrashModal.js"></script>
@@ -1005,21 +1017,21 @@
     <script src="tests/test-stoploss-display.js"></script>
     <script src="tests/test-sidebar-new-session-btn.js"></script>
 
-    <!-- 🛡️ SISTEMA DE MONITORAMENTO INTELIGENTE -->
+    <!-- 🛡️ SISTEMA DE MONITORAMENTO INTELIGENTE -->
     <script type="module" src="src/monitoring/SmartMonitor.js"></script>
     <script type="module" src="src/monitoring/ErrorBoundary.js"></script>
     <script type="module" src="src/testing/AutomatedTestSuite.js"></script>
 
     <!-- Sistema SafeProtection removido (CSP) -->
-    <!-- ðŸ” TESTES DE CORES E GRÃFICOS REMOVIDOS -->
+    <!-- ðŸ” TESTES DE CORES E GRÃFICOS REMOVIDOS -->
     <!-- Arquivos movidos para testes-inuteis/ para evitar spam e problemas de performance -->
     <!-- Use teste-restauracao-limpo.js para testes limpos -->
 
-    <!-- 🎨 LAYOUTS ALTERNATIVOS PARA CENTRO DO GRÃFICO -->
+    <!-- 🎨 LAYOUTS ALTERNATIVOS PARA CENTRO DO GRÃFICO -->
     <script src="layouts-centro-grafico.js"></script>
 
 
-    <!-- ðŸ§  SISTEMA UNIFICADO DE GRÃFICOS - ARQUITETURA LENDÃRIA -->
+    <!-- ðŸ§  SISTEMA UNIFICADO DE GRÃFICOS - ARQUITETURA LENDÃRIA -->
     <script type="module" src="src/charts/UnifiedChartSystem.js"></script>
     <script type="module" src="src/charts/MigrationManager.js"></script>
 
@@ -1044,6 +1056,7 @@
     <script type="module" src="src/ui/components/help/AnalysisHelpIcons.js"></script>
     <script type="module" src="src/ui/components/help/ModalsHelpIcons.js"></script>
     <!-- Boot.js: Inicialização CSP-compliant (substitui scripts inline) -->
+    <script src="src/dev/CrashRadar.js"></script>
     <script src="src/init/boot.js"></script>
     <script src="src/ui/components/help/DashboardHelpIcons.js"></script>
     <script src="fab-dock-manager.js"></script>

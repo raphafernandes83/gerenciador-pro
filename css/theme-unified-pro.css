@@ -1,0 +1,858 @@
+/**
+ * Tema Unified Pro - Tech-Stealth
+ * 
+ * Filosofia "Unified White Typography":
+ * - Texto dos chips/botões sempre neutro (branco/cinza)
+ * - Cor semântica apenas no ícone e no LED/ponto
+ * 
+ * @version TAREFA 26 - 28/12/2025
+ */
+
+/* =============================================================================
+   TOKENS DO TEMA UNIFIED PRO
+   ============================================================================= */
+
+body[data-theme="unified-pro"] {
+    /* Background */
+    --up-bg-base: #0E1014;
+    --up-bg-panel: #161A22;
+    --up-bg-header: #161A22;
+    --up-bg-elevated: #1C2029;
+    --up-bg-hover: #22262F;
+
+    /* Borders */
+    --up-border: #323740;
+    /* Lighter for better definition */
+    --up-border-subtle: #252931;
+
+    /* Text - SEMPRE NEUTRO */
+    --up-text-primary: #F5F5F5;
+    --up-text-secondary: #A0A5B0;
+    --up-text-muted: #6B7080;
+
+    /* Semânticas - SÓ PARA ÍCONES/LED */
+    --up-sem-sky: #38BDF8;
+    --up-sem-sky-glow: rgba(56, 189, 248, 0.3);
+    --up-sem-amber: #FBBF24;
+    --up-sem-amber-glow: rgba(251, 191, 36, 0.3);
+    --up-sem-emerald: #34D399;
+    --up-sem-emerald-glow: rgba(52, 211, 153, 0.3);
+    --up-sem-red: #F87171;
+    --up-sem-red-glow: rgba(248, 113, 113, 0.3);
+
+    /* Apply base colors */
+    background-color: var(--up-bg-base);
+    color: var(--up-text-primary);
+}
+
+/* =============================================================================
+   HEADER UNIFIED PRO
+   ============================================================================= */
+
+body[data-theme="unified-pro"] .app-header,
+body[data-theme="unified-pro"] header {
+    background-color: var(--up-bg-header);
+    border-bottom: 1px solid var(--up-border);
+}
+
+/* =============================================================================
+   UNIFIED CHIPS (Status Chips)
+   
+   Estrutura:
+   <button class="unified-chip is-active">
+       <span class="chip-icon sem-sky">⚙️</span>
+       <span class="chip-label">Settings</span>
+       <span class="chip-led sem-sky"></span>
+   </button>
+   ============================================================================= */
+
+body[data-theme="unified-pro"] .unified-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--up-bg-panel);
+    border: 1px solid var(--up-border);
+    border-radius: 8px;
+    color: var(--up-text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+body[data-theme="unified-pro"] .unified-chip:hover {
+    background: var(--up-bg-hover);
+    border-color: var(--up-border);
+}
+
+body[data-theme="unified-pro"] .unified-chip.is-active {
+    background: var(--up-bg-elevated);
+    border-color: var(--up-border);
+    color: var(--up-text-primary);
+}
+
+/* Chip Icon - recebe cor semântica */
+body[data-theme="unified-pro"] .chip-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+/* Chip Label - SEMPRE neutro */
+body[data-theme="unified-pro"] .chip-label {
+    color: inherit;
+}
+
+/* Chip LED - indicador de status ativo */
+body[data-theme="unified-pro"] .chip-led {
+    display: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    animation: unified-pulse 2s ease-in-out infinite;
+}
+
+body[data-theme="unified-pro"] .unified-chip.is-active .chip-led {
+    display: block;
+}
+
+/* =============================================================================
+   UNIFIED TOOLS (Tool Buttons)
+   ============================================================================= */
+
+body[data-theme="unified-pro"] .unified-tool {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--up-text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+body[data-theme="unified-pro"] .unified-tool:hover {
+    background: var(--up-bg-hover);
+    color: var(--up-text-secondary);
+}
+
+body[data-theme="unified-pro"] .unified-tool.is-active {
+    background: var(--up-bg-panel);
+    border-color: var(--up-border);
+    color: var(--up-text-primary);
+}
+
+/* =============================================================================
+   CLASSES SEMÂNTICAS (aplicar a .chip-icon e .chip-led)
+   ============================================================================= */
+
+/* Sky (Info/Cool) */
+body[data-theme="unified-pro"] .sem-sky {
+    color: var(--up-sem-sky);
+}
+
+body[data-theme="unified-pro"] .chip-led.sem-sky {
+    background: var(--up-sem-sky);
+    box-shadow: 0 0 8px var(--up-sem-sky-glow);
+}
+
+/* Amber (Warning/Active) */
+body[data-theme="unified-pro"] .sem-amber {
+    color: var(--up-sem-amber);
+}
+
+body[data-theme="unified-pro"] .chip-led.sem-amber {
+    background: var(--up-sem-amber);
+    box-shadow: 0 0 8px var(--up-sem-amber-glow);
+}
+
+/* Emerald (Success/On) */
+body[data-theme="unified-pro"] .sem-emerald {
+    color: var(--up-sem-emerald);
+}
+
+body[data-theme="unified-pro"] .chip-led.sem-emerald {
+    background: var(--up-sem-emerald);
+    box-shadow: 0 0 8px var(--up-sem-emerald-glow);
+}
+
+/* Red (Danger/Error) */
+body[data-theme="unified-pro"] .sem-red {
+    color: var(--up-sem-red);
+}
+
+body[data-theme="unified-pro"] .chip-led.sem-red {
+    background: var(--up-sem-red);
+    box-shadow: 0 0 8px var(--up-sem-red-glow);
+}
+
+/* =============================================================================
+   ANIMAÇÕES
+   ============================================================================= */
+
+@keyframes unified-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* =============================================================================
+   PANELS E MODALS
+   ============================================================================= */
+
+body[data-theme="unified-pro"] .panel,
+body[data-theme="unified-pro"] .card {
+    background: var(--up-bg-panel);
+    border: 1px solid var(--up-border);
+}
+
+body[data-theme="unified-pro"] .modal-content {
+    background: var(--up-bg-panel);
+    border: 1px solid var(--up-border);
+}
+
+body[data-theme="unified-pro"] .modal-header {
+    border-bottom: 1px solid var(--up-border);
+}
+
+body[data-theme="unified-pro"] .modal-footer {
+    border-top: 1px solid var(--up-border);
+}
+
+/* =============================================================================
+   SIDEBAR
+   ============================================================================= */
+
+body[data-theme="unified-pro"] .sidebar,
+body[data-theme="unified-pro"] aside {
+    background: var(--up-bg-panel);
+    border-right: 1px solid var(--up-border);
+}
+
+/* =============================================================================
+   BOTÕES
+   ============================================================================= */
+
+body[data-theme="unified-pro"] .btn-primary {
+    background: var(--up-sem-sky);
+    color: var(--up-bg-base);
+    border: none;
+}
+
+body[data-theme="unified-pro"] .btn-primary:hover {
+    background: #60CAFF;
+}
+
+body[data-theme="unified-pro"] .btn-secondary {
+    background: var(--up-bg-elevated);
+    color: var(--up-text-primary);
+    border: 1px solid var(--up-border);
+}
+
+body[data-theme="unified-pro"] .btn-secondary:hover {
+    background: var(--up-bg-hover);
+}
+
+/* =============================================================================
+   THEME PREVIEW (Para o seletor de temas no Settings)
+   ============================================================================= */
+
+.theme-card[data-theme="unified-pro"] .theme-preview,
+.unified-pro-preview {
+    background: #0E1014;
+}
+
+.theme-card[data-theme="unified-pro"] .theme-preview-col:nth-child(1),
+.unified-pro-preview .theme-preview-col:nth-child(1) {
+    background: #161A22;
+}
+
+.theme-card[data-theme="unified-pro"] .theme-preview-col:nth-child(2),
+.unified-pro-preview .theme-preview-col:nth-child(2) {
+    background: #38BDF8;
+}
+
+.theme-card[data-theme="unified-pro"] .theme-preview-col:nth-child(3),
+.unified-pro-preview .theme-preview-col:nth-child(3) {
+    background: #34D399;
+}
+
+/* =============================================================================
+   CARDS & PANELS (Phase 1)
+   ============================================================================= */
+
+/* Panel base */
+body[data-theme="unified-pro"] .panel {
+    background: var(--up-bg-panel);
+    border: 1px solid var(--up-border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme="unified-pro"] .panel-header {
+    border-bottom: 1px solid var(--up-border-subtle);
+    color: var(--up-text-primary);
+}
+
+body[data-theme="unified-pro"] .panel-header h2,
+body[data-theme="unified-pro"] .panel-header h3 {
+    color: var(--up-text-primary);
+}
+
+/* Progress Status Card */
+body[data-theme="unified-pro"] .progress-status-card {
+    background: var(--up-bg-panel);
+    border: 1px solid var(--up-border);
+    box-shadow: none;
+}
+
+body[data-theme="unified-pro"] .progress-status-card:hover {
+    background: var(--up-bg-elevated);
+    border-color: var(--up-border);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+body[data-theme="unified-pro"] .progress-status-card .status-text {
+    color: var(--up-text-primary);
+}
+
+body[data-theme="unified-pro"] .progress-status-card .status-subtext {
+    color: var(--up-text-muted);
+}
+
+/* Status Card States - mantém cor apenas no acento lateral */
+body[data-theme="unified-pro"] .progress-status-card.excellent {
+    background: var(--up-bg-panel);
+    border-color: var(--up-border);
+    box-shadow: none;
+    animation: none;
+}
+
+body[data-theme="unified-pro"] .progress-status-card.excellent::after {
+    background: var(--up-sem-emerald);
+    opacity: 0.8;
+}
+
+body[data-theme="unified-pro"] .progress-status-card.good {
+    background: var(--up-bg-panel);
+    border-color: var(--up-border);
+}
+
+body[data-theme="unified-pro"] .progress-status-card.good::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 3px;
+    background: var(--up-sem-amber);
+    opacity: 0.8;
+}
+
+body[data-theme="unified-pro"] .progress-status-card.warning {
+    background: var(--up-bg-panel);
+    border-color: var(--up-border);
+    animation: none;
+}
+
+body[data-theme="unified-pro"] .progress-status-card.warning::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 3px;
+    background: var(--up-sem-red);
+    opacity: 0.8;
+}
+
+body[data-theme="unified-pro"] .progress-status-card.neutral {
+    background: var(--up-bg-panel);
+    border-color: var(--up-border);
+    animation: none;
+}
+
+/* Status Indicators - LEDs semânticos */
+body[data-theme="unified-pro"] .status-indicator {
+    box-shadow: none;
+}
+
+body[data-theme="unified-pro"] .status-indicator.meta-progress {
+    background-color: var(--up-sem-sky);
+    box-shadow: 0 0 6px var(--up-sem-sky-glow);
+}
+
+body[data-theme="unified-pro"] .status-indicator.meta-near {
+    background-color: var(--up-sem-amber);
+    box-shadow: 0 0 6px var(--up-sem-amber-glow);
+}
+
+body[data-theme="unified-pro"] .status-indicator.meta-achieved {
+    background-color: var(--up-sem-emerald);
+    box-shadow: 0 0 6px var(--up-sem-emerald-glow);
+}
+
+body[data-theme="unified-pro"] .status-indicator.risk-safe {
+    background-color: var(--up-sem-emerald);
+}
+
+body[data-theme="unified-pro"] .status-indicator.risk-warning {
+    background-color: var(--up-sem-amber);
+    box-shadow: 0 0 4px var(--up-sem-amber-glow);
+}
+
+body[data-theme="unified-pro"] .status-indicator.risk-critical {
+    background-color: var(--up-sem-red);
+    box-shadow: 0 0 6px var(--up-sem-red-glow);
+    animation: none;
+}
+
+/* Theme Card no seletor */
+body[data-theme="unified-pro"] .theme-card {
+    background: var(--up-bg-panel);
+    border-color: var(--up-border);
+    color: var(--up-text-secondary);
+}
+
+body[data-theme="unified-pro"] .theme-card:hover {
+    border-color: var(--up-sem-sky);
+    background: var(--up-bg-elevated);
+}
+
+body[data-theme="unified-pro"] .theme-card.active {
+    border-color: var(--up-sem-sky);
+    box-shadow: 0 0 12px var(--up-sem-sky-glow);
+}
+
+body[data-theme="unified-pro"] .theme-card p {
+    color: var(--up-text-primary);
+}
+
+/* Preview Metrics */
+body[data-theme="unified-pro"] .preview-metrics .section-title {
+    color: var(--up-text-primary);
+}
+
+body[data-theme="unified-pro"] .preview-metrics .metric-label {
+    color: var(--up-text-muted);
+}
+
+body[data-theme="unified-pro"] .preview-metrics .metric-value {
+    color: var(--up-text-primary);
+}
+
+body[data-theme="unified-pro"] .preview-metrics .trend-badge {
+    background: var(--up-bg-elevated);
+    color: var(--up-text-secondary);
+}
+
+body[data-theme="unified-pro"] .preview-metrics .trend-badge.trend-up {
+    background: rgba(52, 211, 153, 0.15);
+    color: var(--up-sem-emerald);
+}
+
+body[data-theme="unified-pro"] .preview-metrics .trend-badge.trend-down {
+    background: rgba(248, 113, 113, 0.15);
+    color: var(--up-sem-red);
+}
+
+/* Container & Main */
+body[data-theme="unified-pro"] .container {
+    background: var(--up-bg-base);
+}
+
+body[data-theme="unified-pro"] #container {
+    background: var(--up-bg-base);
+}
+
+/* Inputs & Form controls */
+body[data-theme="unified-pro"] input,
+body[data-theme="unified-pro"] select,
+body[data-theme="unified-pro"] textarea {
+    background: var(--up-bg-elevated);
+    border: 1px solid var(--up-border);
+    color: var(--up-text-primary);
+}
+
+body[data-theme="unified-pro"] input:focus,
+body[data-theme="unified-pro"] select:focus,
+body[data-theme="unified-pro"] textarea:focus {
+    border-color: var(--up-sem-sky);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--up-sem-sky-glow);
+}
+
+body[data-theme="unified-pro"] input::placeholder {
+    color: var(--up-text-muted);
+}
+
+/* =============================================================================
+   TABELAS (Phase E)
+   ============================================================================= */
+
+/* Base da tabela */
+body[data-theme="unified-pro"] #tabela-resultados,
+body[data-theme="unified-pro"] .data-table,
+body[data-theme="unified-pro"] table {
+    background: var(--up-bg-panel);
+    border: 1px solid var(--up-border);
+    border-radius: 8px;
+}
+
+/* Cabeçalho */
+body[data-theme="unified-pro"] #tabela-resultados thead,
+body[data-theme="unified-pro"] .data-table thead,
+body[data-theme="unified-pro"] thead {
+    background: var(--up-bg-base);
+}
+
+body[data-theme="unified-pro"] #tabela-resultados th,
+body[data-theme="unified-pro"] .data-table th,
+body[data-theme="unified-pro"] th {
+    color: var(--up-text-muted);
+    border-bottom: 1px solid var(--up-border);
+    font-weight: 600;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+/* Células */
+body[data-theme="unified-pro"] #tabela-resultados td,
+body[data-theme="unified-pro"] .data-table td,
+body[data-theme="unified-pro"] td {
+    color: var(--up-text-primary);
+    border-bottom: 1px solid var(--up-border-subtle);
+}
+
+/* Zebra striping muito sutil */
+body[data-theme="unified-pro"] #tabela-resultados tbody tr:nth-child(even),
+body[data-theme="unified-pro"] .data-table tbody tr:nth-child(even),
+body[data-theme="unified-pro"] tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.015);
+}
+
+/* Hover discreto */
+body[data-theme="unified-pro"] #tabela-resultados tbody tr:hover,
+body[data-theme="unified-pro"] .data-table tbody tr:hover,
+body[data-theme="unified-pro"] tbody tr:hover {
+    background: var(--up-bg-hover);
+}
+
+/* --- ESTADOS DE LINHA --- */
+
+/* Próxima etapa - destaque sutil sem borda (TAREFA 27) */
+body[data-theme="unified-pro"] .proxima-etapa {
+    background: rgba(56, 189, 248, 0.08) !important;
+    /* REMOVIDO: border-left que desalinhava colunas */
+}
+
+body[data-theme="unified-pro"] .proxima-etapa td {
+    font-weight: 600;
+}
+
+/* Linha concluída */
+body[data-theme="unified-pro"] .linha-concluida {
+    background: rgba(52, 211, 153, 0.05) !important;
+    opacity: 0.65;
+}
+
+body[data-theme="unified-pro"] .linha-concluida td {
+    text-decoration-color: var(--up-text-muted);
+}
+
+/* Linha desfocada */
+body[data-theme="unified-pro"] .linha-desfocada {
+    opacity: 0.35;
+}
+
+/* --- CÉLULAS ESPECIAIS --- */
+
+body[data-theme="unified-pro"] .valor-cell {
+    color: var(--up-text-primary);
+}
+
+body[data-theme="unified-pro"] .acoes-cell button {
+    background: var(--up-bg-elevated);
+    border: 1px solid var(--up-border);
+    color: var(--up-text-secondary);
+}
+
+body[data-theme="unified-pro"] .acoes-cell button:hover {
+    background: var(--up-bg-hover);
+    color: var(--up-text-primary);
+}
+
+/* Botões de ação - cores semânticas nos ícones */
+body[data-theme="unified-pro"] .acoes-cell .copy-btn {
+    background: rgba(56, 189, 248, 0.1);
+    border-color: transparent;
+}
+
+body[data-theme="unified-pro"] .acoes-cell .copy-btn:hover {
+    background: rgba(56, 189, 248, 0.2);
+    color: var(--up-sem-sky);
+}
+
+body[data-theme="unified-pro"] .acoes-cell .win-btn-linha {
+    background: rgba(52, 211, 153, 0.1);
+    border-color: transparent;
+}
+
+body[data-theme="unified-pro"] .acoes-cell .win-btn-linha:hover {
+    background: rgba(52, 211, 153, 0.2);
+    color: var(--up-sem-emerald);
+}
+
+body[data-theme="unified-pro"] .acoes-cell .loss-btn-linha {
+    background: rgba(248, 113, 113, 0.1);
+    border-color: transparent;
+}
+
+body[data-theme="unified-pro"] .acoes-cell .loss-btn-linha:hover {
+    background: rgba(248, 113, 113, 0.2);
+    color: var(--up-sem-red);
+}
+
+/* --- CLASSES UTILITÁRIAS --- */
+
+body[data-theme="unified-pro"] .text-muted {
+    color: var(--up-text-muted) !important;
+}
+
+body[data-theme="unified-pro"] .text-error {
+    color: var(--up-sem-red) !important;
+}
+
+body[data-theme="unified-pro"] .text-success {
+    color: var(--up-sem-emerald) !important;
+}
+
+/* Table wrapper */
+body[data-theme="unified-pro"] .table-wrapper {
+    background: var(--up-bg-panel);
+    border: 1px solid var(--up-border);
+}
+
+/* =============================================================================
+   MODAIS (Phase F)
+   ============================================================================= */
+
+/* Overlay/Backdrop - escurecimento suave, sem blur exagerado */
+body[data-theme="unified-pro"] .modal-overlay {
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(3px);
+}
+
+body[data-theme="unified-pro"] .modal .modal-overlay {
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(3px);
+}
+
+/* Container do modal */
+body[data-theme="unified-pro"] .modal-content {
+    background: var(--up-bg-panel);
+    border: 1px solid var(--up-border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+body[data-theme="unified-pro"] .modal-container {
+    background: var(--up-bg-panel);
+    border: 1px solid var(--up-border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* Header do modal */
+body[data-theme="unified-pro"] .modal-header {
+    border-bottom: 1px solid var(--up-border);
+}
+
+body[data-theme="unified-pro"] .modal-header h2 {
+    color: var(--up-text-primary);
+}
+
+body[data-theme="unified-pro"] .modal-content h2,
+body[data-theme="unified-pro"] .modal-content h3 {
+    color: var(--up-text-primary);
+}
+
+body[data-theme="unified-pro"] .modal-content p {
+    color: var(--up-text-secondary);
+}
+
+/* Botão fechar (X) - neutro */
+body[data-theme="unified-pro"] .modal-close {
+    color: var(--up-text-muted);
+    background: transparent;
+}
+
+body[data-theme="unified-pro"] .modal-close:hover {
+    color: var(--up-text-primary);
+    background: var(--up-bg-hover);
+}
+
+body[data-theme="unified-pro"] .modal-close:focus {
+    outline: 2px solid var(--up-sem-sky);
+    outline-offset: 2px;
+}
+
+/* Corpo do modal */
+body[data-theme="unified-pro"] .modal-body {
+    color: var(--up-text-primary);
+}
+
+/* Footer */
+body[data-theme="unified-pro"] .modal-footer {
+    border-top: 1px solid var(--up-border);
+}
+
+/* Botões do modal */
+body[data-theme="unified-pro"] .modal-btn {
+    box-shadow: none;
+}
+
+body[data-theme="unified-pro"] .modal-btn:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme="unified-pro"] .modal-action-btn {
+    background: var(--up-bg-elevated);
+    border: 1px solid var(--up-border);
+    color: var(--up-text-primary);
+}
+
+body[data-theme="unified-pro"] #modal-confirm-btn {
+    background: var(--up-sem-sky);
+    color: var(--up-bg-base);
+    border: none;
+}
+
+body[data-theme="unified-pro"] #modal-confirm-btn:hover {
+    background: #60CAFF;
+}
+
+body[data-theme="unified-pro"] #modal-cancel-btn {
+    background: var(--up-bg-elevated);
+    color: var(--up-text-primary);
+    border: 1px solid var(--up-border);
+}
+
+body[data-theme="unified-pro"] #modal-cancel-btn:hover {
+    background: var(--up-bg-hover);
+}
+
+/* --- SETTINGS MODAL --- */
+
+body[data-theme="unified-pro"] #settings-modal .modal-content {
+    background: var(--up-bg-panel);
+}
+
+body[data-theme="unified-pro"] .settings-tabs {
+    border-bottom: 1px solid var(--up-border);
+}
+
+body[data-theme="unified-pro"] .settings-tab-button {
+    color: var(--up-text-muted);
+    background: transparent;
+    border: none;
+}
+
+body[data-theme="unified-pro"] .settings-tab-button:hover {
+    color: var(--up-text-primary);
+    background: var(--up-bg-hover);
+}
+
+body[data-theme="unified-pro"] .settings-tab-button.active {
+    color: var(--up-text-primary);
+    border-bottom: 2px solid var(--up-sem-sky);
+}
+
+body[data-theme="unified-pro"] .settings-tab-content h3 {
+    color: var(--up-text-primary);
+}
+
+/* --- SESSION MODE MODAL --- */
+
+body[data-theme="unified-pro"] #session-mode-modal .modal-content {
+    background: var(--up-bg-panel);
+    border: 1px solid var(--up-border);
+}
+
+body[data-theme="unified-pro"] .checklist-option {
+    background: var(--up-bg-elevated);
+    border: 1px solid var(--up-border);
+    color: var(--up-text-secondary);
+}
+
+body[data-theme="unified-pro"] .checklist-option:hover {
+    border-color: var(--up-sem-sky);
+    color: var(--up-text-primary);
+}
+
+/* --- TAGS MODAL --- */
+
+body[data-theme="unified-pro"] .tags-container button {
+    background: var(--up-bg-elevated);
+    border: 1px solid var(--up-border);
+    color: var(--up-text-secondary);
+}
+
+body[data-theme="unified-pro"] .tags-container button:hover {
+    background: var(--up-sem-sky);
+    color: var(--up-bg-base);
+    border-color: var(--up-sem-sky);
+}
+
+body[data-theme="unified-pro"] #tags-modal textarea {
+    background: var(--up-bg-elevated);
+    border: 1px solid var(--up-border);
+    color: var(--up-text-primary);
+}
+
+/* --- SIMULATION/RISK LAB --- */
+
+body[data-theme="unified-pro"] #simulation-results,
+body[data-theme="unified-pro"] #goal-simulation-results {
+    background: var(--up-bg-base);
+    border: 1px solid var(--up-border);
+}
+
+/* --- INSIGHT POPUP --- */
+
+body[data-theme="unified-pro"] #insight-popup {
+    background: var(--up-bg-panel);
+    border: 1px solid var(--up-border);
+    color: var(--up-text-primary);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* --- A11Y: FOCUS STATES --- */
+
+body[data-theme="unified-pro"] .modal *:focus {
+    outline: 2px solid var(--up-sem-sky);
+    outline-offset: 2px;
+}
+
+body[data-theme="unified-pro"] .modal button:focus {
+    outline: 2px solid var(--up-sem-sky);
+    outline-offset: 2px;
+}
+
+body[data-theme="unified-pro"] .modal input:focus,
+body[data-theme="unified-pro"] .modal select:focus,
+body[data-theme="unified-pro"] .modal textarea:focus {
+    border-color: var(--up-sem-sky);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--up-sem-sky-glow);
+}

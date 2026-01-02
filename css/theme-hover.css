@@ -1,0 +1,99 @@
+/**
+ * Theme Hover Effects - Subtle Modern Interactions
+ * @version T61 - 02/01/2026
+ * 
+ * Applies consistent, professional hover states across all themes
+ */
+
+/* =============================================================================
+   GLOBAL HOVER TRANSITIONS
+   ============================================================================= */
+
+.theme-card,
+.panel,
+.card,
+.modal-content,
+button,
+.tab-button,
+.status-chip {
+    transition:
+        background-color 150ms ease,
+        border-color 150ms ease,
+        box-shadow 150ms ease,
+        transform 150ms ease,
+        color 150ms ease;
+}
+
+/* =============================================================================
+   CARD & PANEL HOVER
+   ============================================================================= */
+
+.theme-card:not(.active):hover {
+    transform: translateY(-1px);
+}
+
+body[data-theme='claro'] .theme-card:hover,
+body[data-theme='claro'] .panel:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+body[data-theme='moderno'] .theme-card:hover,
+body[data-theme='moderno'] .panel:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme='matrix'] .theme-card:hover {
+    border-color: var(--default-primary-color);
+    box-shadow: 0 0 12px rgba(0, 255, 65, 0.2);
+    /* Discrete neon glow */
+}
+
+body[data-theme='daltonismo'] .theme-card:hover,
+body[data-theme='daltonismo'] .panel:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Unified-pro hover defined in theme-unified-pro.css */
+
+/* =============================================================================
+   BUTTON HOVER - SUBTLE
+   ============================================================================= */
+
+button:hover:not(:disabled) {
+    filter: brightness(1.1);
+}
+
+.tab-button:hover:not(.active) {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+body[data-theme='claro'] .tab-button:hover:not(.active) {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* =============================================================================
+   MATRIX NEON - DISCRETE (only on hover/active)
+   ============================================================================= */
+
+body[data-theme='matrix'] button:hover:not(:disabled),
+body[data-theme='matrix'] .status-chip:hover {
+    text-shadow: none;
+    /* Remove text glow */
+}
+
+body[data-theme='matrix'] button:hover:not(:disabled) .chip-icon,
+body[data-theme='matrix'] .status-chip.is-active .chip-icon {
+    color: var(--default-primary-color);
+    filter: drop-shadow(0 0 6px rgba(0, 255, 65, 0.6));
+    /* Neon only on icon */
+}
+
+body[data-theme='matrix'] .panel {
+    box-shadow: none;
+    /* Remove default glow */
+}
+
+body[data-theme='matrix'] .panel:hover {
+    box-shadow: 0 0 8px rgba(0, 255, 65, 0.15);
+    /* Subtle neon border glow on hover */
+}
