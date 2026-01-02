@@ -1,5 +1,5 @@
-/**
- * 🎨 MÓDULO DE INTERFACE DO USUÁRIO
+﻿/**
+ * ðŸŽ¨ MÃ“DULO DE INTERFACE DO USUÃRIO
  * Responsável por toda a manipulação do DOM e renderização na UI
  *
  * @module UI
@@ -54,8 +54,11 @@ const tabelaUIInstance = new TabelaUI();
 import { TimelineUI } from './src/ui/TimelineUI.js';
 const timelineUIInstance = new TimelineUI();
 
+// [TAREFA 11B] devLog para logs condicionais (apenas em dev)
+import { devLog } from './src/constants/SystemConstants.js';
+
 // ============================================================================
-// 🆕 CHECKPOINT 2.2a: Helper de transição para DOMManager
+// ðŸ†• CHECKPOINT 2.2a: Helper de transição para DOMManager
 // ============================================================================
 // Este helper permite usar DOMManager quando disponível, com fallback para DOM direto
 const domHelper = {
@@ -121,7 +124,7 @@ const ui = {
      * @memberof UI
      */
     initPerformanceOptimizations() {
-        console.log('🚀 Inicializando otimizações de performance da UI...');
+        devLog('ðŸš€ Inicializando otimizações de performance da UI...');
 
         // Pré-aquece caches com elementos críticos
         this._preWarmDOMCache();
@@ -129,7 +132,7 @@ const ui = {
         // Configura monitoramento de performance
         this._setupPerformanceMonitoring();
 
-        console.log('✅ Otimizações de performance da UI ativadas');
+        devLog('âœ… Otimizações de performance da UI ativadas');
     },
 
     /**
@@ -187,18 +190,18 @@ const ui = {
 
                 if (stats.methodCalls > 100) {
                     // Só reporta se há atividade significativa
-                    console.group('📊 Relatório de Performance da UI');
-                    console.log('Tempo ativo:', (stats.uptime / 1000).toFixed(1), 'segundos');
-                    console.log('Chamadas de método:', stats.methodCalls);
-                    console.log(
+                    console.group('ðŸ“Š Relatório de Performance da UI');
+                    devLog('Tempo ativo:', (stats.uptime / 1000).toFixed(1), 'segundos');
+                    devLog('Chamadas de método:', stats.methodCalls);
+                    devLog(
                         'Cache de moeda - Taxa de acerto:',
                         stats.caches.currency.hitRate + '%'
                     );
-                    console.log('Cache DOM - Taxa de acerto:', stats.caches.dom.hitRate + '%');
+                    devLog('Cache DOM - Taxa de acerto:', stats.caches.dom.hitRate + '%');
                     console.groupEnd();
                 }
             } catch (error) {
-                console.warn('⚠️ Erro no relatório de performance:', error.message);
+                console.warn('âš ï¸ Erro no relatório de performance:', error.message);
             }
         }, 120000); // Aumentado para 2 minutos
     },
@@ -233,18 +236,18 @@ const ui = {
      */
     clearPerformanceCaches() {
         uiServicesFacade.clearAll();
-        console.log('🧹 Caches de performance da UI limpos');
+        devLog('ðŸ§¹ Caches de performance da UI limpos');
     },
 
     /**
-     * 🚀 INICIALIZAÇÃO COMPLETA DE EXCELÊNCIA 100%+
+     * ðŸš€ INICIALIZAÃ‡ÃO COMPLETA DE EXCELÊNCIA 100%+
      * Ativa todos os sistemas avançados para máxima qualidade
      *
      * @public
      * @memberof UI
      */
     async initializeExcellenceMode() {
-        console.log('🎯 Iniciando modo de excelência 100%+...');
+        devLog('ðŸŽ¯ Iniciando modo de excelência 100%+...');
         const startTime = performance.now();
 
         try {
@@ -269,7 +272,7 @@ const ui = {
             const endTime = performance.now();
             const duration = endTime - startTime;
 
-            console.log(`✨ Modo de excelência 100%+ ativado em ${duration.toFixed(2)}ms!`);
+            devLog(`âœ¨ Modo de excelência 100%+ ativado em ${duration.toFixed(2)}ms!`);
 
             return {
                 success: true,
@@ -285,7 +288,7 @@ const ui = {
                 metrics: await this._generateExcellenceMetrics(),
             };
         } catch (error) {
-            console.error('❌ Erro ao inicializar modo de excelência:', error);
+            console.error('âŒ Erro ao inicializar modo de excelência:', error);
             throw error;
         }
     },
@@ -296,7 +299,7 @@ const ui = {
      * @private
      */
     async _initializeCommandSystem() {
-        console.log('🎯 Inicializando Command Pattern...');
+        devLog('ðŸŽ¯ Inicializando Command Pattern...');
 
         // Converte métodos principais em comandos
         const originalSyncUI = this.syncUIFromState.bind(this);
@@ -324,15 +327,15 @@ const ui = {
 
             try {
                 const result = await globalCommandInvoker.execute(command);
-                console.log('✅ Command Pattern executado:', result);
+                devLog('âœ… Command Pattern executado:', result);
                 return result;
             } catch (error) {
-                console.warn('⚠️ Fallback para método original:', error);
+                console.warn('âš ï¸ Fallback para método original:', error);
                 return await originalSyncUI();
             }
         };
 
-        console.log('✅ Command Pattern ativado');
+        devLog('âœ… Command Pattern ativado');
     },
 
     /**
@@ -341,7 +344,7 @@ const ui = {
      * @private
      */
     async _initializeFunctionalProgramming() {
-        console.log('🔧 Inicializando Functional Programming...');
+        devLog('ðŸ”§ Inicializando Functional Programming...');
 
         // Pipe para formatação monetária funcional
         this.formatarMoedaFunctional = pipe(
@@ -379,7 +382,7 @@ const ui = {
                 .run()
                 .catch((error) => ({ success: false, error: error.message }));
 
-        console.log('✅ Functional Programming ativado');
+        devLog('âœ… Functional Programming ativado');
     },
 
     /**
@@ -388,7 +391,7 @@ const ui = {
      * @private
      */
     async _initializeDynamicDocumentation() {
-        console.log('📚 Inicializando Dynamic Documentation...');
+        devLog('ðŸ“š Inicializando Dynamic Documentation...');
 
         // Registra módulo UI para documentação automática
         globalDocGenerator.registerModule('UI', this, {
@@ -414,9 +417,9 @@ const ui = {
 
         // Gera documentação inicial
         const documentation = globalDocGenerator.generateDocumentation('html');
-        console.log('📄 Documentação gerada:', documentation.length, 'caracteres');
+        devLog('ðŸ“„ Documentação gerada:', documentation.length, 'caracteres');
 
-        console.log('✅ Dynamic Documentation ativado');
+        devLog('âœ… Dynamic Documentation ativado');
     },
 
     /**
@@ -425,7 +428,7 @@ const ui = {
      * @private
      */
     async _initializePredictiveAI() {
-        console.log('🤖 Inicializando Predictive AI...');
+        devLog('ðŸ¤– Inicializando Predictive AI...');
 
         // Coleta contexto atual para análise
         const currentContext = {
@@ -440,12 +443,12 @@ const ui = {
 
         // Analisa possíveis erros
         const predictions = globalPredictiveAnalyzer.predictErrors(currentContext);
-        console.log('🎯 Predições de erro:', predictions);
+        devLog('ðŸŽ¯ Predições de erro:', predictions);
 
         // Ativa prevenção automática
         const preventionActions =
             await globalAutoPreventionSystem.executeAutoPrevention(currentContext);
-        console.log('🛡️ Ações de prevenção:', preventionActions);
+        devLog('ðŸ›¡ï¸ Ações de prevenção:', preventionActions);
 
         // Agenda análise periódica (protegido)
         const safeInterval2 = window.safeProtection?.safeSetInterval || setInterval;
@@ -455,15 +458,15 @@ const ui = {
                 const newPredictions = globalPredictiveAnalyzer.predictErrors(context);
 
                 if (newPredictions.some((p) => p.probability > 0.8)) {
-                    console.warn('⚠️ Alto risco de erro detectado:', newPredictions);
+                    console.warn('âš ï¸ Alto risco de erro detectado:', newPredictions);
                     await globalAutoPreventionSystem.executeAutoPrevention(context);
                 }
             } catch (error) {
-                console.warn('⚠️ Erro na análise preditiva:', error.message);
+                console.warn('âš ï¸ Erro na análise preditiva:', error.message);
             }
         }, 60000); // Aumentado para 60 segundos
 
-        console.log('✅ Predictive AI ativado');
+        devLog('âœ… Predictive AI ativado');
     },
 
     /**
@@ -472,9 +475,9 @@ const ui = {
      * @private
      */
     async _initializeMLOptimization() {
-        console.log('🧠 Inicializando ML Optimization...');
+        devLog('ðŸ§  Inicializando ML Optimization...');
 
-        // 🚨 DESABILITADO: ML optimization pode estar causando vazamento de código
+        // ðŸš¨ DESABILITADO: ML optimization pode estar causando vazamento de código
         // globalMLOptimizer.enableAutoTuning();
 
         // Analiza performance atual e otimiza
@@ -491,9 +494,9 @@ const ui = {
             networkLatency: 100,
         };
 
-        // 🚨 DESABILITADO: Análise ML pode estar causando problemas
+        // ðŸš¨ DESABILITADO: Análise ML pode estar causando problemas
         // const optimizations = globalMLOptimizer.analyzeAndOptimize(currentPerformance);
-        // console.log('🚀 Otimizações ML:', optimizations);
+        // devLog('ðŸš€ Otimizações ML:', optimizations);
 
         // Aplica configurações otimizadas - DESABILITADO
         // if (optimizations.confidence > 0.7) {
@@ -501,7 +504,7 @@ const ui = {
         //     this._applyMLOptimizations(optimizedConfig);
         // }
 
-        console.log('✅ ML Optimization ativado');
+        devLog('âœ… ML Optimization ativado');
     },
 
     /**
@@ -510,7 +513,7 @@ const ui = {
      * @private
      */
     async _initializeAutoLearning() {
-        console.log('🎓 Inicializando Auto Learning...');
+        devLog('ðŸŽ“ Inicializando Auto Learning...');
 
         // Intercepta execuções para aprendizado
         const originalMethods = [
@@ -532,7 +535,7 @@ const ui = {
                         const result = await original.apply(this, args);
                         const endTime = performance.now();
 
-                        // 🚨 DESABILITADO: ML learning pode estar causando problemas
+                        // ðŸš¨ DESABILITADO: ML learning pode estar causando problemas
                         // globalMLOptimizer.learnFromResults(context, {
                         //     success: true,
                         //     executionTime: endTime - startTime,
@@ -553,7 +556,7 @@ const ui = {
                     } catch (error) {
                         const endTime = performance.now();
 
-                        // 🚨 DESABILITADO: Análise de erro pode estar causando problemas
+                        // ðŸš¨ DESABILITADO: Análise de erro pode estar causando problemas
                         // globalPredictiveAnalyzer.learnFromError(error, context);
                         // globalMLOptimizer.learnFromResults(context, {
                         //     success: false,
@@ -570,7 +573,7 @@ const ui = {
             }
         });
 
-        console.log('✅ Auto Learning ativado');
+        devLog('âœ… Auto Learning ativado');
     },
 
     /**
@@ -631,7 +634,7 @@ const ui = {
      * @private
      */
     _applyMLOptimizations(config) {
-        console.log('🔧 Aplicando otimizações ML:', config);
+        devLog('ðŸ”§ Aplicando otimizações ML:', config);
 
         // Ajusta configurações de cache
         if (config.cache) {
@@ -790,14 +793,14 @@ const ui = {
                 const duration = endTime - startTime;
 
                 if (result.success) {
-                    console.log(
-                        `✅ UI sincronizada com sucesso em ${duration.toFixed(2)}ms`,
+                    devLog(
+                        `âœ… UI sincronizada com sucesso em ${duration.toFixed(2)}ms`,
                         result.data
                     );
                     return { success: true, duration, ...result.data };
                 } else {
                     console.warn(
-                        `⚠️ UI sincronizada com fallbacks em ${duration.toFixed(2)}ms`,
+                        `âš ï¸ UI sincronizada com fallbacks em ${duration.toFixed(2)}ms`,
                         result
                     );
                     return { success: false, duration, fallback: true, error: result.error };
@@ -1012,7 +1015,7 @@ const ui = {
      */
     _updateLockDurationVisibility() {
         if (dom.lockDurationContainer) {
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             domHelper.toggleClass(dom.lockDurationContainer, CSS_CLASSES.HIDDEN, !config.autoBloqueio);
         }
     },
@@ -1076,7 +1079,7 @@ const ui = {
             const readOperations = buttons.map((button) =>
                 batcher.read(() => ({
                     button,
-                    // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                    // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                     currentState: domHelper.hasClass(button, activeClass),
                     shouldBeActive: button.dataset[dataAttribute] === activeValue,
                 }))
@@ -1088,7 +1091,7 @@ const ui = {
             const writeOperations = buttonStates
                 .filter(({ currentState, shouldBeActive }) => currentState !== shouldBeActive)
                 .map(({ button, shouldBeActive }) =>
-                    // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                    // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                     batcher.write(() => domHelper.toggleClass(button, activeClass, shouldBeActive))
                 );
 
@@ -1111,7 +1114,7 @@ const ui = {
                 try {
                     await this._atualizarTudoInterno();
                 } catch (error) {
-                    console.error('❌ UI: Erro durante atualização com debounce:', error);
+                    console.error('âŒ UI: Erro durante atualização com debounce:', error);
                 }
             },
             TIMING.DEBOUNCE.NORMAL,
@@ -1120,7 +1123,7 @@ const ui = {
     },
 
     atualizarTudo() {
-        console.log('🔄 UI: Iniciando atualização completa...');
+        devLog('ðŸ”„ UI: Iniciando atualização completa...');
         const startTime = performance.now();
 
         // Inicializa debounce se necessário
@@ -1131,19 +1134,19 @@ const ui = {
         this.atualizarTudoDebounced();
 
         const endTime = performance.now();
-        console.log(
-            `⚡ UI: Atualização completa solicitada em ${(endTime - startTime).toFixed(2)}ms`
+        devLog(
+            `âš¡ UI: Atualização completa solicitada em ${(endTime - startTime).toFixed(2)}ms`
         );
     },
 
     async _atualizarTudoInterno() {
-        console.log('🎯 UI: Executando atualização interna...');
+        devLog('ðŸŽ¯ UI: Executando atualização interna...');
         const startTime = performance.now();
 
         try {
-            this.renderizarTabela();
+            this.requestRenderTabela('UI._atualizarTudoInterno');
 
-            // 🛡️ CORREÇÃO CRÍTICA: Usar state global diretamente para garantir dados atuais
+            // ðŸ›¡ï¸ CORREÃ‡ÃO CRÃTICA: Usar state global diretamente para garantir dados atuais
             const historicoPrincipal =
                 window.state && Array.isArray(window.state.historicoCombinado)
                     ? window.state.historicoCombinado
@@ -1151,8 +1154,8 @@ const ui = {
                         ? state.historicoCombinado
                         : [];
 
-            console.log(
-                '🎨 [UI-UPDATE] Renderizando timeline com',
+            devLog(
+                'ðŸŽ¨ [UI-UPDATE] Renderizando timeline com',
                 historicoPrincipal.length,
                 'operações'
             );
@@ -1166,36 +1169,63 @@ const ui = {
             this.atualizarVisibilidadeBotoesSessao();
 
             const endTime = performance.now();
-            console.log(
-                `✅ UI: Atualização interna completa em ${(endTime - startTime).toFixed(2)}ms`
+            devLog(
+                `âœ… UI: Atualização interna completa em ${(endTime - startTime).toFixed(2)}ms`
             );
         } catch (error) {
-            console.error('❌ UI: Erro durante atualização interna:', error);
+            console.error('âŒ UI: Erro durante atualização interna:', error);
             throw error;
         }
         this.atualizarVisibilidadeContextual();
 
-        // ===== ATUALIZAÇÃO DOS GRÁFICOS DE PROGRESSO =====
+        // ===== ATUALIZAÃ‡ÃO DOS GRÃFICOS DE PROGRESSO =====
         // Seguindo boas práticas: atualiza gráficos após todas as outras atualizações
         this.updateProgressChartsUI();
 
-        // ===== ATUALIZAÇÃO DA SIDEBAR =====
+        // ===== ATUALIZAÃ‡ÃO DA SIDEBAR =====
         // Atualiza parâmetros na sidebar se ela estiver inicializada
         this.updateSidebarParameters();
     },
 
+    /**
+     * Agenda a renderização da tabela no próximo frame (coalesce)
+     * Evita múltiplos renders concorrentes em sequência.
+     * @param {string} reason
+     */
+    requestRenderTabela(reason = '') {
+        this._renderTabelaScheduled = this._renderTabelaScheduled || false;
+        this._renderTabelaLastReason = reason;
+
+        if (this._renderTabelaScheduled) return;
+        this._renderTabelaScheduled = true;
+
+        requestAnimationFrame(() => {
+            this._renderTabelaScheduled = false;
+            try {
+                this.renderizarTabela();
+            } catch (error) {
+                console.error('❌ UI: erro ao renderizar tabela (scheduled)', error);
+            }
+        });
+    },
+
     renderizarTabela() {
-        console.log('📊 UI: Renderizando tabela...');
+
+        // 🔧 TAREFA 28: Guard contra race condition
+        this._renderTableId = (this._renderTableId || 0) + 1;
+        const currentRenderId = this._renderTableId;
+        const isStaleRender = () => currentRenderId !== this._renderTableId;
+        // 🔧 TAREFA 39: Log do renderId no início\r\n        devLog(`📊 UI: Iniciando render #${currentRenderId}`);
 
         if (!dom.tabelaBody) {
-            console.warn('⚠️ UI: Elemento tabelaBody não encontrado');
+            console.warn('âš ï¸ UI: Elemento tabelaBody não encontrado');
             return;
         }
 
-        dom.tabelaBody.innerHTML = '';
+        // 🔧 TAREFA 39: Removido innerHTML='' - agora usamos buffer para commit atômico
 
         if (!state.isSessionActive) {
-            console.log('🎯 UI: Sessão inativa - mostrando mensagem');
+            devLog('ðŸŽ¯ UI: Sessão inativa - mostrando mensagem');
             // [TAREFA 7B] Substituido inline style por classes CSS
             dom.tabelaBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Nenhuma sessão ativa. Clique em "Nova Sessão" para começar.</td></tr>`;
             return;
@@ -1205,13 +1235,20 @@ const ui = {
             dom.tabelaBody.innerHTML = `<tr><td colspan="5" class="text-center text-error">Erro: Plano de operações inválido.</td></tr>`;
             return;
         }
+
+        // 🔧 TAREFA 38: Snapshot do plano para render estável
+        const planoSnapshot = state.planoDeOperacoes.slice();
+
+        // 🔧 TAREFA 39: Buffer para render atômico (commit)
+        const renderBuffer = document.createDocumentFragment();
+
         const isZen = config.zenMode;
 
         if (config.estrategiaAtiva === CONSTANTS.STRATEGY.FIXED) {
-            const etapa = state.planoDeOperacoes[0];
+            const etapa = planoSnapshot[0];
             if (!etapa) return;
             const tr = document.createElement('tr');
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             domHelper.addClass(tr, 'fade-in-row');
             tr.dataset.index = 0;
             tr.innerHTML = `
@@ -1221,30 +1258,40 @@ const ui = {
                 <td>${isZen ? '---' : this._formatarMoedaInternal(etapa.retorno)}</td>
                 <td>
                     <div class="acoes-cell">
-                        <button title="Copiar" class="copy-btn" data-index="0" data-aporte="1">📋</button>
+                        <button title="Copiar" class="copy-btn" data-index="0" data-aporte="1">&#x1F4CB;</button>
                         <button title="Win" class="wl-btn win-btn-linha" data-index="0" data-aporte="1">W</button>
                         <button title="Loss" class="wl-btn loss-btn-linha" data-index="0" data-aporte="1">L</button>
                     </div>
                 </td>`;
-            dom.tabelaBody.appendChild(tr);
+            renderBuffer.appendChild(tr);
+            // 🔧 TAREFA 39: Commit atômico para estratégia FIXED
+            if (!isStaleRender()) {
+                devLog(`📊 UI: Commit render #${currentRenderId} (FIXED)`);
+                dom.tabelaBody.replaceChildren(...renderBuffer.childNodes);
+                this.atualizarVisualPlano();
+            } else {
+                devLog(`📊 UI: Render #${currentRenderId} abortado (stale) [FIXED]`);
+            }
         } else {
-            // 🔧 OTIMIZAÇÃO CRÍTICA: Divide renderização em chunks para evitar bloqueio da thread principal
+            // ðŸ”§ OTIMIZAÃ‡ÃO CRÃTICA: Divide renderização em chunks para evitar bloqueio da thread principal
             const renderizarPlanoEmChunks = async () => {
                 const chunkSize = 5; // Renderiza 5 linhas por vez
-                const totalEtapas = state.planoDeOperacoes.length;
+                const totalEtapas = planoSnapshot.length;
 
                 for (let chunk = 0; chunk < Math.ceil(totalEtapas / chunkSize); chunk++) {
+                    if (isStaleRender()) return;
                     const startIndex = chunk * chunkSize;
                     const endIndex = Math.min(startIndex + chunkSize, totalEtapas);
 
                     // Processa chunk atual
                     for (let i = startIndex; i < endIndex; i++) {
-                        const etapa = state.planoDeOperacoes[i];
+                        if (isStaleRender()) return;
+                        const etapa = planoSnapshot[i];
                         const index = i;
 
                         const criarLinha = (aporteNum, valorEntrada, valorRetorno) => {
                             const tr = document.createElement('tr');
-                            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                             domHelper.addClass(tr, 'fade-in-row');
                             tr.dataset.index = index;
                             if (aporteNum) tr.dataset.aporte = aporteNum;
@@ -1262,7 +1309,7 @@ const ui = {
                                 <td>${isZen ? '---' : this._formatarMoedaInternal(valorRetorno)}</td>
                                 <td>
                                     <div class="acoes-cell">
-                                        <button title="Copiar" class="copy-btn" data-index="${index}" data-aporte="${aporteNum || 1}">📋</button>
+                                        <button title="Copiar" class="copy-btn" data-index="${index}" data-aporte="${aporteNum || 1}">&#x1F4CB;</button>
                                         <button title="Win" class="wl-btn win-btn-linha" data-index="${index}" data-aporte="${aporteNum || 1}">W</button>
                                         <button title="Loss" class="wl-btn loss-btn-linha" data-index="${index}" data-aporte="${aporteNum || 1}">L</button>
                                     </div>
@@ -1270,31 +1317,45 @@ const ui = {
                             return tr;
                         };
 
+                        // 🔧 TAREFA 39: Append no buffer ao invés do DOM
                         if (etapa.entrada2 === undefined) {
-                            dom.tabelaBody.appendChild(
+                            renderBuffer.appendChild(
                                 criarLinha(null, etapa.entrada, etapa.retorno)
                             );
                         } else {
-                            dom.tabelaBody.appendChild(
+                            renderBuffer.appendChild(
                                 criarLinha(1, etapa.entrada1, etapa.retorno1)
                             );
-                            dom.tabelaBody.appendChild(
+                            renderBuffer.appendChild(
                                 criarLinha(2, etapa.entrada2, etapa.retorno2)
                             );
                         }
                     }
 
-                    // 🔄 Yielding: Permite que a thread principal processe outros eventos
+                    // ðŸ”„ Yielding: Permite que a thread principal processe outros eventos
+                    if (isStaleRender()) return;
+
                     if (chunk < Math.ceil(totalEtapas / chunkSize) - 1) {
                         const safeTimeout = window.safeProtection?.safeSetTimeout || setTimeout;
                         await new Promise((resolve) => safeTimeout(resolve, 1));
+                        if (isStaleRender()) return;
                     }
+                }
+                // 🔧 TAREFA 39: Commit atômico após todos os chunks
+                if (!isStaleRender()) {
+                    devLog(`📊 UI: Commit render #${currentRenderId}`);
+                    dom.tabelaBody.replaceChildren(...renderBuffer.childNodes);
+                } else {
+                    devLog(`📊 UI: Render #${currentRenderId} abortado (stale)`);
                 }
             };
 
             // Executa renderização em chunks
             renderizarPlanoEmChunks().then(() => {
-                this.atualizarVisualPlano();
+                // 🔧 TAREFA 39: atualizarVisualPlano só após commit bem-sucedido
+                if (!isStaleRender()) {
+                    this.atualizarVisualPlano();
+                }
             });
         }
     },
@@ -1303,12 +1364,12 @@ const ui = {
         if (!state.isSessionActive || !dom.tabelaBody) return;
         const isBlocked = state.metaAtingida;
         if (dom.tabelaResultados)
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             domHelper.toggleClass(dom.tabelaResultados, 'operacoes-bloqueadas', isBlocked);
 
         const todasAsLinhas = dom.tabelaBody.querySelectorAll('tr');
         todasAsLinhas.forEach((tr) => {
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             domHelper.removeClass(tr,
                 'proxima-etapa',
                 'linha-desfocada',
@@ -1330,7 +1391,7 @@ const ui = {
             }
 
             if (concluida) {
-                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                 domHelper.addClass(tr, 'linha-concluida');
             }
 
@@ -1345,11 +1406,11 @@ const ui = {
                 }
 
                 if (!isRowHabilitada && !concluida) {
-                    // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                    // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                     domHelper.addClass(tr, 'linha-desfocada', 'linha-desabilitada');
                 }
                 if (isRowHabilitada && !isBlocked) {
-                    // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                    // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                     domHelper.addClass(tr, 'proxima-etapa');
                 }
             }
@@ -1359,7 +1420,7 @@ const ui = {
     async atualizarDashboardSessao() {
         const { capitalDeCalculo, capitalAtual, capitalInicioSessao } = state;
 
-        // 🛡️ PROTEÇÃO ULTRA-ROBUSTA CONTRA NaN
+        // ðŸ›¡ï¸ PROTEÃ‡ÃO ULTRA-ROBUSTA CONTRA NaN
         const capitalAtualSeguro =
             typeof capitalAtual === 'number' && !isNaN(capitalAtual)
                 ? capitalAtual
@@ -1371,16 +1432,16 @@ const ui = {
 
         let lucroPrejuizo = capitalAtualSeguro - capitalInicioSeguro;
 
-        // 🛡️ VERIFICAÇÃO FINAL DO RESULTADO
+        // ðŸ›¡ï¸ VERIFICAÃ‡ÃO FINAL DO RESULTADO
         if (typeof lucroPrejuizo !== 'number' || isNaN(lucroPrejuizo)) {
-            console.error('❌ [DASHBOARD] lucroPrejuizo calculado como NaN - aplicando fallback');
+            console.error('âŒ [DASHBOARD] lucroPrejuizo calculado como NaN - aplicando fallback');
             lucroPrejuizo = 0;
         }
 
         const isZen = config.zenMode;
 
-        // 🕵️ DEBUG DO DETETIVE - INVESTIGAÇÃO CONCLUÍDA
-        console.log('🔍 INVESTIGAÇÃO RESULTADO DO DIA:', {
+        // ðŸ•µï¸ DEBUG DO DETETIVE - INVESTIGAÃ‡ÃO CONCLUÃDA
+        devLog('ðŸ” INVESTIGAÃ‡ÃO RESULTADO DO DIA:', {
             capitalAtual: capitalAtualSeguro,
             capitalInicioSessao: capitalInicioSeguro,
             lucroPrejuizo,
@@ -1389,20 +1450,20 @@ const ui = {
             valoresOriginais: { capitalAtual, capitalInicioSessao },
         });
 
-        // 🛠️ CORREÇÃO CRÍTICA: Verificar se elemento já tem valor diferente de zero
+        // ðŸ› ï¸ CORREÃ‡ÃO CRÃTICA: Verificar se elemento já tem valor diferente de zero
         // Isso evita sobrescrever valores durante operações em andamento
         const elementoResultado = dom.lucroPrejuizo;
         let preservarValor = false;
 
-        // 🔧 CORREÇÃO CRÍTICA: Sem sessão ativa, sempre mostrar R$ 0,00
+        // ðŸ”§ CORREÃ‡ÃO CRÃTICA: Sem sessão ativa, sempre mostrar R$ 0,00
         if (!state.isSessionActive) {
             // Força lucroPrejuizo = 0 quando não há sessão ativa
             lucroPrejuizo = 0;
             preservarValor = false; // Nunca preservar valores sem sessão ativa
-            console.log('🔧 SEM SESSÃO ATIVA: Forçando resultado para R$ 0,00');
+            devLog('ðŸ”§ SEM SESSÃO ATIVA: Forçando resultado para R$ 0,00');
         }
 
-        // 🛠️ CORREÇÃO VISUAL: Aguarda inicialização do cache antes da formatação
+        // ðŸ› ï¸ CORREÃ‡ÃO VISUAL: Aguarda inicialização do cache antes da formatação
         try {
             // Garante que o UIServicesFacade está inicializado
             await this._initMappingManager();
@@ -1416,50 +1477,50 @@ const ui = {
                 ? '(Base: ---)'
                 : `(Base: ${this.formatarMoeda(capitalDeCalculo)})`;
             dom.displayCapitalCalculo.textContent = capitalCalculoFormatado;
-            // 🎯 FORÇA REPAINT
+            // ðŸŽ¯ FORÃ‡A REPAINT
             dom.displayCapitalCalculo.style.display = 'none';
             dom.displayCapitalCalculo.offsetHeight; // Trigger reflow
             dom.displayCapitalCalculo.style.display = '';
         }
 
-        // 📊 Declaração de variáveis de formatação no escopo correto
+        // ðŸ“Š Declaração de variáveis de formatação no escopo correto
         let capitalAtualFormatado = '---';
         let lucroPrejuizoFormatado = '---';
 
         if (dom.capitalAtual) {
             capitalAtualFormatado = isZen ? '---' : this.formatarMoeda(capitalAtualSeguro);
             dom.capitalAtual.textContent = capitalAtualFormatado;
-            // 🎯 FORÇA REPAINT
+            // ðŸŽ¯ FORÃ‡A REPAINT
             dom.capitalAtual.style.display = 'none';
             dom.capitalAtual.offsetHeight; // Trigger reflow
             dom.capitalAtual.style.display = '';
         }
 
         if (dom.lucroPrejuizo) {
-            // 🛠️ SÓ atualiza se não estiver preservando valor
+            // ðŸ› ï¸ SÃ“ atualiza se não estiver preservando valor
             if (!preservarValor) {
                 lucroPrejuizoFormatado = isZen ? '---' : this.formatarMoeda(lucroPrejuizo);
                 dom.lucroPrejuizo.textContent = lucroPrejuizoFormatado;
-                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                 domHelper.toggleClass(dom.lucroPrejuizo, 'positive', lucroPrejuizo > 0);
                 domHelper.toggleClass(dom.lucroPrejuizo, 'negative', lucroPrejuizo < 0);
-                // 🎯 FORÇA REPAINT
+                // ðŸŽ¯ FORÃ‡A REPAINT
                 dom.lucroPrejuizo.style.display = 'none';
                 dom.lucroPrejuizo.offsetHeight; // Trigger reflow
                 dom.lucroPrejuizo.style.display = '';
             } else {
                 // Mantém valor existente mas ainda aplica classes CSS se necessário
                 lucroPrejuizoFormatado = dom.lucroPrejuizo.textContent;
-                console.log('🛠️ Valor preservado:', lucroPrejuizoFormatado);
+                devLog('ðŸ› ï¸ Valor preservado:', lucroPrejuizoFormatado);
             }
         }
 
         if (dom.undoBtn)
             dom.undoBtn.disabled = state.undoStack.length === 0 || !state.isSessionActive;
 
-        // 🚀 ATUALIZAÇÃO ADICIONAL: Força re-renderização completa
-        console.log(
-            '✅ Dashboard atualizado - Capital Atual:',
+        // ðŸš€ ATUALIZAÃ‡ÃO ADICIONAL: Força re-renderização completa
+        devLog(
+            'âœ… Dashboard atualizado - Capital Atual:',
             capitalAtualFormatado,
             'Resultado:',
             lucroPrejuizoFormatado
@@ -1470,7 +1531,7 @@ const ui = {
         historico = state.historicoCombinado,
         container = dom.timelineContainer
     ) {
-        // ADIÇÃO: Garantir array válido
+        // ADIÃ‡ÃO: Garantir array válido
         if (typeof historico === 'string') {
             try {
                 historico = JSON.parse(historico);
@@ -1482,22 +1543,22 @@ const ui = {
             historico = [];
         }
 
-        // 🛡️ VALIDAÇÃO DEFENSIVA ULTRA-ROBUSTA
+        // ðŸ›¡ï¸ VALIDAÃ‡ÃO DEFENSIVA ULTRA-ROBUSTA
         if (!container) {
-            console.warn('⚠️ [TIMELINE] Container não fornecido, usando padrão');
+            console.warn('âš ï¸ [TIMELINE] Container não fornecido, usando padrão');
             container = dom.timelineContainer;
             if (!container) {
-                console.error('❌ [TIMELINE] Timeline container não encontrado!');
+                console.error('âŒ [TIMELINE] Timeline container não encontrado!');
                 return;
             }
         }
 
         if (!Array.isArray(historico)) {
             console.warn(
-                '⚠️ [TIMELINE] Histórico inválido, usando state.historicoCombinado:',
+                'âš ï¸ [TIMELINE] Histórico inválido, usando state.historicoCombinado:',
                 typeof historico
             );
-            // 🎨 Resolve CSS variable dinamicamente
+            // ðŸŽ¨ Resolve CSS variable dinamicamente
             const mutedColor =
                 getComputedStyle(document.documentElement)
                     .getPropertyValue('--text-muted')
@@ -1516,15 +1577,15 @@ const ui = {
             container.style.boxShadow = '';
         } catch (_) { }
 
-        // 🛡️ FALLBACK DEFENSIVO: Se histórico vazio, tentar carregar dados persistidos
-        // 🔒 Bloquear fallback durante finalização de sessão
+        // ðŸ›¡ï¸ FALLBACK DEFENSIVO: Se histórico vazio, tentar carregar dados persistidos
+        // ðŸ”’ Bloquear fallback durante finalização de sessão
         if (
             historico.length === 0 &&
             !state.isSessionActive &&
             !window.__suppressPersistedTimeline
         ) {
             console.warn(
-                '⚠️ [TIMELINE] Histórico vazio sem sessão ativa - buscando dados persistidos'
+                'âš ï¸ [TIMELINE] Histórico vazio sem sessão ativa - buscando dados persistidos'
             );
 
             // Tentar carregar histórico persistido da última sessão
@@ -1537,8 +1598,8 @@ const ui = {
                         Array.isArray(sessionData.historicoCombinado) &&
                         sessionData.historicoCombinado.length > 0
                     ) {
-                        console.log(
-                            '✅ [TIMELINE] Dados persistidos encontrados:',
+                        devLog(
+                            'âœ… [TIMELINE] Dados persistidos encontrados:',
                             sessionData.historicoCombinado.length,
                             'operações'
                         );
@@ -1546,7 +1607,7 @@ const ui = {
                     }
                 }
             } catch (error) {
-                console.warn('⚠️ [TIMELINE] Erro ao carregar dados persistidos:', error);
+                console.warn('âš ï¸ [TIMELINE] Erro ao carregar dados persistidos:', error);
             }
         }
 
@@ -1558,20 +1619,20 @@ const ui = {
             operacoesParaRenderizar = sequencias.maxLossStreak;
 
         if (operacoesParaRenderizar.length === 0) {
-            // 🎨 Resolve CSS variable dinamicamente
+            // ðŸŽ¨ Resolve CSS variable dinamicamente
             const mutedColor =
                 getComputedStyle(document.documentElement)
                     .getPropertyValue('--text-muted')
                     .trim() || '#888888';
 
-            // 🛡️ FALLBACK FINAL: Dados de demonstração (desativado por padrão)
+            // ðŸ›¡ï¸ FALLBACK FINAL: Dados de demonstração (desativado por padrão)
             if (
                 !state.isSessionActive &&
                 container === dom.timelineContainer &&
                 !window.__suppressPersistedTimeline &&
                 window.__allowTimelineDemo === true
             ) {
-                console.log('⚠️ [TIMELINE] Criando dados de demonstração para timeline vazio');
+                devLog('âš ï¸ [TIMELINE] Criando dados de demonstração para timeline vazio');
 
                 // Criar operações de demonstração
                 const agora = new Date();
@@ -1642,7 +1703,7 @@ const ui = {
         const container = customContainer || dom.timelineContainer;
         if (!container || !op) return;
 
-        // 🛡️ CORREÇÃO CRÍTICA: Suportar tanto isWin boolean quanto resultado string
+        // ðŸ›¡ï¸ CORREÃ‡ÃO CRÃTICA: Suportar tanto isWin boolean quanto resultado string
         let isWin;
         if (typeof op.isWin === 'boolean') {
             isWin = op.isWin;
@@ -1659,17 +1720,17 @@ const ui = {
         const getIconForOperation = (op) => {
             const tag = op.tag || '';
             if (op.isWin) {
-                if (tag.includes('Plano')) return '✅';
-                if (tag.includes('Perfeita')) return '🎯';
-                if (tag.includes('Tendência')) return '📈';
-                if (tag.includes('Paciência')) return '😌';
-                return '👍';
+                if (tag.includes('Plano')) return 'âœ…';
+                if (tag.includes('Perfeita')) return 'ðŸŽ¯';
+                if (tag.includes('Tendência')) return 'ðŸ“ˆ';
+                if (tag.includes('Paciência')) return 'ðŸ˜Œ';
+                return 'ðŸ‘';
             } else {
-                if (tag.includes('Plano')) return '❌';
-                if (tag.includes('Impaciência')) return '😡';
-                if (tag.includes('Hesitação') || tag.includes('Medo')) return '😰';
-                if (tag.includes('Tendência')) return '📉';
-                return '👎';
+                if (tag.includes('Plano')) return 'âŒ';
+                if (tag.includes('Impaciência')) return 'ðŸ˜¡';
+                if (tag.includes('Hesitação') || tag.includes('Medo')) return 'ðŸ˜°';
+                if (tag.includes('Tendência')) return 'ðŸ“‰';
+                return 'ðŸ‘Ž';
             }
         };
 
@@ -1688,7 +1749,7 @@ const ui = {
                 : `- ${this._formatarMoedaInternal(Math.abs(valorCanonico))}`;
         const notaHTML = op.nota ? `<p class="timeline-note">${op.nota}</p>` : '';
 
-        // 🎨 Resolve CSS variable para timestamp
+        // ðŸŽ¨ Resolve CSS variable para timestamp
         const mutedColor =
             getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() ||
             '#888888';
@@ -1699,7 +1760,7 @@ const ui = {
         itemDiv.innerHTML = `
             <div class="timeline-marker">${getIconForOperation(op)}</div>
             <div class="timeline-content">
-                <button class="edit-op-btn" title="Editar Operação">✏️</button>
+                <button class="edit-op-btn" title="Editar Operação">âœï¸</button>
                 <div class="timeline-header">
                     <span class="timeline-tag">${op.tag || 'Sem Tag'}</span>
                     <span class="timeline-value ${itemClass}">${valorDisplay}</span>
@@ -1720,7 +1781,7 @@ const ui = {
         if (
             container &&
             container.lastChild &&
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             container.lastChild && domHelper.hasClass(container.lastChild, 'timeline-item')
         ) {
             container.removeChild(container.lastChild);
@@ -1735,8 +1796,8 @@ const ui = {
             <button class="wl-btn win-btn-linha" data-new-result="true">W</button>
             <button class="wl-btn loss-btn-linha" data-new-result="false">L</button>
             <input type="number" step="0.01" class="edit-value-input" placeholder="Valor (R$)" style="width:110px;margin:0 6px;" />
-            <button class="wl-btn" data-save-value="true" title="Salvar valor">💾</button>
-            <button class="wl-btn" data-delete-op="true" title="Excluir operação">🗑️</button>`;
+            <button class="wl-btn" data-save-value="true" title="Salvar valor">ðŸ’¾</button>
+            <button class="wl-btn" data-delete-op="true" title="Excluir operação">ðŸ—‘ï¸</button>`;
         panel.addEventListener('click', (e) => {
             e.stopPropagation();
             const button = e.target.closest('button');
@@ -1807,30 +1868,30 @@ const ui = {
         if (dom.modalConfirmBtn) dom.modalConfirmBtn.textContent = confirmText;
 
         if (dom.modalCancelBtn) {
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             domHelper.toggleClass(dom.modalCancelBtn, 'hidden', !cancelText);
             if (cancelText) dom.modalCancelBtn.textContent = cancelText;
         }
 
-        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
         if (dom.confirmationModal) domHelper.addClass(dom.confirmationModal, 'show');
 
         if (dom.modalConfirmBtn)
             dom.modalConfirmBtn.onclick = () => {
                 if (onConfirm) onConfirm();
-                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                 if (dom.confirmationModal) domHelper.removeClass(dom.confirmationModal, 'show');
             };
         if (dom.modalCancelBtn)
             dom.modalCancelBtn.onclick = () => {
                 if (onCancel) onCancel();
-                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                 if (dom.confirmationModal) domHelper.removeClass(dom.confirmationModal, 'show');
             };
         if (dom.confirmationModal)
             dom.confirmationModal.onclick = (e) => {
                 if (e.target === dom.confirmationModal)
-                    // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                    // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                     domHelper.removeClass(dom.confirmationModal, 'show');
             };
     },
@@ -1838,26 +1899,26 @@ const ui = {
     showTagsModal(isWin) {
         const TAGS = {
             win: [
-                '✅ Segui o Plano',
-                '🎯 Análise Perfeita',
-                '📈 A Favor da Tendência',
-                '😌 Paciência',
+                'âœ… Segui o Plano',
+                'ðŸŽ¯ Análise Perfeita',
+                'ðŸ“ˆ A Favor da Tendência',
+                'ðŸ˜Œ Paciência',
             ],
             loss: [
-                '❌ Fora do Plano',
-                '😡 Impaciência',
-                '😰 Hesitação/Medo',
-                '📉 Contra Tendência',
+                'âŒ Fora do Plano',
+                'ðŸ˜¡ Impaciência',
+                'ðŸ˜° Hesitação/Medo',
+                'ðŸ“‰ Contra Tendência',
             ],
         };
         if (dom.tagsModalTitle)
-            dom.tagsModalTitle.textContent = `Classifique sua ${isWin ? 'VITÓRIA' : 'DERROTA'}:`;
+            dom.tagsModalTitle.textContent = `Classifique sua ${isWin ? 'VITÃ“RIA' : 'DERROTA'}:`;
         if (dom.tagsContainer)
             dom.tagsContainer.innerHTML = (isWin ? TAGS.win : TAGS.loss)
                 .map((tag) => `<button>${tag}</button>`)
                 .join('');
         if (dom.opNote) dom.opNote.value = '';
-        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
         if (dom.tagsModal) domHelper.addClass(dom.tagsModal, 'show');
     },
 
@@ -1868,7 +1929,7 @@ const ui = {
         if (h2) h2.textContent = `Sessão Finalizada!`;
         if (p)
             p.textContent = `Meta de ${tipoMeta === 'win' ? 'ganhos' : 'perdas'} atingida. O bloqueio automático foi ativado para proteger seu capital.`;
-        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
         if (dom.container) domHelper.addClass(dom.container, 'hidden');
         domHelper.removeClass(dom.lockdownOverlay, 'hidden');
         const safeInterval = window.safeProtection?.safeSetInterval || setInterval;
@@ -1878,7 +1939,7 @@ const ui = {
                 clearInterval(state.countdownInterval);
                 localStorage.removeItem('gerenciadorProLockdownEnd');
                 localStorage.removeItem('gerenciadorProLockdownType'); // Limpar o tipo também
-                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                 if (dom.lockdownOverlay) domHelper.addClass(dom.lockdownOverlay, 'hidden');
                 if (dom.container) domHelper.removeClass(dom.container, 'hidden');
                 return;
@@ -1897,15 +1958,15 @@ const ui = {
         }, 1000);
     },
 
-    mostrarInsightPopup(texto, icone = '💡') {
+    mostrarInsightPopup(texto, icone = 'ðŸ’¡') {
         if (!config.notificacoesAtivas || !dom.insightPopup) return;
         clearTimeout(state.insightPopupTimer);
         if (dom.insightPopupText) dom.insightPopupText.textContent = `${icone} ${texto}`;
-        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
         domHelper.addClass(dom.insightPopup, 'show');
         const safeTimeout = window.safeProtection?.safeSetTimeout || setTimeout;
         state.insightPopupTimer = safeTimeout(() => {
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             if (dom.insightPopup) domHelper.removeClass(dom.insightPopup, 'show');
         }, 4000);
     },
@@ -1924,7 +1985,7 @@ const ui = {
             if (!enabled) return;
 
             const isWin = type === 'STOP_WIN';
-            const icon = isWin ? '🏁' : '⛔';
+            const icon = isWin ? 'ðŸ' : 'â›”';
             const msg = isWin ? 'Meta de ganhos atingida' : 'Limite de perda atingido';
 
             this.mostrarInsightPopup(`${msg}${reason ? ` · ${reason}` : ''}`, icon);
@@ -1932,7 +1993,7 @@ const ui = {
             const badge = dom.progressSoftLockBadge;
             if (badge) {
                 badge.textContent = `${icon} ${msg}`;
-                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                 domHelper.removeClass(badge, 'hidden');
                 domHelper.addClass(badge, 'show');
                 // Aplica display inline para sobrepor quaisquer regras herdadas
@@ -1946,7 +2007,7 @@ const ui = {
                 const raf = window.requestAnimationFrame || ((cb) => setTimeout(cb, 16));
                 raf(() => {
                     try {
-                        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                        // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                         domHelper.addClass(badge, 'show');
                     } catch (_) { }
                 });
@@ -1961,7 +2022,7 @@ const ui = {
         config.tema = tema;
         document
             .querySelectorAll('.theme-card')
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             .forEach((card) => domHelper.toggleClass(card, 'active', card.dataset.theme === tema));
         charts.updateColors();
     },
@@ -1979,7 +2040,7 @@ const ui = {
         if (!panel) return;
 
         if (totalOps === 0) {
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             domHelper.addClass(panel, 'hidden');
             return;
         }
@@ -1988,53 +2049,53 @@ const ui = {
         if (ultimas3.length === 3) {
             if (ultimas3.every((op) => !op.isWin)) {
                 panel.className = 'panel insight-panel warning';
-                if (dom.mentalNoteTitle) dom.mentalNoteTitle.textContent = '⚠️ Alerta de Risco';
+                if (dom.mentalNoteTitle) dom.mentalNoteTitle.textContent = 'âš ï¸ Alerta de Risco';
                 if (dom.mentalNoteText)
                     dom.mentalNoteText.textContent =
                         'Sequência de 3 derrotas. Considere uma pausa para reavaliar sua estratégia e as condições do mercado.';
-                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                 domHelper.removeClass(panel, 'hidden');
                 return;
             }
             if (ultimas3.every((op) => op.isWin)) {
                 panel.className = 'panel insight-panel success';
-                if (dom.mentalNoteTitle) dom.mentalNoteTitle.textContent = '🚀 Em Performance';
+                if (dom.mentalNoteTitle) dom.mentalNoteTitle.textContent = 'ðŸš€ Em Performance';
                 if (dom.mentalNoteText)
                     dom.mentalNoteText.textContent =
                         'Sequência de 3 vitórias. Excelente consistência. Mantenha o foco e a disciplina.';
-                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                 domHelper.removeClass(panel, 'hidden');
                 return;
             }
         }
-        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
         domHelper.addClass(panel, 'hidden');
     },
 
     atualizarStatusIndicadores() {
         if (dom.sessionModeIndicator) {
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             domHelper.toggleClass(dom.sessionModeIndicator,
                 'active',
                 state.sessionMode === CONSTANTS.SESSION_MODE.OFFICIAL
             );
             if (dom.sessionModeIcon)
                 dom.sessionModeIcon.textContent =
-                    state.sessionMode === CONSTANTS.SESSION_MODE.OFFICIAL ? '📈' : '🧪';
+                    state.sessionMode === CONSTANTS.SESSION_MODE.OFFICIAL ? 'ðŸ“ˆ' : 'ðŸ§ª';
             const modeTooltip = dom.sessionModeIndicator.querySelector('.tooltip-text');
             if (modeTooltip)
                 modeTooltip.textContent = `Modo da Sessão: ${state.sessionMode === CONSTANTS.SESSION_MODE.OFFICIAL ? 'Oficial' : 'Simulação'}`;
         }
 
         if (dom.guidedModeIndicator)
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             domHelper.toggleClass(dom.guidedModeIndicator, 'active', config.modoGuiado);
         if (dom.compoundingIndicator)
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             domHelper.toggleClass(dom.compoundingIndicator, 'active', config.incorporarLucros);
         const isCiclos = config.estrategiaAtiva === CONSTANTS.STRATEGY.CYCLES;
         if (dom.strategyIndicatorIcon)
-            dom.strategyIndicatorIcon.textContent = isCiclos ? '🔄' : '➖';
+            dom.strategyIndicatorIcon.textContent = isCiclos ? 'ðŸ”„' : 'âž–';
         if (dom.strategyIndicator) {
             const tooltip = dom.strategyIndicator.querySelector('.tooltip-text');
             if (tooltip)
@@ -2054,7 +2115,7 @@ const ui = {
 
     updateSettingsModalVisibility() {
         if (dom.divisorRecuperacaoGroup)
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             domHelper.toggleClass(dom.divisorRecuperacaoGroup,
                 'hidden',
                 config.estrategiaAtiva !== CONSTANTS.STRATEGY.CYCLES
@@ -2074,7 +2135,7 @@ const ui = {
         });
         const sortedTags = Object.entries(diagnostics).sort((a, b) => b[1].ops - a[1].ops);
         if (sortedTags.length === 0) {
-            // 🎨 Resolve CSS variable dinamicamente
+            // ðŸŽ¨ Resolve CSS variable dinamicamente
             const mutedColor =
                 getComputedStyle(document.documentElement)
                     .getPropertyValue('--text-muted')
@@ -2096,7 +2157,7 @@ const ui = {
         });
     },
 
-    // 🔧 Normaliza ID de sessão para formato válido
+    // ðŸ”§ Normaliza ID de sessão para formato válido
     _normalizeSessionId(sessao) {
         if (!sessao || typeof sessao !== 'object') {
             return null;
@@ -2104,16 +2165,16 @@ const ui = {
 
         let validId = null;
 
-        // 🔧 CORREÇÃO CRÍTICA: Aceitar IDs string válidos
+        // ðŸ”§ CORREÃ‡ÃO CRÃTICA: Aceitar IDs string válidos
         if (typeof sessao.id === 'string') {
             const parsed = parseInt(sessao.id, 10);
             if (!isNaN(parsed) && parsed > 0) {
                 validId = parsed;
-                console.log('🔧 ID de sessão convertido:', sessao.id, '->', validId);
+                devLog('ðŸ”§ ID de sessão convertido:', sessao.id, '->', validId);
             } else if (sessao.id.length > 0) {
                 // Se string não é numérica mas não está vazia, aceitar
                 validId = sessao.id;
-                console.log('🔧 ID de sessão mantido como string:', sessao.id);
+                devLog('ðŸ”§ ID de sessão mantido como string:', sessao.id);
             }
         }
         // ID já é número válido
@@ -2123,7 +2184,7 @@ const ui = {
         // Gerar ID baseado em timestamp se não existir
         else if (!sessao.id) {
             validId = Date.now();
-            console.log('🆆 ID de sessão gerado automaticamente:', validId);
+            devLog('ðŸ†† ID de sessão gerado automaticamente:', validId);
         }
 
         if (validId === null) {
@@ -2159,10 +2220,10 @@ const ui = {
             }
             body.innerHTML = '';
             sessoes.forEach((sessao) => {
-                // 🛡️ Validação e normalização robusta de ID de sessão
+                // ðŸ›¡ï¸ Validação e normalização robusta de ID de sessão
                 const normalizedSession = this._normalizeSessionId(sessao);
                 if (!normalizedSession) {
-                    console.warn('📋 Sessão com ID inválido ignorada:', {
+                    console.warn('ðŸ“‹ Sessão com ID inválido ignorada:', {
                         originalId: sessao.id,
                         type: typeof sessao.id,
                         sessionData: { ...sessao, operacoes: '[ARRAY]' },
@@ -2189,7 +2250,7 @@ const ui = {
                         ? sessao.totalOperacoes
                         : historico.length;
 
-                // 🔧 CORREÇÃO CRÍTICA: Recalcular resultadoFinanceiro se inválido
+                // ðŸ”§ CORREÃ‡ÃO CRÃTICA: Recalcular resultadoFinanceiro se inválido
                 let resultadoFinanceiro = sessao.resultadoFinanceiro;
                 if (typeof resultadoFinanceiro !== 'number' || isNaN(resultadoFinanceiro)) {
                     // Recalcular a partir do histórico
@@ -2204,7 +2265,7 @@ const ui = {
                         return acc + v;
                     }, 0);
 
-                    console.warn('🔧 ResultadoFinanceiro recalculado para sessão', sessao.id, ':', {
+                    console.warn('ðŸ”§ ResultadoFinanceiro recalculado para sessão', sessao.id, ':', {
                         original: sessao.resultadoFinanceiro,
                         recalculado: resultadoFinanceiro,
                         historico: historico.length,
@@ -2220,7 +2281,7 @@ const ui = {
                 const wins = historico.filter((op) => op && op.isWin).length;
                 const assertividade = totalOperacoes > 0 ? (wins / totalOperacoes) * 100 : 0;
 
-                // 🛡️ Formatação segura do resultado financeiro
+                // ðŸ›¡ï¸ Formatação segura do resultado financeiro
                 let resultadoFormatado = 'R$ 0,00';
                 try {
                     resultadoFormatado = this._formatarMoedaInternal(resultadoFinanceiro);
@@ -2248,7 +2309,7 @@ const ui = {
                     <td>
                         <div class="acoes-cell">
                             <button class="details-btn" data-session-id="${sessao.id}">Ver</button>
-                            <button class="delete-btn" data-session-id="${sessao.id}" title="Excluir Sessão">🗑️</button>
+                            <button class="delete-btn" data-session-id="${sessao.id}" title="Excluir Sessão">ðŸ—‘ï¸</button>
                         </div>
                     </td>`;
                 body.appendChild(tr);
@@ -2271,7 +2332,7 @@ const ui = {
             }
             if (dom.replayTitle)
                 dom.replayTitle.textContent = `Replay da Sessão - ${new Date(sessao.data).toLocaleDateString('pt-BR')}`;
-            console.log('🎬 CARREGANDO REPLAY DA SESSÃO:', {
+            devLog('ðŸŽ¬ CARREGANDO REPLAY DA SESSÃO:', {
                 sessionId,
                 historico: sessao.historicoCombinado?.length || 0,
                 resultadoFinanceiro: sessao.resultadoFinanceiro,
@@ -2286,7 +2347,7 @@ const ui = {
             const payoff = calcularPayoffRatio(historico);
             const drawdown = calcularDrawdown(historico, sessao.capitalInicial || 0);
 
-            console.log('📊 ESTATÍSTICAS CALCULADAS:', {
+            devLog('ðŸ“Š ESTATÃSTICAS CALCULADAS:', {
                 wins,
                 totalOps,
                 assertividade: (assertividade * 100).toFixed(1) + '%',
@@ -2301,7 +2362,7 @@ const ui = {
                 <div class="stat-card"><h4>Drawdown Máx.</h4><p class="negative">${this._formatarMoedaInternal(drawdown)}</p></div>`;
             this.renderizarTimelineCompleta(sessao.historicoCombinado, dom.replayTimelineContainer);
             charts.updateReplayCharts(sessao);
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             if (dom.replayModal) domHelper.addClass(dom.replayModal, 'show');
             if (dom.replayModal) {
                 const content = dom.replayModal.querySelector('.modal-content');
@@ -2320,12 +2381,12 @@ const ui = {
         if (!targetTabId) return;
         if (dom.mainTabButtons)
             dom.mainTabButtons.forEach((btn) =>
-                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                 domHelper.toggleClass(btn, 'active', btn.dataset.tab === targetTabId)
             );
         if (dom.mainTabContents)
             dom.mainTabContents.forEach((content) =>
-                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                 domHelper.toggleClass(content, 'active', content.id === `${targetTabId}-content`)
             );
 
@@ -2334,20 +2395,20 @@ const ui = {
 
     switchSettingsTab(targetTabId) {
         if (dom.settingsTabButtons)
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             dom.settingsTabButtons.forEach((b) => domHelper.removeClass(b, 'active'));
         if (dom.settingsTabContents)
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             dom.settingsTabContents.forEach((c) => domHelper.removeClass(c, 'active'));
         const targetTab = document.querySelector(`.settings-tab-button[data-tab="${targetTabId}"]`);
         const targetContent = document.getElementById(`${targetTabId}-content`);
-        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
         if (targetTab) domHelper.addClass(targetTab, 'active');
         if (targetContent) domHelper.addClass(targetContent, 'active');
     },
 
     toggleCompactMode() {
-        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
         document.body && domHelper.toggleClass(document.body, 'compact-mode');
     },
 
@@ -2355,7 +2416,7 @@ const ui = {
         config.zenMode = !config.zenMode;
         localStorage.setItem('gerenciadorProZenMode', JSON.stringify(config.zenMode));
         this.atualizarTudo();
-        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
         dom.zenModeBtn && domHelper.toggleClass(dom.zenModeBtn, 'active', config.zenMode);
     },
 
@@ -2389,7 +2450,7 @@ const ui = {
             const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
             doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
             doc.save(`Relatorio-Trading-${new Date().toISOString().split('T')[0]}.pdf`);
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             if (dom.confirmationModal) domHelper.removeClass(dom.confirmationModal, 'show');
         } catch (error) {
             console.error('Erro ao gerar PDF:', error);
@@ -2403,19 +2464,19 @@ const ui = {
     atualizarVisibilidadeBotoesSessao() {
         const sessionActive = state.isSessionActive;
 
-        console.log('🔄 Atualizando visibilidade dos botões de sessão:', {
+        devLog('ðŸ”„ Atualizando visibilidade dos botões de sessão:', {
             sessionActive,
             newSessionBtn: !!dom.newSessionBtn,
             finishSessionBtn: !!dom.finishSessionBtn,
         });
 
-        // 🛠️ CORREÇÃO ROBUSTA: Força estado correto dos botões
+        // ðŸ› ï¸ CORREÃ‡ÃO ROBUSTA: Força estado correto dos botões
         if (dom.newSessionBtn) {
             // Remove todas as classes primeiro para garantir estado limpo
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             if (dom.newSessionBtn) domHelper.removeClass(dom.newSessionBtn, 'hidden');
             if (sessionActive) {
-                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                 domHelper.addClass(dom.newSessionBtn, 'hidden');
             }
             // Força atualização visual
@@ -2424,10 +2485,10 @@ const ui = {
 
         if (dom.finishSessionBtn) {
             // Remove todas as classes primeiro para garantir estado limpo
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             if (dom.finishSessionBtn) domHelper.removeClass(dom.finishSessionBtn, 'hidden');
             if (!sessionActive) {
-                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                 domHelper.addClass(dom.finishSessionBtn, 'hidden');
             }
             // Força atualização visual
@@ -2443,7 +2504,7 @@ const ui = {
             });
         }
 
-        // 🚀 Força repaint dos botões
+        // ðŸš€ Força repaint dos botões
         if (dom.newSessionBtn) {
             dom.newSessionBtn.offsetHeight; // Trigger reflow
         }
@@ -2451,15 +2512,15 @@ const ui = {
             dom.finishSessionBtn.offsetHeight; // Trigger reflow
         }
 
-        console.log('✅ Botões de sessão atualizados:', {
+        devLog('âœ… Botões de sessão atualizados:', {
             newSessionVisible: dom.newSessionBtn
                 ? dom.newSessionBtn.style.display !== 'none' &&
-                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                 !domHelper.hasClass(dom.newSessionBtn, 'hidden')
                 : 'N/A',
             finishSessionVisible: dom.finishSessionBtn
                 ? dom.finishSessionBtn.style.display !== 'none' &&
-                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                 !domHelper.hasClass(dom.finishSessionBtn, 'hidden')
                 : 'N/A',
         });
@@ -2468,7 +2529,7 @@ const ui = {
         try {
             const sidebarBtn = dom.sidebarNewSessionBtn;
             if (sidebarBtn) {
-                // 🆕 CHECKPOINT 2.2a: Usando domHelper
+                // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
                 domHelper.toggleClass(sidebarBtn, 'hidden', sessionActive);
                 sidebarBtn.style.display = sessionActive ? 'none' : '';
             }
@@ -2494,7 +2555,7 @@ const ui = {
         body.innerHTML = '';
         if (processedData.data.length === 0) {
             body.innerHTML = `<tr><td colspan="5" style="text-align: center;">${processedData.insight}</td></tr>`;
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             domHelper.addClass(insightPanel, 'hidden');
             return;
         }
@@ -2514,12 +2575,12 @@ const ui = {
         });
         insightTitle.textContent = 'Diagnóstico Quantitativo';
         insightText.textContent = processedData.insight;
-        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
         domHelper.removeClass(insightPanel, 'hidden');
         const overallEV = calcularExpectativaMatematica(
             processedData.data.flatMap((d) => d.historico)
         ).ev;
-        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
         domHelper.toggleClass(insightPanel, 'success', overallEV > 0);
         domHelper.toggleClass(insightPanel, 'warning', overallEV < 0);
     },
@@ -2533,7 +2594,7 @@ const ui = {
                 const formatted = this.formatarMoeda(totalSimulatedResult);
                 dom.goalSimResult.textContent = formatted;
             } catch (formatError) {
-                console.error('❌ Erro ao formatar moeda:', formatError);
+                console.error('âŒ Erro ao formatar moeda:', formatError);
                 dom.goalSimResult.textContent = 'R$ 0,00';
             }
         }
@@ -2544,7 +2605,7 @@ const ui = {
         if (dom.goalSimLosses) dom.goalSimLosses.textContent = lossSessions;
 
         if (dom.goalSimulationInsight) dom.goalSimulationInsight.textContent = insight;
-        // 🆕 CHECKPOINT 2.2a: Usando domHelper
+        // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
         if (dom.goalSimulationResults) domHelper.removeClass(dom.goalSimulationResults, 'hidden');
     },
 
@@ -2554,17 +2615,17 @@ const ui = {
      * Chamada a partir de atualizarTudo() para sincronização completa
      */
     updateProgressChartsUI() {
-        console.log('📈 UI: Atualizando gráficos de progresso...');
+        devLog('ðŸ“ˆ UI: Atualizando gráficos de progresso...');
         const startTime = performance.now();
 
         try {
-            // 🎯 Define metas (em versões futuras podem ser configuráveis)
+            // ðŸŽ¯ Define metas (em versões futuras podem ser configuráveis)
             const targetRates = {
                 winTarget: 60, // Meta de 60% de assertividade
                 lossTarget: 40, // Limite de 40% de loss
             };
 
-            // 🚀 Usa a NOVA função com verificações robustas
+            // ðŸš€ Usa a NOVA função com verificações robustas
             let historyToUse = [];
             if (state.isSessionActive && Array.isArray(state.historicoCombinado)) {
                 historyToUse = state.historicoCombinado;
@@ -2573,28 +2634,28 @@ const ui = {
             // Atualiza gráficos com dados atuais usando nova implementação
             const success = charts.updateProgressChart(historyToUse);
 
-            // 🚫 DESABILITADO: Reinicialização automática removida para evitar gráficos duplicados
+            // ðŸš« DESABILITADO: Reinicialização automática removida para evitar gráficos duplicados
             /*
             if (!success) {
-                console.warn('⚠️ UI: Falha ao atualizar progresso, tentando reinicializar...');
+                console.warn('âš ï¸ UI: Falha ao atualizar progresso, tentando reinicializar...');
                 charts.initProgressChart();
                 charts.updateProgressChart(historyToUse);
             }
             */
 
-            // 📊 Atualiza informação da sessão via logic
+            // ðŸ“Š Atualiza informação da sessão via logic
             if (logic.updateProgressSessionInfo) {
                 logic.updateProgressSessionInfo();
             }
 
             const endTime = performance.now();
-            console.log(
-                `✅ UI: Gráficos de progresso atualizados em ${(endTime - startTime).toFixed(2)}ms`
+            devLog(
+                `âœ… UI: Gráficos de progresso atualizados em ${(endTime - startTime).toFixed(2)}ms`
             );
         } catch (error) {
-            console.error('❌ UI: Erro na atualização dos gráficos de progresso:', error);
+            console.error('âŒ UI: Erro na atualização dos gráficos de progresso:', error);
             const endTime = performance.now();
-            console.log(`⚡ UI: Falha nos gráficos após ${(endTime - startTime).toFixed(2)}ms`);
+            devLog(`âš¡ UI: Falha nos gráficos após ${(endTime - startTime).toFixed(2)}ms`);
         }
     },
 
@@ -2697,7 +2758,7 @@ const ui = {
     mostrarConfiguracoes() {
         if (dom.settingsModal) {
             this.updateSettingsModalVisibility();
-            // 🆕 CHECKPOINT 2.2a: Usando domHelper
+            // ðŸ†• CHECKPOINT 2.2a: Usando domHelper
             domHelper.addClass(dom.settingsModal, 'show');
         }
     },
@@ -2714,17 +2775,17 @@ const ui = {
     },
 
     /**
-     * 🔄 Renderiza histórico de sessões
+     * ðŸ”„ Renderiza histórico de sessões
      * Alias de compatibilidade para SessionsTrashHandler
      * Atualiza toda a UI quando uma sessão é restaurada
      */
     renderizarHistorico() {
-        console.log('🔄 Renderizando histórico de sessões...');
+        devLog('ðŸ”„ Renderizando histórico de sessões...');
 
         try {
             // Atualiza tabela
             if (this.renderizarTabela) {
-                this.renderizarTabela();
+                this.requestRenderTabela('UI._atualizarTudoInterno');
             }
 
             // Atualiza dashboard
@@ -2742,9 +2803,9 @@ const ui = {
                 this.atualizarTudo();
             }
 
-            console.log('✅ Histórico renderizado com sucesso');
+            devLog('âœ… Histórico renderizado com sucesso');
         } catch (error) {
-            console.error('❌ Erro ao renderizar histórico:', error);
+            console.error('âŒ Erro ao renderizar histórico:', error);
         }
     },
 
@@ -2770,7 +2831,7 @@ const ui = {
         // Persiste preferência
         localStorage.setItem('ui.compactMode', isCompact ? '1' : '0');
 
-        console.log(`🗜️ Compact Mode: ${isCompact ? 'ATIVO' : 'INATIVO'}`);
+        devLog(`🗜️ Compact Mode: ${isCompact ? 'ATIVO' : 'INATIVO'}`);
     },
 
     /**
@@ -2793,7 +2854,7 @@ const ui = {
         // Atualiza config para uso em outras partes do código
         config.zenMode = isZen;
 
-        console.log(`🧘 Zen Mode: ${isZen ? 'ATIVO' : 'INATIVO'}`);
+        devLog(`🧘 Zen Mode: ${isZen ? 'ATIVO' : 'INATIVO'}`);
     },
 
     /**
@@ -2820,7 +2881,7 @@ const ui = {
             config.zenMode = true;
         }
 
-        console.log('🎨 Preferências de UI aplicadas');
+        devLog('🎨 Preferências de UI aplicadas');
     },
 };
 
@@ -2829,7 +2890,7 @@ const ui = {
  * Testa todas as funcionalidades principais da UI
  */
 function testUIComponents() {
-    console.log('🧪 Testando componentes UI...');
+    devLog('ðŸ§ª Testando componentes UI...');
 
     const startTime = performance.now();
     const results = {
@@ -2843,17 +2904,17 @@ function testUIComponents() {
 
     try {
         // 1. Teste de renderização de tabela
-        console.log('📊 Testando renderização de tabela...');
+        devLog('ðŸ“Š Testando renderização de tabela...');
         try {
             ui.renderizarTabela();
             results.renderTable = true;
-            console.log('✅ Renderização de tabela: OK');
+            devLog('âœ… Renderização de tabela: OK');
         } catch (error) {
-            console.warn('⚠️ Renderização de tabela:', error.message);
+            console.warn('âš ï¸ Renderização de tabela:', error.message);
         }
 
         // 2. Teste de timeline
-        console.log('⏱️ Testando renderização de timeline...');
+        devLog('â±ï¸ Testando renderização de timeline...');
         try {
             const mockHistory = [
                 { isWin: true, valor: 100, timestamp: '10:00:00', tag: 'Teste' },
@@ -2861,37 +2922,37 @@ function testUIComponents() {
             ];
             ui.renderizarTimeline(mockHistory);
             results.renderTimeline = true;
-            console.log('✅ Timeline: OK');
+            devLog('âœ… Timeline: OK');
         } catch (error) {
-            console.warn('⚠️ Timeline:', error.message);
+            console.warn('âš ï¸ Timeline:', error.message);
         }
 
         // 3. Teste de atualização de charts
-        console.log('📈 Testando atualização de charts...');
+        devLog('ðŸ“ˆ Testando atualização de charts...');
         try {
             ui.updateProgressChartsUI();
             results.updateCharts = true;
-            console.log('✅ Charts: OK');
+            devLog('âœ… Charts: OK');
         } catch (error) {
-            console.warn('⚠️ Charts:', error.message);
+            console.warn('âš ï¸ Charts:', error.message);
         }
 
         // 4. Teste de formatação de moeda
-        console.log('💰 Testando formatação de moeda...');
+        devLog('ðŸ’° Testando formatação de moeda...');
         try {
             const formatted1 = ui.formatarMoeda(1234.56);
             const formatted2 = ui.formatarMoeda(-789.12);
 
             if (formatted1 && formatted2) {
                 results.formatCurrency = true;
-                console.log('✅ Formatação:', formatted1, formatted2);
+                devLog('âœ… Formatação:', formatted1, formatted2);
             }
         } catch (error) {
-            console.warn('⚠️ Formatação de moeda:', error.message);
+            console.warn('âš ï¸ Formatação de moeda:', error.message);
         }
 
         // 5. Teste de debounce
-        console.log('⏱️ Testando função debounce...');
+        devLog('â±ï¸ Testando função debounce...');
         try {
             let counter = 0;
             const debouncedFn = ui.debounce(() => counter++, 50);
@@ -2904,13 +2965,13 @@ function testUIComponents() {
             safeTimeout(() => {
                 if (counter === 1) {
                     results.debounce = true;
-                    console.log('✅ Debounce: OK');
+                    devLog('âœ… Debounce: OK');
                 } else {
-                    console.warn('⚠️ Debounce: falhou, counter =', counter);
+                    console.warn('âš ï¸ Debounce: falhou, counter =', counter);
                 }
             }, 100);
         } catch (error) {
-            console.warn('⚠️ Debounce:', error.message);
+            console.warn('âš ï¸ Debounce:', error.message);
         }
 
         // Resultado geral
@@ -2918,17 +2979,17 @@ function testUIComponents() {
         results.overall = successCount >= 3; // Pelo menos 3 de 5 testes
 
         const endTime = performance.now();
-        console.log(`⏱️ Testes UI executados em ${(endTime - startTime).toFixed(2)}ms`);
+        devLog(`â±ï¸ Testes UI executados em ${(endTime - startTime).toFixed(2)}ms`);
 
         if (results.overall) {
-            console.log('✅ UI COMPONENTS: Funcionando corretamente!');
+            devLog('âœ… UI COMPONENTS: Funcionando corretamente!');
         } else {
-            console.warn('⚠️ UI COMPONENTS: Alguns problemas encontrados');
+            console.warn('âš ï¸ UI COMPONENTS: Alguns problemas encontrados');
         }
 
         return results;
     } catch (error) {
-        console.error('❌ Erro crítico nos testes UI:', error);
+        console.error('âŒ Erro crítico nos testes UI:', error);
         return { ...results, overall: false };
     }
 }
@@ -2936,7 +2997,8 @@ function testUIComponents() {
 // Exposição global
 if (typeof window !== 'undefined') {
     window.testUIComponents = testUIComponents;
-    console.log('🧪 testUIComponents() disponível globalmente');
+    devLog('ðŸ§ª testUIComponents() disponível globalmente');
 }
 
 export { ui, testUIComponents };
+

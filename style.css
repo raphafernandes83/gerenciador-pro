@@ -14,12 +14,12 @@
 }
 
 /* ===== FASE 2: MELHORIAS DOS PONTOS PERCENTUAIS ===== */
-/* TransiÃƒÂ§ÃƒÂµes suaves para mudanÃƒÂ§as de cor */
+/* TransiÃÂ§ÃÂµes suaves para mudanÃÂ§as de cor */
 .color-transition {
     transition: all 0.3s ease-in-out;
 }
 
-/* AnimaÃƒÂ§ÃƒÂ£o de pulse para mudanÃƒÂ§as significativas */
+/* AnimaÃÂ§ÃÂ£o de pulse para mudanÃÂ§as significativas */
 @keyframes pulse {
     0% {
         transform: scale(1);
@@ -34,7 +34,7 @@
     }
 }
 
-/* Melhorias nos trend badges - CORRIGIDO para consistÃƒÂªncia */
+/* Melhorias nos trend badges - CORRIGIDO para consistÃªncia */
 .trend-badge {
     transition: all 0.3s ease-in-out;
     font-weight: 600;
@@ -45,7 +45,7 @@
     display: inline-block;
 }
 
-/* CORREÃƒâ€¡ÃƒÆ’O: Trend badges sempre seguem a direÃƒÂ§ÃƒÂ£o da seta */
+/* CORREÃ"¡ÃÆ’O: Trend badges sempre seguem a direÃÂ§ÃÂ£o da seta */
 .trend-badge.trend-up {
     background: rgba(5, 150, 105, 0.15) !important;
     color: var(--card-accent-positive, #059669) !important;
@@ -58,7 +58,7 @@
     border: 1px solid rgba(220, 38, 38, 0.2);
 }
 
-/* CORREÃƒâ€¡ÃƒÆ’O: ForÃƒÂ§a consistÃƒÂªncia independente do contexto */
+/* CORREÃ"¡ÃÆ’O: ForÃÂ§a consistÃªncia independente do contexto */
 .trend-badge[data-trend="positive"] {
     background: rgba(5, 150, 105, 0.15) !important;
     color: var(--card-accent-positive, #059669) !important;
@@ -83,9 +83,9 @@
     font-weight: 600;
 }
 
-/* ===== FASE 3: VALORES MONETÃƒÂRIOS AVANÃƒâ€¡ADOS ===== */
+/* ===== FASE 3: VALORES MONETÃÂRIOS AVANÃ"¡ADOS ===== */
 
-/* CORREÃƒâ€¡ÃƒÆ’O: Melhor contraste para texto central do grÃƒÂ¡fico */
+/* CORREÃ"¡ÃÆ’O: Melhor contraste para texto central do grÃÂ¡fico */
 .chart-center-text {
     color: #ffffff !important;
     font-weight: 700 !important;
@@ -100,7 +100,7 @@
     font-size: 0.9em !important;
 }
 
-/* FormataÃƒÂ§ÃƒÂ£o monetÃƒÂ¡ria base */
+/* FormataÃÂ§ÃÂ£o monetÃÂ¡ria base */
 .monetary-value {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-variant-numeric: tabular-nums;
@@ -108,7 +108,7 @@
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Estilos de formataÃƒÂ§ÃƒÂ£o */
+/* Estilos de formataÃÂ§ÃÂ£o */
 .format-compact {
     font-weight: 600;
     font-size: 0.95em;
@@ -129,7 +129,7 @@
     font-size: 1em;
 }
 
-/* Magnitudes monetÃƒÂ¡rias */
+/* Magnitudes monetÃÂ¡rias */
 .magnitude-small {
     font-size: 0.9em;
     opacity: 0.9;
@@ -164,7 +164,7 @@
     opacity: 0.6;
 }
 
-/* Status da meta - CORRIGIDO para consistÃƒÂªncia */
+/* Status da meta - CORRIGIDO para consistÃªncia */
 .status-progress {
     color: var(--card-info, #0ea5e9) !important;
 }
@@ -180,12 +180,12 @@
     font-weight: 700;
 }
 
-/* CORREÃƒâ€¡ÃƒÆ’O CRÃƒÂTICA: Progresso da Meta - FORÃƒâ€¡A cor baseada no valor */
+/* CORREÃ"¡ÃÆ’O CRÃÂTICA: Progresso da Meta - FORÃ"¡A cor baseada no valor */
 #meta-progress-value {
     transition: color 0.3s ease-in-out;
 }
 
-/* FORÃƒâ€¡A progresso zero = cor neutra (MÃƒÂXIMA PRIORIDADE) */
+/* FORÃ"¡A progresso zero = cor neutra (MÃÂXIMA PRIORIDADE) */
 #meta-progress-value.text-neutral,
 #meta-progress-value[data-progress="0"],
 #meta-progress-value:contains("0.0%") {
@@ -208,7 +208,7 @@
     font-weight: 600 !important;
 }
 
-/* FORÃƒâ€¡A ABSOLUTA: Qualquer elemento com texto "0.0%" deve ser cinza */
+/* FORÃ"¡A ABSOLUTA: Qualquer elemento com texto "0.0%" deve ser cinza */
 *[id*="progress"]:contains("0.0%") {
     color: #6b7280 !important;
 }
@@ -229,7 +229,7 @@
     font-weight: 700;
 }
 
-/* AnimaÃƒÂ§ÃƒÂµes monetÃƒÂ¡rias */
+/* AnimaÃÂ§ÃÂµes monetÃÂ¡rias */
 @keyframes monetary-pulse {
     0% {
         transform: scale(1);
@@ -292,7 +292,7 @@
     animation: extreme-value-glow 1.5s ease-in-out infinite;
 }
 
-/* AnimaÃƒÂ§ÃƒÂµes de trend */
+/* AnimaÃÂ§ÃÂµes de trend */
 @keyframes trend-up-flash {
     0% {
         background-color: transparent;
@@ -331,7 +331,7 @@
     border-radius: 4px;
 }
 
-/* Risco crÃƒÂ­tico */
+/* Risco crÃÂ­tico */
 @keyframes critical-risk-pulse {
     0% {
         background-color: rgba(220, 38, 38, 0.1);
@@ -399,7 +399,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsividade para valores monetÃƒÂ¡rios */
+/* Responsividade para valores monetÃÂ¡rios */
 @media (max-width: 768px) {
     .format-compact {
         font-size: 0.9em;
@@ -435,7 +435,7 @@
     position: relative;
 }
 
-/* Guia central posicionada via JS para passar pelo centro do grÃƒÂ¡fico */
+/* Guia central posicionada via JS para passar pelo centro do grÃÂ¡fico */
 #alignment-guide {
     position: absolute;
     top: 0;
@@ -463,9 +463,11 @@
 
 .preview-grid {
     display: grid;
-    grid-template-columns: 1fr 12px 1.3fr;
+    /* FIX: Coluna direita usa minmax para acomodar valores maiores */
+    grid-template-columns: 1fr 12px minmax(180px, 1.5fr);
     gap: 20px;
     align-items: stretch;
+    overflow: visible;
 }
 
 .preview-left {
@@ -490,7 +492,7 @@
     opacity: .8;
 }
 
-/* CentralizaÃƒÂ§ÃƒÂ£o da legenda sob o donut (somente no preview) */
+/* CentralizaÃÂ§ÃÂ£o da legenda sob o donut (somente no preview) */
 .kpi-donut .legend {
     display: flex;
     align-items: center;
@@ -534,6 +536,10 @@
     white-space: nowrap;
     text-align: right;
     color: var(--card-text-primary, var(--text-color));
+    /* TAREFA 27: tabular-nums e min-width para prevenir layout shift */
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+    min-width: 10ch;
 }
 
 .trend-badge {
@@ -617,12 +623,12 @@
     color: var(--primary-color, #10b981) !important;
 }
 
-/* CORREÃƒâ€¡ÃƒÆ’O: text-negative NÃƒÆ’O deve afetar meta-progress-value */
+/* CORREÃ"¡ÃÆ’O: text-negative NÃÆ’O deve afetar meta-progress-value */
 .text-negative:not(#meta-progress-value) {
     color: var(--secondary-color, #fca5a5) !important;
 }
 
-/* FORÃƒâ€¡A ESPECÃƒÂFICA: meta-progress-value sempre cinza */
+/* FORÃ"¡A ESPECÃÂFICA: meta-progress-value sempre cinza */
 #meta-progress-value,
 #meta-progress-value.text-negative,
 #meta-progress-value.text-positive,
@@ -633,10 +639,10 @@
     font-weight: 500 !important;
 }
 
-/* CORREÃƒâ€¡ÃƒÆ’O: Cores especÃƒÂ­ficas para valores monetÃƒÂ¡rios */
+/* CORREÃ"¡ÃÆ’O: Cores especÃÂ­ficas para valores monetÃÂ¡rios */
 #meta-achieved-amount.text-positive {
     color: #10b981 !important;
-    /* Verde esmeralda mÃƒÂ©dio para valores atingidos positivos */
+    /* Verde esmeralda mÃÂ©dio para valores atingidos positivos */
     font-weight: 600 !important;
 }
 
@@ -653,10 +659,10 @@
     font-weight: 600 !important;
 }
 
-/* Garante que valores monetÃƒÂ¡rios tenham as cores corretas */
+/* Garante que valores monetÃÂ¡rios tenham as cores corretas */
 .metric-value.text-positive {
     color: #10b981 !important;
-    /* Verde esmeralda mÃƒÂ©dio */
+    /* Verde esmeralda mÃÂ©dio */
 }
 
 .metric-value.text-negative {
@@ -669,10 +675,10 @@
     /* Cinza */
 }
 
-/* CORREÃƒâ€¡ÃƒÆ’O PROFISSIONAL: Cores especÃƒÂ­ficas por elemento */
+/* CORREÃ"¡ÃÆ’O PROFISSIONAL: Cores especÃÂ­ficas por elemento */
 #win-current-value.text-positive {
     color: #10b981 !important;
-    /* WR Atual > 0 = VERDE esmeralda mÃƒÂ©dio */
+    /* WR Atual > 0 = VERDE esmeralda mÃÂ©dio */
     font-weight: 600 !important;
 }
 
@@ -694,17 +700,17 @@
     font-weight: 500 !important;
 }
 
-/* FORÃƒâ€¡A limite sempre negativo e vermelho */
+/* FORÃ"¡A limite sempre negativo e vermelho */
 #loss-limit-amount {
     color: #fca5a5 !important;
     /* Sempre VERMELHO */
     font-weight: 600 !important;
 }
 
-/* Remove pontos percentuais visuais desnecessÃƒÂ¡rios */
+/* Remove pontos percentuais visuais desnecessÃÂ¡rios */
 .trend-badge {
     display: none !important;
-    /* Oculta badges de tendÃƒÂªncia */
+    /* Oculta badges de tendÃªncia */
 }
 
 .preview-modal {
@@ -721,7 +727,7 @@
 }
 
 /* ============================================= */
-/* TEMAS E VARIÃƒÂVEIS DE COR                      */
+/* TEMAS E VARIÃÂVEIS DE COR                      */
 /* ============================================= */
 :root {
     --shadow-sm: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
@@ -791,8 +797,8 @@ body[data-theme='daltonismo'] {
 }
 
 body[data-theme='custom'] {
-    /* As cores personalizadas serÃƒÂ£o aplicadas via JavaScript */
-    /* Este seletor ÃƒÂ© usado apenas para identificar o tema customizado */
+    /* As cores personalizadas serÃÂ£o aplicadas via JavaScript */
+    /* Este seletor ÃÂ© usado apenas para identificar o tema customizado */
     color: inherit;
 }
 
@@ -803,11 +809,11 @@ body {
     --info-color: var(--default-info-color);
     /* Cores suaves para resultados (positivos/negativos) - PROFISSIONAIS */
     --result-positive-color: #86efac;
-    /* verde claro, nÃƒÂ£o agressivo */
+    /* verde claro, nÃÂ£o agressivo */
     --result-negative-color: #fca5a5;
-    /* vermelho claro, nÃƒÂ£o agressivo */
+    /* vermelho claro, nÃÂ£o agressivo */
     --success-color: #10b981;
-    /* Verde esmeralda mÃƒÂ©dio vibrante para valores positivos */
+    /* Verde esmeralda mÃÂ©dio vibrante para valores positivos */
     --danger-color: #fca5a5;
     /* Vermelho profissional para valores negativos */
 }
@@ -823,6 +829,8 @@ body {
 
 html {
     scroll-behavior: smooth;
+    /* TAREFA 27: Previne layout shift quando scrollbar aparece/desaparece */
+    scrollbar-gutter: stable;
 }
 
 body {
@@ -849,7 +857,9 @@ body {
     /* um pouco mais quadrado */
     padding: 0;
     box-shadow: var(--shadow-lg);
-    overflow: hidden;
+    /* TAREFA 25: Split overflow para evitar corte vertical no Progress Card */
+    overflow-x: hidden;
+    overflow-y: auto;
     transition: filter 0.3s ease-in-out;
 }
 
@@ -1059,7 +1069,7 @@ body {
 }
 
 /* ============================================= */
-/* Ã°Å¸Å¡â‚¬ PROGRESSO DAS METAS - RECONSTRUÃƒÂDO        */
+/* Ã°Å¸Å¡â‚¬ PROGRESSO DAS METAS - RECONSTRUÃÂDO        */
 /* ============================================= */
 
 /**
@@ -1069,38 +1079,40 @@ body {
 .progress-metas-panel {
     margin-top: 1.5rem;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
+    /* TAREFA 25: Largura minima para acomodar valores monetarios maiores */
+    min-width: 650px;
 }
 
-/* Escala tipogrÃƒÂ¡fica do card em pixels (equivalente a 105%) */
+/* Escala tipogrÃÂ¡fica do card em pixels (equivalente a 105%) */
 #progress-metas-panel {
     font-size: 16.8px !important;
     line-height: 1.35;
 }
 
-/* Sistema tipogrÃƒÂ¡fico e de cores do card (padrÃƒÂ£o profissional corporativo) */
+/* Sistema tipogrÃÂ¡fico e de cores do card (padrÃÂ£o profissional corporativo) */
 #progress-metas-panel {
     --card-font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, 'Helvetica Neue', Arial, sans-serif;
 
     /* Ã°Å¸Å½Â¨ ESQUEMA DE CORES PROFISSIONAL CORPORATIVO */
     --card-text-primary: #f1f5f9;
-    /* Branco suave elegante para tÃƒÂ­tulos principais */
+    /* Branco suave elegante para tÃÂ­tulos principais */
     --card-text-secondary: #94a3b8;
-    /* Cinza mÃƒÂ©dio para labels secundÃƒÂ¡rios */
+    /* Cinza mÃÂ©dio para labels secundÃÂ¡rios */
     --card-text-muted: #64748b;
     /* Cinza mais escuro para texto auxiliar */
     --card-text-subtle: #475569;
-    /* Cinza discreto para informaÃƒÂ§ÃƒÂµes menos importantes */
+    /* Cinza discreto para informaÃÂ§ÃÂµes menos importantes */
 
-    /* Valores numÃƒÂ©ricos com tons mais profissionais e menos agressivos */
+    /* Valores numÃÂ©ricos com tons mais profissionais e menos agressivos */
     --card-accent-positive: #10b981;
-    /* Verde esmeralda mÃƒÂ©dio vibrante */
+    /* Verde esmeralda mÃÂ©dio vibrante */
     --card-accent-negative: #fca5a5;
     /* Vermelho corporativo discreto */
     --card-accent-amber: #d97706;
-    /* Ãƒâ€šmbar mantido para consistÃƒÂªncia */
+    /* Ã"šmbar mantido para consistÃªncia */
     --card-accent-neutral: #6b7280;
-    /* Cinza neutro para valores sem conotaÃƒÂ§ÃƒÂ£o */
+    /* Cinza neutro para valores sem conotaÃÂ§ÃÂ£o */
     --card-info: #0ea5e9;
     /* Azul info profissional */
 
@@ -1108,7 +1120,7 @@ body {
     --card-divider-color: var(--border-color);
     --card-background-subtle: rgba(255, 255, 255, 0.02);
 
-    /* Sobrescreve cores base apenas dentro do card para consistÃƒÂªncia */
+    /* Sobrescreve cores base apenas dentro do card para consistÃªncia */
     --primary-color: #10b981;
     --secondary-color: #fca5a5;
     --accent-color: #d97706;
@@ -1122,19 +1134,19 @@ body {
     font-family: var(--card-font-family);
 }
 
-/* Bloco de mÃƒÂ©tricas (direita) em pixels (equivalente a 111% sobre 105%) */
+/* Bloco de metricas (direita) em pixels - TAREFA 25: reduzido para evitar estouro */
 #progress-metas-panel .preview-metrics {
-    font-size: 18.65px !important;
+    font-size: 15px !important;
     line-height: 1.35;
 }
 
-/* Itens/labels/valores do bloco de mÃƒÂ©tricas (direita) em pixels (Ã¢â€°Ë†1.11em) */
+/* Itens/labels/valores do bloco de metricas - TAREFA 25: reduzido de 20.71px para 16px */
 #progress-metas-panel .preview-metrics .metric-list,
 #progress-metas-panel .preview-metrics .metric-row,
 #progress-metas-panel .preview-metrics .metric-label,
 #progress-metas-panel .preview-metrics .metric-value,
 #progress-metas-panel .preview-metrics .section-title {
-    font-size: 20.71px !important;
+    font-size: 16px !important;
     line-height: 1.35;
 }
 
@@ -1155,7 +1167,7 @@ body {
     font-weight: 600;
 }
 
-/* Valores com semÃƒÂ¢ntica de resultado - cores mais sutis e profissionais - MÃƒÂXIMA PRIORIDADE */
+/* Valores com semÃÂ¢ntica de resultado - cores mais sutis e profissionais - MÃÂXIMA PRIORIDADE */
 #progress-metas-panel .preview-metrics .metric-value.text-positive,
 #progress-metas-panel .metric-value.text-positive,
 #progress-metas-panel .text-positive {
@@ -1178,7 +1190,7 @@ body {
     font-weight: 600;
 }
 
-/* Ajustes especÃƒÂ­ficos para elementos text-muted dentro do card */
+/* Ajustes especÃÂ­ficos para elementos text-muted dentro do card */
 #progress-metas-panel .text-muted {
     color: var(--card-text-muted) !important;
     font-weight: 500;
@@ -1190,7 +1202,7 @@ body {
     font-weight: 500;
 }
 
-/* TÃƒÂ­tulo principal do card com estilo corporativo */
+/* TÃÂ­tulo principal do card com estilo corporativo */
 #progress-metas-panel .panel-header h2 {
     color: var(--card-text-primary) !important;
     font-weight: 600;
@@ -1198,7 +1210,7 @@ body {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* FORÃƒâ€¡AR REMOÃƒâ€¡ÃƒÆ’O DE GRADIENTES DOS VALORES - MÃƒÂXIMA PRIORIDADE */
+/* FORÃ"¡AR REMOÃ"¡ÃÆ’O DE GRADIENTES DOS VALORES - MÃÂXIMA PRIORIDADE */
 #progress-metas-panel .metric-value,
 #progress-metas-panel .preview-metrics .metric-value {
     background: none !important;
@@ -1243,7 +1255,7 @@ body {
     margin-top: 0.5rem;
 }
 
-/* Remover o subtÃƒÂ­tulo "Meta Win/Loss vs. Realizado" conforme solicitado */
+/* Remover o subtÃÂ­tulo "Meta Win/Loss vs. Realizado" conforme solicitado */
 .progress-metas-subtitle {
     display: none;
 }
@@ -1259,21 +1271,21 @@ body {
 }
 
 /**
- * Ã°Å¸â€œÅ  GRID PRINCIPAL DOS GRÃƒÂFICOS
- * Layout flexÃƒÂ­vel que adapta em mobile
+ * Ã°Å¸"Å  GRID PRINCIPAL DOS GRÃÂFICOS
+ * Layout flexÃÂ­vel que adapta em mobile
  */
 .progress-charts-grid {
     display: grid;
-    grid-template-columns: 1.35fr 12px 1.5fr;
-    /* aumenta a coluna esquerda para ficar proporcional */
+    /* Layout proporcional: pizza esquerda, separador, metricas direita */
+    grid-template-columns: 1fr 12px 2fr;
     gap: 20px;
     margin-top: 1.5rem;
     align-items: stretch;
 }
 
 /**
- * SeÃƒÂ§ÃƒÂ£o individual de cada grÃƒÂ¡fico
- * Distribui espaÃƒÂ§o igualmente entre pizza e barras
+ * SeÃÂ§ÃÂ£o individual de cada grÃÂ¡fico
+ * Distribui espaÃÂ§o igualmente entre pizza e barras
  */
 .chart-section {
     flex: 1;
@@ -1292,7 +1304,7 @@ body {
 }
 
 /**
- * Wrapper do grÃƒÂ¡fico de pizza com informaÃƒÂ§ÃƒÂ£o central
+ * Wrapper do grÃÂ¡fico de pizza com informaÃÂ§ÃÂ£o central
  * Posicionamento relativo para sobrepor texto no centro
  */
 .chart-wrapper {
@@ -1303,7 +1315,7 @@ body {
 }
 
 /**
- * InformaÃƒÂ§ÃƒÂ£o centralizada no grÃƒÂ¡fico de rosca
+ * InformaÃÂ§ÃÂ£o centralizada no grÃÂ¡fico de rosca
  * Posicionamento absoluto para ficar no centro exato
  */
 .chart-center-info {
@@ -1331,7 +1343,7 @@ body {
 
 /**
  * Container das barras de progresso horizontais
- * EspaÃƒÂ§amento vertical entre as barras
+ * EspaÃÂ§amento vertical entre as barras
  */
 .progress-bars-container {
     width: 100%;
@@ -1343,7 +1355,7 @@ body {
 
 /**
  * Item individual de barra de progresso
- * ContÃƒÂ©m label, track e valores
+ * ContÃÂ©m label, track e valores
  */
 .progress-bar-item {
     width: 100%;
@@ -1358,7 +1370,7 @@ body {
     font-size: 0.9rem;
 }
 
-/* REMOVIDO: CSS antigo conflitante - novo CSS estÃƒÂ¡ nas linhas 1163+ */
+/* REMOVIDO: CSS antigo conflitante - novo CSS estÃÂ¡ nas linhas 1163+ */
 
 /**
  * Barra de meta (fundo mais claro)
@@ -1401,7 +1413,7 @@ body {
 
 /**
  * Valores meta vs. atual abaixo da barra
- * Alinhamento justificado para mostrar comparaÃƒÂ§ÃƒÂ£o
+ * Alinhamento justificado para mostrar comparaÃÂ§ÃÂ£o
  */
 .progress-bar-values {
     display: flex;
@@ -1445,7 +1457,7 @@ body {
 
 /**
  * Estados dos indicadores baseados na performance
- * Cores e animaÃƒÂ§ÃƒÂµes diferentes para cada estado
+ * Cores e animaÃÂ§ÃÂµes diferentes para cada estado
  */
 .status-indicator.excellent {
     background-color: rgba(0, 230, 118, 0.1);
@@ -1489,7 +1501,7 @@ body {
 }
 
 /**
- * Responsividade para dispositivos mÃƒÂ³veis
+ * Responsividade para dispositivos móveis
  * Stack vertical em telas pequenas
  */
 @media (max-width: 768px) {
@@ -1534,7 +1546,7 @@ h6 {
 }
 
 /* ============================================= */
-/* CABEÃƒâ€¡ALHO E NAVEGAÃƒâ€¡ÃƒÆ’O                         */
+/* CABEÃ"¡ALHO E NAVEGAÃ"¡ÃÆ’O                         */
 /* ============================================= */
 .app-header {
     padding: 1rem 1.5rem;
@@ -1634,7 +1646,7 @@ body.compact-mode #compact-mode-btn {
 }
 
 .tabs+* {
-    /* remove faixa/ÃƒÂ¡rea vazia abaixo das abas */
+    /* remove faixa/ÃÂ¡rea vazia abaixo das abas */
     margin-top: 0 !important;
 }
 
@@ -1781,7 +1793,7 @@ main {
     box-shadow: 0 0 16px -2px var(--info-color);
 }
 
-/* Feedback sutil de validaÃƒÂ§ÃƒÂ£o em inputs numÃƒÂ©ricos */
+/* Feedback sutil de validaÃÂ§ÃÂ£o em inputs numÃÂ©ricos */
 .input-validation-warning {
     outline: 2px solid rgba(255, 193, 7, 0.65);
     transition: outline 0.2s ease-in-out;
@@ -1886,7 +1898,7 @@ input:checked+.slider:before {
     box-shadow: 0 0 15px -2px var(--accent-color);
 }
 
-/* CorreÃƒÂ§ÃƒÂ£o de legibilidade do dropdown nativo (Windows/Chrome) */
+/* CorreÃÂ§ÃÂ£o de legibilidade do dropdown nativo (Windows/Chrome) */
 #estrategia-select option,
 #sidebar-estrategia-select option {
     color: var(--text-dark);
@@ -1894,7 +1906,7 @@ input:checked+.slider:before {
     background-color: #ffffff;
 }
 
-/* EspaÃƒÂ§amento para aÃƒÂ§ÃƒÂµes de sessÃƒÂ£o no modal da sidebar */
+/* EspaÃÂ§amento para aÃÂ§ÃÂµes de sessÃÂ£o no modal da sidebar */
 .session-actions {
     margin-top: 12px;
 }
@@ -2063,7 +2075,7 @@ td[rowspan='2'] {
 }
 
 /* ============================================= */
-/* DASHBOARD & GRÃƒÂFICOS                          */
+/* DASHBOARD & GRÃÂFICOS                          */
 /* ============================================= */
 #performance-panel {
     text-align: center;
@@ -2389,7 +2401,7 @@ td[rowspan='2'] {
     font-weight: 600;
 }
 
-/* DIÃƒÂRIO DE TRADING & FILTROS GLOBAIS */
+/* DIÃÂRIO DE TRADING & FILTROS GLOBAIS */
 .filter-controls {
     display: flex;
     flex-wrap: wrap;
@@ -2452,7 +2464,7 @@ td[rowspan='2'] {
     background-color: var(--info-color);
 }
 
-/* Cores suaves para a coluna Resultado do DiÃƒÂ¡rio */
+/* Cores suaves para a coluna Resultado do DiÃÂ¡rio */
 #tabela-historico-sessoes td.positive,
 .stat-card p.positive {
     color: var(--result-positive-color) !important;
@@ -2464,7 +2476,7 @@ td[rowspan='2'] {
 }
 
 /* ================================ */
-/* SHOWROOM DE ÃƒÂCONES               */
+/* SHOWROOM DE ÃÂCONES               */
 /* ================================ */
 .showroom-controls {
     display: flex;
@@ -2635,7 +2647,7 @@ td[rowspan='2'] {
 }
 
 
-/* Estilos para Testes AutomÃƒÂ¡ticos */
+/* Estilos para Testes AutomÃÂ¡ticos */
 .test-controls {
     display: flex;
     gap: 1rem;
@@ -3014,7 +3026,7 @@ body.compact-mode .container {
 /* REAL-TIME SYNC FEEDBACK */
 /* ============================================= */
 
-/* Feedback de aplicaÃƒÂ§ÃƒÂ£o automÃƒÂ¡tica */
+/* Feedback de aplicaÃÂ§ÃÂ£o automÃÂ¡tica */
 .auto-applied {
     animation: autoApplyPulse 0.8s ease-out;
     border-color: var(--accent-color) !important;
@@ -3035,7 +3047,7 @@ body.compact-mode .container {
     }
 }
 
-/* Feedback de sincronizaÃƒÂ§ÃƒÂ£o */
+/* Feedback de sincronizaÃÂ§ÃÂ£o */
 .sync-success {
     animation: syncSuccess 0.6s ease-out;
 }
@@ -3071,7 +3083,7 @@ body.compact-mode .container {
     }
 }
 
-/* Indicador de sincronizaÃƒÂ§ÃƒÂ£o */
+/* Indicador de sincronizaÃÂ§ÃÂ£o */
 .sync-indicator {
     display: flex;
     align-items: center;
@@ -3104,7 +3116,7 @@ body.compact-mode .container {
     }
 }
 
-/* Estados de loading durante sincronizaÃƒÂ§ÃƒÂ£o */
+/* Estados de loading durante sincronizaÃÂ§ÃÂ£o */
 .syncing {
     opacity: 0.7;
     pointer-events: none;
@@ -3158,7 +3170,7 @@ body.compact-mode .container {
 }
 
 /* ============================================= */
-/* PREMIUM FIELD FOCUS EFFECTS - VERSÃƒÆ’O CORRIGIDA */
+/* PREMIUM FIELD FOCUS EFFECTS - VERSÃÆ’O CORRIGIDA */
 /* ============================================= */
 
 /* Base styles para TODOS os campos focados */
@@ -3175,7 +3187,7 @@ textarea:focus {
     background-color: rgba(76, 175, 80, 0.02);
 }
 
-/* Campos especÃƒÂ­ficos do card principal */
+/* Campos especÃÂ­ficos do card principal */
 #capital-inicial:focus,
 #percentual-entrada:focus,
 #stop-win-perc:focus,
@@ -3186,7 +3198,7 @@ textarea:focus {
     transform: translateY(-1px);
 }
 
-/* Campos especÃƒÂ­ficos do sidebar */
+/* Campos especÃÂ­ficos do sidebar */
 #sidebar-capital-inicial:focus,
 #sidebar-percentual-entrada:focus,
 #sidebar-stop-win-perc:focus,
@@ -3197,7 +3209,7 @@ textarea:focus {
     transform: scale(1.01);
 }
 
-/* Efeito de digitaÃƒÂ§ÃƒÂ£o (quando usuÃƒÂ¡rio estÃƒÂ¡ digitando) */
+/* Efeito de digitaÃÂ§ÃÂ£o (quando usuÃÂ¡rio estÃÂ¡ digitando) */
 .input-group input.typing,
 .input-group select.typing {
     animation: typingPulse 1.5s ease-in-out infinite;
@@ -3215,7 +3227,7 @@ textarea:focus {
     }
 }
 
-/* AdaptaÃƒÂ§ÃƒÂ£o para temas */
+/* AdaptaÃÂ§ÃÂ£o para temas */
 body[data-theme='claro'] .input-group input:focus,
 body[data-theme='claro'] .input-group select:focus {
     border: 2px solid rgba(76, 175, 80, 0.8) !important;
@@ -3267,7 +3279,7 @@ body[data-theme='daltonismo'] .input-group select:focus {
     }
 }
 
-/* Efeito de confirmaÃƒÂ§ÃƒÂ£o ao clicar */
+/* Efeito de confirmaÃÂ§ÃÂ£o ao clicar */
 .payout-clicked {
     animation: payoutClickFeedback 0.3s ease-out;
 }
@@ -3287,7 +3299,7 @@ body[data-theme='daltonismo'] .input-group select:focus {
     }
 }
 
-/* Efeito de sincronizaÃƒÂ§ÃƒÂ£o */
+/* Efeito de sincronizaÃÂ§ÃÂ£o */
 .payout-synced {
     animation: payoutSyncFeedback 0.6s ease-out;
 }
@@ -3319,7 +3331,7 @@ body[data-theme='daltonismo'] .input-group select:focus {
     position: relative;
 }
 
-/* Pulse sutil no botÃƒÂ£o ativo */
+/* Pulse sutil no botÃÂ£o ativo */
 .payout-buttons button.active-payout::after {
     content: '';
     position: absolute;
@@ -3367,13 +3379,13 @@ body[data-theme='daltonismo'] .input-group select:focus {
     letter-spacing: 0.025em;
 }
 
-/* Remover tÃƒÂ­tulo "Metas vs. Performance" conforme solicitado */
+/* Remover tÃÂ­tulo "Metas vs. Performance" conforme solicitado */
 .progress-bars-section .progress-chart-title {
     display: none;
 }
 
 /**
- * Ã°Å¸Â¥Â§ SEÃƒâ€¡ÃƒÆ’O DO GRÃƒÂFICO DE PIZZA
+ * Ã°Å¸Â¥Â§ SEÃ"¡ÃÆ’O DO GRÃÂFICO DE PIZZA
  */
 .progress-pie-section {
     justify-content: flex-start;
@@ -3415,7 +3427,7 @@ body[data-theme='daltonismo'] .input-group select:focus {
 }
 
 /**
- * Ã°Å¸ÂÂ·Ã¯Â¸Â LEGENDA DO GRÃƒÂFICO
+ * Ã°Å¸·Ã¯Â¸Â LEGENDA DO GRÃÂFICO
  */
 .progress-pie-legend {
     display: flex;
@@ -3448,7 +3460,7 @@ body[data-theme='daltonismo'] .input-group select:focus {
 }
 
 /**
- * Ã°Å¸â€œÅ  BARRAS DE PROGRESSO
+ * Ã°Å¸"Å  BARRAS DE PROGRESSO
  */
 .progress-bars-section {
     justify-content: flex-start;
@@ -3457,7 +3469,7 @@ body[data-theme='daltonismo'] .input-group select:focus {
 .progress-bars-grid {
     width: 100%;
     max-width: 460px;
-    /* evita quebras de linha nas mÃƒÂ©tricas */
+    /* evita quebras de linha nas mÃÂ©tricas */
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -3499,7 +3511,7 @@ body[data-theme='daltonismo'] .input-group select:focus {
 }
 
 /**
- * Ã°Å¸â€ºÂ¤Ã¯Â¸Â TRACK DAS BARRAS
+ * Ã°Å¸"ºÂ¤Ã¯Â¸Â TRACK DAS BARRAS
  */
 .progress-bar-track {
     position: relative;
@@ -3575,7 +3587,7 @@ body[data-theme='daltonismo'] .input-group select:focus {
     transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 2;
     min-width: 1px;
-    /* Sempre visÃƒÂ­vel */
+    /* Sempre visÃÂ­vel */
 }
 
 .progress-bar-win {
@@ -3589,7 +3601,7 @@ body[data-theme='daltonismo'] .input-group select:focus {
 }
 
 /**
- * Ã°Å¸â€œË† INFORMAÃƒâ€¡Ãƒâ€¢ES DAS BARRAS
+ * Ã°Å¸"Ë† INFORMAÃ"¡Ã"¢ES DAS BARRAS
  */
 .progress-bar-info {
     display: flex;
@@ -3606,12 +3618,12 @@ body[data-theme='daltonismo'] .input-group select:focus {
     color: var(--text-muted);
 }
 
-/* Mini barras secundÃƒÂ¡rias (meta e risco) */
+/* Mini barras secundÃÂ¡rias (meta e risco) */
 .mini-progress {
     display: none;
 }
 
-/* remover miniÃ¢â‚¬â€˜barra Progresso da Meta/Risco Usado conforme solicitado */
+/* remover miniââ‚¬"˜barra Progresso da Meta/Risco Usado conforme solicitado */
 #meta-progress-track,
 #risk-used-track {
     height: 8px;
@@ -3645,7 +3657,7 @@ body[data-theme='daltonismo'] .input-group select:focus {
     margin-top: 2rem;
 }
 
-/* Remover os dois cartÃƒÂµes de status: "Vamos comeÃƒÂ§ar!" e "Controle total" */
+/* Remover os dois cartÃÂµes de status: "Vamos comeÃÂ§ar!" e "Controle total" */
 #win-status-indicator,
 #loss-status-indicator {
     display: none !important;
@@ -3653,7 +3665,7 @@ body[data-theme='daltonismo'] .input-group select:focus {
 
 
 /**
- * Ã°Å¸â€œÂ± RESPONSIVIDADE
+ * Ã°Å¸"Â± RESPONSIVIDADE
  */
 @media (max-width: 1024px) {
     .progress-charts-grid {
@@ -3714,7 +3726,7 @@ body[data-theme='daltonismo'] .input-group select:focus {
     }
 }
 
-/* ===== CONTADORES DE VITÃƒâ€œRIAS E DERROTAS ===== */
+/* ===== CONTADORES DE VITÃ"RIAS E DERROTAS ===== */
 .win-loss-counters {
     display: flex;
     justify-content: center;
@@ -3775,7 +3787,7 @@ body[data-theme='daltonismo'] .input-group select:focus {
     letter-spacing: 0.025em;
 }
 
-/* AnimaÃƒÂ§ÃƒÂ£o para mudanÃƒÂ§as nos contadores */
+/* AnimaÃÂ§ÃÂ£o para mudanÃÂ§as nos contadores */
 .counter-value.updated {
     animation: counterPulse 0.6s ease-out;
 }
@@ -3795,10 +3807,10 @@ body[data-theme='daltonismo'] .input-group select:focus {
 }
 
 /* ============================================================================
-   PAINEL MINIMIZÃƒÂVEL - ESTILOS CSS
+   PAINEL MINIMIZÃÂVEL - ESTILOS CSS
    ============================================================================ */
 
-/* Header do painel com botÃƒÂ£o de minimizar */
+/* Header do painel com botÃÂ£o de minimizar */
 .panel-header {
     position: relative;
     display: flex;
@@ -3817,7 +3829,7 @@ body[data-theme='daltonismo'] .input-group select:focus {
     color: var(--text-primary, #fff);
 }
 
-/* BotÃƒÂ£o de minimizar */
+/* BotÃÂ£o de minimizar */
 .panel-minimize-btn {
     background: none;
     border: none;
@@ -3844,20 +3856,20 @@ body[data-theme='daltonismo'] .input-group select:focus {
     transform: scale(0.95);
 }
 
-/* ÃƒÂcone do botÃƒÂ£o (Ã¢Å¾â€“/Ã¢Å¾â€¢) */
+/* ÃÂcone do botÃÂ£o (âÅ¾"“/âÅ¾"¢) */
 .minimize-icon {
     font-size: 14px;
     line-height: 1;
     transition: transform 0.3s ease;
 }
 
-/* ConteÃƒÂºdo do painel */
+/* Conteúdo do painel */
 .panel-content {
     overflow: hidden;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     opacity: 1;
     max-height: 1000px;
-    /* Altura mÃƒÂ¡xima para animaÃƒÂ§ÃƒÂ£o suave */
+    /* Altura mÃÂ¡xima para animaÃÂ§ÃÂ£o suave */
 }
 
 /* Estado minimizado */
@@ -3879,7 +3891,7 @@ body[data-theme='daltonismo'] .input-group select:focus {
     transform: rotate(90deg);
 }
 
-/* Feedback visual no botÃƒÂ£o */
+/* Feedback visual no botÃÂ£o */
 .panel-minimize-btn.feedback-active {
     background: var(--accent-color, #007bff);
     color: white;

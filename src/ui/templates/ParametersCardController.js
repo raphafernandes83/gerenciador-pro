@@ -1,6 +1,6 @@
 /**
- * Controller responsÃ¡vel por ligar eventos de input/select/payout
- * e manter sincronizaÃ§Ã£o bidirecional entre o card principal e o da sidebar.
+ * Controller responsável por ligar eventos de input/select/payout
+ * e manter sincronização bidirecional entre o card principal e o da sidebar.
  */
 export class ParametersCardController {
     constructor() {
@@ -23,7 +23,7 @@ export class ParametersCardController {
 
         // Sidebar pronto
         document.addEventListener('sidebarModalReady', () => {
-            // Sidebar â†’ principal apÃ³s aberto
+            // Sidebar â†’ principal após aberto
             this._attachInputMirror('sidebar-capital-inicial', 'capital-inicial');
             this._attachInputMirror('sidebar-percentual-entrada', 'percentual-entrada');
             this._attachInputMirror('sidebar-stop-win-perc', 'stop-win-perc');
@@ -31,7 +31,7 @@ export class ParametersCardController {
             this._attachSelectMirror('sidebar-estrategia-select', 'estrategia-select');
         });
 
-        // Payout sync usando eventos de clique â€“ mantÃ©m compatÃ­vel com PayoutSyncManager
+        // Payout sync usando eventos de clique "“ mantém compatível com PayoutSyncManager
         const forwardPayout = (containerSelector, source) => {
             const container = document.querySelector(containerSelector);
             if (!container) return;
@@ -46,7 +46,7 @@ export class ParametersCardController {
                         }
                         if (window.ui) window.ui.atualizarTudo();
                     } catch (_) { }
-                    // Propaga para o outro container atravÃ©s do manager existente
+                    // Propaga para o outro container através do manager existente
                     try {
                         if (window.realTimeSync && window.realTimeSync.syncPayoutButtons) {
                             await window.realTimeSync.syncPayoutButtons(payout, source);
@@ -61,7 +61,7 @@ export class ParametersCardController {
         forwardPayout('.payout-buttons', 'main');
         document.addEventListener('sidebarModalReady', () => {
             forwardPayout('#sidebar-parameters .payout-buttons', 'sidebar');
-            // ForÃ§a estado visual do payout no clone com base no hidden atual
+            // Força estado visual do payout no clone com base no hidden atual
             const hidden = document.getElementById('payout-ativo');
             const active = hidden ? parseInt(hidden.value) : undefined;
             if (Number.isFinite(active)) {
@@ -86,26 +86,26 @@ export class ParametersCardController {
         const source = document.getElementById(sourceId);
         if (!source) return;
         source.addEventListener('input', (e) => {
-            // Impede interferÃªncia de outros handlers sem bloquear a digitaÃ§Ã£o nativa
+            // Impede interferência de outros handlers sem bloquear a digitação nativa
             e.stopPropagation();
             const target = document.getElementById(targetId);
             if (!target) return;
             if (target.value !== e.target.value) target.value = e.target.value;
-            // Enter confirma alteraÃ§Ã£o
+            // Enter confirma alteração
             source.addEventListener('keydown', (ke) => {
                 if (ke.key === 'Enter') {
                     source.blur();
                 }
             }, { once: true });
         });
-        // Propaga change para que lÃ³gica existente reaja
+        // Propaga change para que lógica existente reaja
         const commit = (e) => {
             try {
-                // SanitizaÃ§Ã£o agressiva: mantÃ©m apenas dÃ­gitos e um separador decimal
+                // Sanitização agressiva: mantém apenas dígitos e um separador decimal
                 let raw = String(e.target.value).trim();
                 raw = raw.replace(/\s+/g, '');
                 raw = raw.replace(/,/g, '.');
-                raw = raw.replace(/(?!^)[^.]/g, (m) => (/[0-9]/.test(m) ? m : '')); // remove nÃ£o dÃ­gitos exceto ponto
+                raw = raw.replace(/(?!^)[^.]/g, (m) => (/[0-9]/.test(m) ? m : '')); // remove não dígitos exceto ponto
                 const n = Number(raw);
                 const patch = {};
                 if (sourceId.includes('capital-inicial')) patch.capitalInicial = n;
@@ -131,7 +131,7 @@ export class ParametersCardController {
                             setTimeout(() => source.classList.remove('input-validation-warning'), 800);
                             return;
                         }
-                        // Sem validador, nÃ£o bloqueia o commit; deixa lÃ³gica global tratar limites
+                        // Sem validador, não bloqueia o commit; deixa lógica global tratar limites
                     }
                     const needs = window.updateState(patch);
                     // Sempre refletir capital nos estados derivados usados pela UI e emitir evento
@@ -153,7 +153,7 @@ export class ParametersCardController {
         };
         source.addEventListener('change', commit);
 
-        // TambÃ©m escuta perda de foco para sincronizar valores digitados sem change explÃ­cito
+        // Também escuta perda de foco para sincronizar valores digitados sem change explícito
         source.addEventListener('blur', (e) => {
             const target = document.getElementById(targetId);
             if (target && target.value !== e.target.value) target.value = e.target.value;
@@ -178,7 +178,7 @@ export class ParametersCardController {
     }
 
     /**
-     * Adiciona funcionalidade de minimizar/expandir ao botÃ£o
+     * Adiciona funcionalidade de minimizar/expandir ao botão
      */
     _attachMinimizeButton(buttonId, contentId) {
         const button = document.getElementById(buttonId);
@@ -227,7 +227,7 @@ export class ParametersCardController {
     }
 }
 
-// InstÃ¢ncia global opcional
+// Instância global opcional
 if (typeof window !== 'undefined') {
     window.ParametersCardController = ParametersCardController;
 }
