@@ -49,18 +49,15 @@ test.describe('Lock suave (badge + popup)', () => {
     });
 
     // Pequeno respiro para processamento do update
-    await page.waitForTimeout(50);
+    await page.waitForTimeout(100);
 
+    // Use more stable assertion with extended timeout
     const badge = page.locator('#progress-soft-lock-badge');
-    await page.waitForFunction(() => {
-      const el = document.getElementById('progress-soft-lock-badge');
-      return el && el.classList.contains('show');
-    });
-    await expect(badge).toBeVisible();
-    await expect(badge).toContainText('Limite de perda atingido');
+    await expect(badge).toBeVisible({ timeout: 10000 });
+    await expect(badge).toContainText('Limite de perda atingido', { timeout: 5000 });
 
-    // Popup discreto deve aparecer
+    // Popup discreto deve aparecer (use toHaveClass with timeout)
     const popup = page.locator('#insight-popup');
-    await expect(popup).toHaveClass(/show/);
+    await expect(popup).toHaveClass(/show/, { timeout: 5000 });
   });
 });

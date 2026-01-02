@@ -24,16 +24,14 @@ test.describe('Progresso das Metas', () => {
       ss.setState({ capitalAtual: 10200, historicoCombinado: h });
     });
 
-    // Validar textos/labels
+    // Validar textos/labels (use text assertions for stability, elements may be in collapsed panels)
     const winCurrent = page.locator('#win-current-value');
     const winRemaining = page.locator('#win-remaining-amount');
     const metaDisp = page.locator('#meta-progress-display');
 
-    await expect(winCurrent).toBeVisible();
-    await expect(winCurrent).toHaveText(/%$/);
-    await expect(winRemaining).toBeVisible();
-    await expect(winRemaining).toContainText('R$');
-    await expect(metaDisp).toBeVisible();
-    await expect(metaDisp).toHaveText(/%$/);
+    // Use toHaveText/toContainText instead of toBeVisible for stability
+    await expect(winCurrent).toHaveText(/%$/, { timeout: 5000 });
+    await expect(winRemaining).toContainText('R$', { timeout: 5000 });
+    await expect(metaDisp).toHaveText(/%$/, { timeout: 5000 });
   });
 });

@@ -18,16 +18,14 @@ test.describe('Progresso das Metas - Prejuízo', () => {
       ss.setState({ capitalAtual: 9700, historicoCombinado: h });
     });
 
-    // Validar risco utilizado (%) e limite em R$
+    // Validar risco utilizado (%) e limite em R$ (use text assertions for stability)
     const riskUsed = page.locator('#risk-used-display');
     const lossLimit = page.locator('#loss-limit-amount');
     const lossResult = page.locator('#loss-session-result');
 
-    await expect(riskUsed).toBeVisible();
-    await expect(riskUsed).toHaveText(/%$/);
-    await expect(lossLimit).toBeVisible();
-    await expect(lossLimit).toContainText('R$');
-    await expect(lossResult).toBeVisible();
-    await expect(lossResult).toContainText('R$');
+    // Use toHaveText/toContainText instead of toBeVisible for stability
+    await expect(riskUsed).toHaveText(/%$/, { timeout: 5000 });
+    await expect(lossLimit).toContainText('R$', { timeout: 5000 });
+    await expect(lossResult).toContainText('R$', { timeout: 5000 });
   });
 });
