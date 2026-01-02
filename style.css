@@ -3946,3 +3946,39 @@ body[data-theme='daltonismo'] .input-group select:focus {
     align-items: center;
     gap: 8px;
 }
+/* ========================================
+   ICON SYSTEM (T62)
+   ======================================== */
+
+.icon {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+/* Size variants */
+.icon.sm {
+    width: 12px;
+    height: 12px;
+}
+
+.icon.md {
+    width: 16px;
+    height: 16px;
+}
+
+.icon.lg {
+    width: 20px;
+    height: 20px;
+}
+
+.icon.xl {
+    width: 24px;
+    height: 24px;
+}
+
+/* Icon inherits color from parent via currentColor */
+.icon svg {
+    width: 100%;
+    height: 100%;
+}
