@@ -6,7 +6,7 @@
  * @version 1.0.0
  */
 
-import { logger } from '../../utils/Logger.js';
+import { logger } from '../../../utils/Logger.js';
 
 class ModalsHelpIcons {
     constructor() {
