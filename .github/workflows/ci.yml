@@ -41,7 +41,7 @@ jobs:
       - name: 🔍 ESLint - Verificação de erros
         run: |
           echo "::group::🔍 Executando ESLint"
-          npx eslint . --format=github --max-warnings=10
+          npx eslint . --format=stylish --max-warnings=10
           echo "::endgroup::"
         continue-on-error: false
 
