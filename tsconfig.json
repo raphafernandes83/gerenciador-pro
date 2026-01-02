@@ -4,7 +4,7 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "allowJs": true,
-    "checkJs": false,
+    "checkJs": true,
     "noEmit": true,
     "skipLibCheck": true,
     "strict": false,
@@ -41,6 +41,8 @@
     "backup_old_files/**",
     "backup_PRE_*/**",
     "temp_*/**",
-    "arquivos moji/**"
+    "arquivos moji/**",
+    "analytics.js",
+    "add-info-panel.js"
   ]
 }

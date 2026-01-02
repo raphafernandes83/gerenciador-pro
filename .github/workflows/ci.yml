@@ -55,7 +55,7 @@ jobs:
       - name: 📝 TypeScript - Verificação de tipos (JSDoc)
         run: |
           echo "::group::📝 Verificando tipos via JSDoc"
-          npx tsc --noEmit --allowJs --checkJs --skipLibCheck
+          npx tsc -p tsconfig.json --noEmit --allowJs --checkJs --skipLibCheck
           echo "::endgroup::"
         continue-on-error: true
 
