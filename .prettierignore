@@ -35,6 +35,13 @@ backup_old_files/**
 tools/**
 *.backup*
 TrashFAB_BACKUP_FUNCIONANDO.js
+fix_main_encoding.cjs
+fix_main_encoding.py
+add-fix-script.js
+scripts/add-*.js
+backup_PRE_*/**
+temp_*/**
+arquivos moji/**
 
 # Arquivos grandes que causam problemas
 ui.js
