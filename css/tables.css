@@ -122,35 +122,18 @@
     }
 }
 
-/* Proxima etapa - destaque */
+/* Proxima etapa - destaque sutil sem alterar tamanho (TAREFA 27) */
 .proxima-etapa {
-    background: rgba(14, 165, 233, 0.15) !important;
-    border-left: 3px solid var(--info-color, #0ea5e9);
-    position: relative;
+    background: rgba(14, 165, 233, 0.08) !important;
+    /* REMOVIDO: border-left que adicionava 3px de largura e desalinhava colunas */
 }
 
-.proxima-etapa::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: var(--info-color, #0ea5e9);
-    animation: pulse-glow 2s ease-in-out infinite;
+/* TAREFA 27: Destaque via negrito no texto, não via borda */
+.proxima-etapa td {
+    font-weight: 600;
 }
 
-@keyframes pulse-glow {
-
-    0%,
-    100% {
-        box-shadow: 0 0 4px var(--info-color, #0ea5e9);
-    }
-
-    50% {
-        box-shadow: 0 0 12px var(--info-color, #0ea5e9);
-    }
-}
+/* REMOVIDO: ::before com animação - causava desalinhamento */
 
 /* Linha concluida */
 .linha-concluida {

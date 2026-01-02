@@ -105,24 +105,24 @@ const initializeSupabaseClient = () => {
         if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
             const client = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
 
-            // ” Validacao robusta do cliente
+            // ” Validacao robusta do cliente
             if (client && typeof client.auth === 'object' && typeof client.from === 'function') {
                 supabase = client;
                 logger.debug('âœ… Cliente Supabase inicializado com sucesso!');
                 return true;
             } else {
-                logger.error('âŒ Cliente Supabase criado mas invalido');
+                logger.error('âŒ Cliente Supabase criado mas invalido');
                 return false;
             }
         } else {
             logger.error(
-                'âŒ Biblioteca Supabase nao carregada. Verifique se o script esta incluido no HTML.'
+                'âŒ Biblioteca Supabase nao carregada. Verifique se o script esta incluido no HTML.'
             );
             return false;
         }
     } catch (error) {
         // ›¡ Log seguro sem vazamento de credenciais
-        logger.error('âŒ Erro na inicializacao do Supabase:', {
+        logger.error('âŒ Erro na inicializacao do Supabase:', {
             message: error.message,
             timestamp: new Date().toISOString(),
             hasCredentials: !!(supabaseUrl && supabaseAnonKey),
@@ -168,18 +168,18 @@ if (!initializeSupabaseClient()) {
 }
 
 /**
- * ” TESTE SEGURO DE CONEXAO SUPABASE
+ * ” TESTE SEGURO DE CONEXAO SUPABASE
  * Implementa validacao completa com categorizacao de erros e logging seguro
  *
  * @returns {Promise<boolean>} True se conexao valida, false caso contrario
  */
 async function testSupabaseConnection() {
-    logger.debug('” Iniciando teste de conexao Supabase...');
+    logger.debug('” Iniciando teste de conexao Supabase...');
     const requestId = generateRequestId('supabase');
 
     // Guard Clause 1: Verifica se cliente existe
     if (!supabase) {
-        logger.error('âŒ Cliente Supabase e null/undefined');
+        logger.error('âŒ Cliente Supabase e null/undefined');
         return false;
     }
 
@@ -191,7 +191,7 @@ async function testSupabaseConnection() {
 
     // Guard Clause 3: Verifica se cliente tem interface esperada
     if (!supabase.auth || typeof supabase.auth.getUser !== 'function') {
-        logger.error('âŒ Cliente Supabase com interface invalida');
+        logger.error('âŒ Cliente Supabase com interface invalida');
         return false;
     }
 
@@ -217,7 +217,7 @@ async function testSupabaseConnection() {
                     const { data: refreshed, error: refreshError } =
                         await supabase.auth.refreshSession();
                     if (!refreshError) {
-                        logger.info('” Sessao renovada com sucesso');
+                        logger.info('” Sessao renovada com sucesso');
                         return true;
                     }
                 } catch (_) {
@@ -252,7 +252,7 @@ function _categorizeSupabaseError(authError) {
 
         case 'NETWORK_ERROR':
         case 'CONNECTION_TIMEOUT':
-            logger.error('Œ Erro de rede na conexao Supabase:', {
+            logger.error('Œ Erro de rede na conexao Supabase:', {
                 code: errorCode,
                 type: 'network',
                 timestamp: new Date().toISOString(),
@@ -322,13 +322,13 @@ function _handleConnectionException(error) {
 
     // Categorizacao de excecoes
     if (errorMessage.includes('timeout') || errorMessage.includes('Timeout')) {
-        logger.error('â± Timeout na conexao Supabase:', {
+        logger.error('â± Timeout na conexao Supabase:', {
             type: 'timeout',
             duration: SUPABASE_CONFIG.CONNECTION_TIMEOUT,
             suggestion: 'Verificar conectividade de rede',
         });
     } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
-        logger.error('Œ Falha de rede:', {
+        logger.error('Œ Falha de rede:', {
             type: 'network',
             suggestion: 'Verificar conectividade ou URL do Supabase',
         });
@@ -658,7 +658,7 @@ class App {
                 logger.debug('âœ… DashboardUIManager inicializado com sucesso');
                 this.initializationSteps.push('dashboard_ui_initialized');
             } catch (error) {
-                logger.error('âŒ Erro ao inicializar DashboardUIManager:', error);
+                logger.error('âŒ Erro ao inicializar DashboardUIManager:', error);
             }
 
             await this._performUISync();
@@ -706,7 +706,7 @@ class App {
 
             this.initializationSteps.push('dependency_injection_initialized');
         } catch (error) {
-            logger.error('âŒ Erro ao inicializar Dependency Injection:', error.message);
+            logger.error('âŒ Erro ao inicializar Dependency Injection:', error.message);
             throw new Error(`Falha critica no Dependency Injection: ${error.message}`);
         }
     }
@@ -810,7 +810,7 @@ class App {
                 this.initializationSteps.push('strategies_partial');
             }
         } catch (error) {
-            logger.error('âŒ Erro ao registrar estrategias:', error.message);
+            logger.error('âŒ Erro ao registrar estrategias:', error.message);
             this.initializationSteps.push('strategies_failed');
         }
     }
@@ -850,7 +850,7 @@ class App {
                         });
                         await new Promise(r => setTimeout(r, delay));
                     } else {
-                        logger.error('âŒ Todas as tentativas de inicializar IndexedDB falharam');
+                        logger.error('âŒ Todas as tentativas de inicializar IndexedDB falharam');
                         // Continua sem IndexedDB - modo degradado
                         this.initializationSteps.push('database_failed');
                         logger.warn('âš  Continuando em modo degradado sem IndexedDB local');
@@ -902,7 +902,7 @@ class App {
                 logger.warn('âš  Falha ao renderizar card principal via template:', e.message);
             }
         } catch (error) {
-            logger.error('âŒ Erro ao inicializar modulos legados:', error.message);
+            logger.error('âŒ Erro ao inicializar modulos legados:', error.message);
             throw new Error(`Falha critica na inicializacao de modulos legados: ${error.message}`);
         }
     }
@@ -931,7 +931,7 @@ class App {
 
             this.initializationSteps.push('state_manager_initialized');
         } catch (error) {
-            logger.error('âŒ Erro ao inicializar StateManager:', error.message);
+            logger.error('âŒ Erro ao inicializar StateManager:', error.message);
             logger.warn('âš  Continuando com estado legado apenas');
             this.initializationSteps.push('state_manager_failed');
         }
@@ -953,7 +953,7 @@ class App {
 
             this.initializationSteps.push('dom_manager_initialized');
         } catch (error) {
-            logger.error('âŒ Erro ao inicializar DOMManager:', error.message);
+            logger.error('âŒ Erro ao inicializar DOMManager:', error.message);
             logger.warn('âš  Continuando com DOM legado apenas');
             this.initializationSteps.push('dom_manager_failed');
         }
@@ -1006,7 +1006,7 @@ class App {
 
             this.initializationSteps.push('modular_system_initialized');
         } catch (error) {
-            logger.error('âŒ Erro ao inicializar Sistema Modular:', error.message);
+            logger.error('âŒ Erro ao inicializar Sistema Modular:', error.message);
             logger.warn('âš  Continuando sem sistema modular');
             this.initializationSteps.push('modular_system_failed');
         }
@@ -1044,16 +1044,20 @@ class App {
             });
             this.initializationSteps.push('legacy_adapter_initialized');
 
-            // Criar proxies para manter compatibilidade
-            legacyAdapter.createLegacyProxies(window.logic);
-            this.initializationSteps.push('legacy_proxies_created');
+            // 🔧 TAREFA 28: DESABILITADO - createLegacyProxies causava execução dupla do plano
+            // Isso fazia com que tanto sessionManager.recalculatePlan() quanto 
+            // TradingOperationsManager.calculateTradingPlan() fossem executados,
+            // resultando em tabela com linhas duplicadas (17ª Mão → 3ª Mão)
+            // legacyAdapter.createLegacyProxies(window.logic);
+            // Para reativar: descomente a linha acima
+            this.initializationSteps.push('legacy_proxies_skipped'); // Era: legacy_proxies_created
 
             // Expor o novo manager globalmente para testes
             window.tradingManager = this.tradingManager;
 
             logger.debug('”„ Migracao de compatibilidade configurada com sucesso!');
         } catch (error) {
-            logger.error('âŒ Erro ao inicializar sistemas refatorados:', error.message);
+            logger.error('âŒ Erro ao inicializar sistemas refatorados:', error.message);
             throw new Error(`Falha na inicializacao de sistemas refatorados: ${error.message}`);
         }
     }
@@ -1111,7 +1115,7 @@ class App {
             await syncPromise;
             logger.debug('âœ… Interface sincronizada com sucesso!');
         } catch (error) {
-            logger.error('âŒ Erro na sincronizacao da UI:', error.message);
+            logger.error('âŒ Erro na sincronizacao da UI:', error.message);
             throw new Error(`Falha critica na sincronizacao da UI: ${error.message}`);
         }
     }
@@ -1179,11 +1183,11 @@ class App {
     }
 
     /**
-     * âŒ Tratamento de erros de inicializacao
+     * âŒ Tratamento de erros de inicializacao
      * @private
      */
     _handleInitializationError(error) {
-        logger.error('âŒ Erro durante inicializacao:', error);
+        logger.error('âŒ Erro durante inicializacao:', error);
 
         // Adiciona erro aos passos para diagnostico
         this.initializationSteps.push(`error_${error.name || 'unknown'}`);
@@ -1195,7 +1199,7 @@ class App {
         }
 
         // Log dos passos completados para diagnostico
-        logger.debug('” Passos completados antes do erro:', this.initializationSteps);
+        logger.debug('” Passos completados antes do erro:', this.initializationSteps);
 
         // Tentativa de usar tratamento de erro avancado se disponivel
         if (window.errorHandler && typeof window.errorHandler.handleError === 'function') {
@@ -1247,7 +1251,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await app.init();
         logger.debug('âœ… Aplicacao inicializada com sucesso!');
 
-        // ” Purga automatica da Lixeira: agora e diariamente
+        // ” Purga automatica da Lixeira: agora e diariamente
         try {
             if (window.dbManager && typeof dbManager.purgeExpiredTrash === 'function') {
                 dbManager.purgeExpiredTrash().catch(() => { });
@@ -1255,11 +1259,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         } catch (_) { }
     } catch (error) {
-        logger.error('âŒ Falha critica na inicializacao:', error);
+        logger.error('âŒ Falha critica na inicializacao:', error);
 
         // O tratamento de erro detalhado ja foi feito no _handleInitializationError
         // Aqui apenas garantimos que o erro seja logado
-        logger.debug('” Inicializacao falhou. Veja logs detalhados acima.');
+        logger.debug('” Inicializacao falhou. Veja logs detalhados acima.');
     }
 });
 
@@ -1280,7 +1284,7 @@ window.clearCorruptedData = async () => {
         }
         return removed;
     } catch (error) {
-        logger.error('âŒ Erro:', error);
+        logger.error('âŒ Erro:', error);
         return 0;
     }
 };
@@ -1298,7 +1302,7 @@ window.repairCorruptedData = async () => {
         }
         return repaired;
     } catch (error) {
-        logger.error('âŒ Erro:', error);
+        logger.error('âŒ Erro:', error);
         return 0;
     }
 };
@@ -1317,7 +1321,7 @@ window.repairResultadosZerados = async () => {
         }
         return result;
     } catch (error) {
-        logger.error('âŒ Erro:', error);
+        logger.error('âŒ Erro:', error);
         return { repaired: 0, errors: 1, error: error.message };
     }
 };
@@ -1334,7 +1338,7 @@ window.testRealTimeSync = function () {
     logger.debug('\n [TEST] TESTANDO SINCRONIZACAO EM TEMPO REAL...\n');
 
     // Teste 1: Capital Inicial
-    logger.debug('“ Teste 1: Mudanca no capital inicial');
+    logger.debug('“ Teste 1: Mudanca no capital inicial');
     const capitalInput = dom.capitalInicial;
     if (capitalInput) {
         capitalInput.value = '15000';
@@ -1352,7 +1356,7 @@ window.testRealTimeSync = function () {
 
     // Teste 2: Entrada Inicial
     setTimeout(() => {
-        logger.debug('“ Teste 2: Mudanca na entrada inicial');
+        logger.debug('“ Teste 2: Mudanca na entrada inicial');
         const entradaInput = dom.percentualEntrada;
         if (entradaInput) {
             entradaInput.value = '3.5';
@@ -1363,7 +1367,7 @@ window.testRealTimeSync = function () {
 
     // Teste 3: Payout
     setTimeout(() => {
-        logger.debug('“ Teste 3: Mudanca de payout');
+        logger.debug('“ Teste 3: Mudanca de payout');
         const payoutBtn = Array.from(document.querySelectorAll('.payout-buttons button')).find(
             (btn) => btn.textContent.trim() === '90'
         );
@@ -1375,7 +1379,7 @@ window.testRealTimeSync = function () {
 
     // Teste 4: Estrategia
     setTimeout(() => {
-        logger.debug('“ Teste 4: Mudanca de estrategia');
+        logger.debug('“ Teste 4: Mudanca de estrategia');
         const strategySelect = dom.estrategiaSelect;
         if (strategySelect) {
             strategySelect.value = 'fixa';
@@ -1386,7 +1390,7 @@ window.testRealTimeSync = function () {
 
     // Teste 5: Stop Win
     setTimeout(() => {
-        logger.debug('“ Teste 5: Mudanca no Stop Win');
+        logger.debug('“ Teste 5: Mudanca no Stop Win');
         const stopWinInput = dom.stopWinPerc;
         if (stopWinInput) {
             stopWinInput.value = '12';
@@ -1397,7 +1401,7 @@ window.testRealTimeSync = function () {
 
     // Teste 6: Stop Loss
     setTimeout(() => {
-        logger.debug('“ Teste 6: Mudanca no Stop Loss');
+        logger.debug('“ Teste 6: Mudanca no Stop Loss');
         const stopLossInput = dom.stopLossPerc;
         if (stopLossInput) {
             stopLossInput.value = '18';
@@ -1428,7 +1432,7 @@ window.testPayoutAndFocus = function () {
     const tests = [
         // Teste 1: Payout Sync Main â†’ Sidebar
         () => {
-            logger.debug('“ Teste 1: Payout 90% no card principal');
+            logger.debug('“ Teste 1: Payout 90% no card principal');
             const btn = Array.from(document.querySelectorAll('.payout-buttons button')).find(
                 (b) => b.textContent.trim() === '90'
             );
@@ -1436,26 +1440,26 @@ window.testPayoutAndFocus = function () {
                 btn.click();
                 logger.debug('âœ… Clique executado no payout 90%');
             } else {
-                logger.debug('âŒ Botao payout 90% nao encontrado');
+                logger.debug('âŒ Botao payout 90% nao encontrado');
             }
         },
 
         // Teste 2: Verificar sincronizacao no sidebar
         () => {
-            logger.debug('“ Teste 2: Verificando sincronizacao no sidebar');
+            logger.debug('“ Teste 2: Verificando sincronizacao no sidebar');
             const sidebarBtn = dom.sidebarPayout - 90;
             if (sidebarBtn && sidebarBtn.classList.contains('active-payout')) {
                 logger.debug('âœ… Sidebar sincronizado corretamente');
             } else if (!sidebarBtn) {
                 logger.debug('âš  Sidebar nao esta aberto - abra o menu lateral primeiro');
             } else {
-                logger.debug('âŒ Sidebar NAO sincronizado');
+                logger.debug('âŒ Sidebar NAO sincronizado');
             }
         },
 
         // Teste 3: Focus Effect (Verde Elegante)
         () => {
-            logger.debug('“ Teste 3: Efeito de focus verde elegante no capital inicial');
+            logger.debug('“ Teste 3: Efeito de focus verde elegante no capital inicial');
             const capitalField = dom.capitalInicial;
             if (capitalField) {
                 capitalField.focus();
@@ -1478,23 +1482,23 @@ window.testPayoutAndFocus = function () {
                     if (hasCorrectGreen && !hasUnwantedColors) {
                         logger.debug('âœ… Efeito verde ELEGANTE aplicado corretamente');
                     } else if (hasUnwantedColors) {
-                        logger.debug('âŒ AINDA tem cores indesejadas (amarelo/dourado)');
-                        logger.debug('” Border:', borderColor);
-                        logger.debug('” Shadow:', boxShadow);
+                        logger.debug('âŒ AINDA tem cores indesejadas (amarelo/dourado)');
+                        logger.debug('” Border:', borderColor);
+                        logger.debug('” Shadow:', boxShadow);
                     } else {
-                        logger.debug('âŒ Efeito verde NAO aplicado');
-                        logger.debug('” Border:', borderColor);
-                        logger.debug('” Shadow:', boxShadow);
+                        logger.debug('âŒ Efeito verde NAO aplicado');
+                        logger.debug('” Border:', borderColor);
+                        logger.debug('” Shadow:', boxShadow);
                     }
                 }, 100);
             } else {
-                logger.debug('âŒ Campo capital inicial nao encontrado');
+                logger.debug('âŒ Campo capital inicial nao encontrado');
             }
         },
 
         // Teste 4: Typing Effect
         () => {
-            logger.debug('“ Teste 4: Efeito de digitacao');
+            logger.debug('“ Teste 4: Efeito de digitacao');
             const capitalField = dom.capitalInicial;
             if (capitalField) {
                 capitalField.value = '25000';
@@ -1512,7 +1516,7 @@ window.testPayoutAndFocus = function () {
 
         // Teste 5: Payout Sidebar â†’ Main (se sidebar estiver aberto)
         () => {
-            logger.debug('“ Teste 5: Payout 92% no sidebar');
+            logger.debug('“ Teste 5: Payout 92% no sidebar');
             const sidebarBtn = dom.sidebarPayout - 92;
             if (sidebarBtn) {
                 sidebarBtn.click();
@@ -1525,7 +1529,7 @@ window.testPayoutAndFocus = function () {
                     if (mainBtn && mainBtn.classList.contains('active-payout')) {
                         logger.debug('âœ… Card principal sincronizado');
                     } else {
-                        logger.debug('âŒ Card principal NAO sincronizado');
+                        logger.debug('âŒ Card principal NAO sincronizado');
                     }
                 }, 100);
             } else {
@@ -1535,7 +1539,7 @@ window.testPayoutAndFocus = function () {
 
         // Teste 6: Focus no sidebar (se estiver aberto)
         () => {
-            logger.debug('“ Teste 6: Focus no sidebar');
+            logger.debug('“ Teste 6: Focus no sidebar');
             const sidebarField = dom.sidebarCapitalInicial;
             if (sidebarField) {
                 sidebarField.focus();
@@ -1547,7 +1551,7 @@ window.testPayoutAndFocus = function () {
                     if (hasGreenBorder) {
                         logger.debug('âœ… Efeito de focus no sidebar funcionando');
                     } else {
-                        logger.debug('âŒ Efeito de focus no sidebar NAO funcionando');
+                        logger.debug('âŒ Efeito de focus no sidebar NAO funcionando');
                     }
                 }, 100);
             } else {
@@ -1584,7 +1588,7 @@ window.testGreenBorderChallenge = function () {
     logger.debug('\nŽ¯ TESTE DO DESAFIO: BORDAS VERDES ELEGANTES\n');
 
     // Teste 1: Verificacao Visual Stop Win
-    logger.debug('“ Testando campo Stop Win (%) - o que estava com problema...');
+    logger.debug('“ Testando campo Stop Win (%) - o que estava com problema...');
     const stopWinField = dom.stopWinPerc;
     if (stopWinField) {
         stopWinField.focus();
@@ -1594,8 +1598,8 @@ window.testGreenBorderChallenge = function () {
             const border = style.borderColor;
             const shadow = style.boxShadow;
 
-            logger.debug('” Border atual:', border);
-            logger.debug('” Shadow atual:', shadow);
+            logger.debug('” Border atual:', border);
+            logger.debug('” Shadow atual:', shadow);
 
             // Verifica verde elegante (76, 175, 80)
             const hasCorrectGreen =
@@ -1609,11 +1613,11 @@ window.testGreenBorderChallenge = function () {
             if (hasCorrectGreen && !hasUnwantedColors) {
                 logger.debug('âœ… SUCESSO! Apenas verde elegante, sem amarelo/dourado');
             } else if (hasUnwantedColors) {
-                logger.debug('âŒ FALHA! Ainda tem cores indesejadas');
+                logger.debug('âŒ FALHA! Ainda tem cores indesejadas');
                 if (hasYellow) logger.debug('Ÿ¡ Detectado: Verde saturado (230, 118)');
                 if (hasGold) logger.debug('Ÿ¨ Detectado: Dourado/Amarelo');
             } else {
-                logger.debug('âŒ FALHA! Verde elegante nao aplicado');
+                logger.debug('âŒ FALHA! Verde elegante nao aplicado');
             }
 
             stopWinField.blur();
@@ -1622,7 +1626,7 @@ window.testGreenBorderChallenge = function () {
 
     // Teste 2: Todos os campos principais
     setTimeout(() => {
-        logger.debug('\n“ Testando TODOS os campos principais...');
+        logger.debug('\n“ Testando TODOS os campos principais...');
         const fields = [
             'capital-inicial',
             'percentual-entrada',
@@ -1651,7 +1655,7 @@ window.testGreenBorderChallenge = function () {
                             logger.debug(`âœ… ${fieldId}: Verde elegante OK`);
                             testsPassed++;
                         } else {
-                            logger.debug(`âŒ ${fieldId}: Problema detectado`);
+                            logger.debug(`âŒ ${fieldId}: Problema detectado`);
                         }
 
                         field.blur();
@@ -1728,7 +1732,7 @@ function testInitialization() {
         }
 
         // 2. Teste de objetos globais
-        logger.debug('Œ Testando objetos globais...');
+        logger.debug('Œ Testando objetos globais...');
         try {
             const globalObjects = [
                 'config',
@@ -1747,7 +1751,7 @@ function testInitialization() {
                     foundObjects++;
                     logger.debug(`âœ… ${obj}: disponivel`);
                 } else {
-                    logger.debug(`âŒ ${obj}: nao encontrado`);
+                    logger.debug(`âŒ ${obj}: nao encontrado`);
                 }
             });
 
@@ -1801,7 +1805,7 @@ function testInitialization() {
         results.overall = successCount >= 3; // Pelo menos 3 de 5 testes
 
         const endTime = performance.now();
-        logger.debug(`â± Testes Initialization executados em ${(endTime - startTime).toFixed(2)}ms`);
+        logger.debug(`â± Testes Initialization executados em ${(endTime - startTime).toFixed(2)}ms`);
 
         if (results.overall) {
             logger.debug('âœ… INITIALIZATION: Sistema inicializado corretamente!');
@@ -1811,7 +1815,7 @@ function testInitialization() {
 
         return results;
     } catch (error) {
-        logger.error('âŒ Erro critico nos testes Initialization:', error);
+        logger.error('âŒ Erro critico nos testes Initialization:', error);
         return { ...results, overall: false };
     }
 }

@@ -22,6 +22,8 @@ import {
     createManagedTimer,
     clearAllManagedTimers,
 } from './src/utils/TimerManager.js';
+// [TAREFA 11A] Import de devLog para logs condicionais
+import { devLog } from './src/constants/SystemConstants.js';
 
 // ============================================================================
 // 🆕 CHECKPOINT 2.2b: Helper de transição para DOMManager (CONSOLIDADO)
@@ -139,11 +141,32 @@ export const events = {
                 });
             });
         }
-        // Cabeçalho
+        // Cabecalho
+        // [TAREFA 10] Variavel para guardar elemento focado antes de abrir modal
+        let previouslyFocusedElement = null;
+
         dom.settingsBtn?.addEventListener('click', () => {
             ui.updateSettingsModalVisibility();
-            // 🆕 CHECKPOINT 2.2b: Usando domHelper
-            dom.settingsModal && domHelper.addClass(dom.settingsModal, 'show');
+            // [TAREFA 10] Focus trap + aria-hidden
+            if (dom.settingsModal) {
+                // Guardar elemento focado
+                previouslyFocusedElement = document.activeElement;
+
+                // Abrir modal
+                domHelper.addClass(dom.settingsModal, 'show');
+                dom.settingsBtn?.setAttribute('aria-expanded', 'true');
+                dom.settingsModal.setAttribute('aria-hidden', 'false');
+
+                // Mover foco para primeiro elemento focavel do modal
+                const firstFocusable = dom.settingsModal.querySelector('button, [tabindex]:not([tabindex="-1"]), input, select, textarea');
+                if (firstFocusable) {
+                    setTimeout(() => firstFocusable.focus(), 50);
+                }
+
+                // Marcar conteudo de fundo como inerte (se main existir)
+                const mainContent = document.querySelector('main') || document.querySelector('.app-container');
+                if (mainContent) mainContent.setAttribute('inert', '');
+            }
         });
         dom.compactModeBtn?.addEventListener('click', () => ui.toggleCompactMode());
         dom.zenModeBtn?.addEventListener('click', () => ui.toggleZenMode());
@@ -320,9 +343,36 @@ export const events = {
             );
         dom.closeSettingsBtn?.addEventListener('click', () => {
             logic.saveActiveSession(); // Salva o estado ativo ao fechar
-            // 🆕 CHECKPOINT 2.2b: Usando domHelper
-            dom.settingsModal && domHelper.removeClass(dom.settingsModal, 'show');
-            ui.mostrarInsightPopup('Configurações guardadas com sucesso!', '⚙️');
+            // [TAREFA 10] Focus trap + aria-hidden
+            if (dom.settingsModal) {
+                domHelper.removeClass(dom.settingsModal, 'show');
+                dom.settingsBtn?.setAttribute('aria-expanded', 'false');
+                dom.settingsModal.setAttribute('aria-hidden', 'true');
+
+                // Remover inert do conteudo de fundo
+                const mainContent = document.querySelector('main') || document.querySelector('.app-container');
+                if (mainContent) mainContent.removeAttribute('inert');
+
+                // Restaurar foco no botao que abriu
+                dom.settingsBtn?.focus();
+            }
+            ui.mostrarInsightPopup('Configuracoes guardadas com sucesso!', '⚙️');
+        });
+
+        // [TAREFA 10] Fechar settings com ESC + focus trap
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && dom.settingsModal?.classList.contains('show')) {
+                domHelper.removeClass(dom.settingsModal, 'show');
+                dom.settingsBtn?.setAttribute('aria-expanded', 'false');
+                dom.settingsModal.setAttribute('aria-hidden', 'true');
+
+                // Remover inert do conteudo de fundo
+                const mainContent = document.querySelector('main') || document.querySelector('.app-container');
+                if (mainContent) mainContent.removeAttribute('inert');
+
+                // Restaurar foco no botao que abriu
+                dom.settingsBtn?.focus();
+            }
         });
 
         const settingsUpdater = (newState) => {
@@ -1193,7 +1243,7 @@ export const events = {
     // Métodos para Testes Automáticos
     async handleRunAllTests() {
         try {
-            console.log('🧪 Iniciando execução de todos os testes...');
+            devLog('🧪 Iniciando execução de todos os testes...');
 
             // Aguardar que todos os módulos estejam carregados
             await this.waitForModules();
@@ -1222,7 +1272,7 @@ export const events = {
         const maxAttempts = 50; // 5 segundos máximo
         let attempts = 0;
 
-        console.log('⏳ Aguardando carregamento dos módulos...');
+        devLog('⏳ Aguardando carregamento dos módulos...');
 
         while (attempts < maxAttempts) {
             const moduleStatus = {
@@ -1239,13 +1289,13 @@ export const events = {
             const allLoaded = Object.values(moduleStatus).every((loaded) => loaded);
 
             if (allLoaded) {
-                console.log('✅ Todos os módulos carregados!');
+                devLog('✅ Todos os módulos carregados!');
                 return;
             }
 
             if (attempts % 10 === 0) {
                 // Log a cada 1 segundo
-                console.log('📊 Status dos módulos:', moduleStatus);
+                devLog('📊 Status dos módulos:', moduleStatus);
             }
 
             await new Promise((resolve) => createManagedTimer(resolve, 100, 'module-loading-wait'));
@@ -1272,7 +1322,7 @@ export const events = {
 
     async handleRunSpecificTests(suiteType) {
         try {
-            console.log(`🧪 Executando testes de ${suiteType}...`);
+            devLog(`🧪 Executando testes de ${suiteType}...`);
 
             // Aguardar que todos os módulos estejam carregados
             await this.waitForModules();

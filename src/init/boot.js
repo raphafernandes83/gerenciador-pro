@@ -16,6 +16,11 @@
 
 // Aguarda DOM estar pronto
 document.addEventListener('DOMContentLoaded', () => {
+    // [TAREFA 29] Inicializar Crash Radar (captura de erros)
+    if (window.CrashRadar) {
+        window.CrashRadar.init();
+    }
+
     console.log('🚀 Boot.js: Iniciando componentes...');
 
     // Usar requestAnimationFrame para garantir que outros módulos carregaram

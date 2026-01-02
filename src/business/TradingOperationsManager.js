@@ -41,7 +41,7 @@ export class TradingOperationsManager {
 
         // Debounce para operações frequentes
         this._debouncedSave = debounce(
-            this._saveSession ? this._saveSession.bind(this) : () => {},
+            this._saveSession ? this._saveSession.bind(this) : () => { },
             1000
         );
         // 🛡️ CORREÇÃO: UI update agora é async, criar wrapper para debounce
@@ -103,57 +103,64 @@ export class TradingOperationsManager {
     }
 
     /**
-     * Calcula plano de operações usando a estratégia configurada
-     * Função principal que substituirá calcularPlano do logic.js
-     *
-     * @param {boolean} forceRecalculation - Força recálculo mesmo se cached
-     * @returns {Array<Object>} Plano de operações calculado
+     * [TAREFA 28] DEPRECIADO - Usa SessionManager.recalculatePlan() em vez disso
+     * Este método foi desabilitado para evitar duplicação de planos.
+     * @deprecated Use sessionManager.recalculatePlan() instead
+     * @returns {Array} O plano existente (não recalcula)
      */
     async calculateTradingPlan(forceRecalculation = false) {
-        try {
-            const startTime = performance.now();
-
-            // Limpa cache se forçado
-            if (forceRecalculation) {
-                this._memoizedCalculations.calculateStrategy.clearCache();
-            }
-
-            // Prepara configuração para estratégia
-            const strategyConfig = this._prepareStrategyConfig();
-
-            // Valida configuração antes de calcular
-            this._validateStrategyConfig(strategyConfig);
-
-            // Calcula usando strategy memoizada
-            const plan = this._memoizedCalculations.calculateStrategy(
-                this.config.estrategiaAtiva,
-                strategyConfig
-            );
-
-            // Preserva resultados de etapas já executadas
-            const planWithPreservedResults = this._preserveExecutedSteps(plan);
-
-            // Atualiza estado
-            this.state.planoDeOperacoes = planWithPreservedResults;
-
-            // Atualiza UI de forma otimizada
-            if (forceRecalculation) {
-                this._debouncedUIUpdate();
-            }
-
-            const elapsed = performance.now() - startTime;
-            console.log(`📊 Plano calculado em ${elapsed.toFixed(2)}ms`);
-
-            return planWithPreservedResults;
-        } catch (error) {
-            errorHandler.handleError(error, {
-                function: 'calculateTradingPlan',
-                strategy: this.config.estrategiaAtiva,
-                forceRecalculation,
-            });
-            throw error;
-        }
+        console.log('⚠️ TradingOperationsManager.calculateTradingPlan() DEPRECIADO - use sessionManager.recalculatePlan()');
+        // Retorna o plano existente sem recalcular
+        return this.state.planoDeOperacoes || [];
     }
+
+    /**
+     * BACKUP DO MÉTODO ORIGINAL (para referência futura)
+     * async _calculateTradingPlan_ORIGINAL(forceRecalculation = false) {
+     *     try {
+     *         const startTime = performance.now();
+     *
+     *         // Limpa cache se forçado
+     *         if (forceRecalculation) {
+     *             this._memoizedCalculations.calculateStrategy.clearCache();
+     *         }
+     *
+     *         // Prepara configuração para estratégia
+     *         const strategyConfig = this._prepareStrategyConfig();
+     *
+     *         // Valida configuração antes de calcular
+     *         this._validateStrategyConfig(strategyConfig);
+     *
+     *         // Calcula usando strategy memoizada
+     *         const plan = this._memoizedCalculations.calculateStrategy(
+     *             this.config.estrategiaAtiva,
+     *             strategyConfig
+     *         );
+     *
+     *         // Preserva resultados de etapas já executadas
+     *         const planWithPreservedResults = this._preserveExecutedSteps(plan);
+     *
+     *         // Atualiza estado
+     *         this.state.planoDeOperacoes = planWithPreservedResults;
+     *
+     *         // Atualiza UI de forma otimizada
+     *         if (forceRecalculation) {
+     *             this._debouncedUIUpdate();
+     *         }
+     *
+     *         const elapsed = performance.now() - startTime;
+     *         console.log(`📊 Plano calculado em ${elapsed.toFixed(2)}ms`);
+     *
+     *         return planWithPreservedResults;
+     *     } catch (error) {
+     *         errorHandler.handleError(error, {
+     *             function: 'calculateTradingPlan',
+     *             strategy: this.config.estrategiaAtiva,
+     *             forceRecalculation,
+     *         });
+     *         throw error;
+     *     }
+     * }
 
     /**
      * Registra nova operação de trading
@@ -261,10 +268,11 @@ export class TradingOperationsManager {
             Object.assign(this.state, updates);
             Object.assign(this.config, updates);
 
+            // 🔧 TAREFA 28: DESABILITADO - SessionManager.recalculatePlan() já faz isso
             // Recalcula plano se necessário
-            if (needsRecalculation) {
-                this.calculateTradingPlan(true);
-            }
+            // if (needsRecalculation) {
+            //     this.calculateTradingPlan(true);
+            // }
 
             return needsRecalculation;
         } catch (error) {
@@ -603,7 +611,7 @@ export class TradingOperationsManager {
             // 🛡️ CORREÇÃO CRÍTICA: Aguardar conclusão do dashboard
             await this.ui.atualizarDashboardSessao();
             this.ui.atualizarVisualPlano();
-            this.ui.renderizarTabela();
+            this.ui.requestRenderTabela('TM._updateAllUI');
 
             // 🛡️ CORREÇÃO CRÍTICA: SEMPRE usar dados do estado GLOBAL para timeline
             if (this.ui.renderizarTimelineCompleta && globalState.historicoCombinado) {
@@ -803,13 +811,14 @@ export class TradingOperationsManager {
         this.state.capitalAtual = this.config.capitalInicial || this.state.capitalAtual || 0;
         this.state.proximaEtapaIndex = 0;
 
+        // 🔧 TAREFA 28: DESABILITADO - SessionManager.recalculatePlan() já faz isso
         // Certifica plano
-        if (
-            !Array.isArray(this.state.planoDeOperacoes) ||
-            this.state.planoDeOperacoes.length === 0
-        ) {
-            this.calculateTradingPlan(true);
-        }
+        // if (
+        //     !Array.isArray(this.state.planoDeOperacoes) ||
+        //     this.state.planoDeOperacoes.length === 0
+        // ) {
+        //     this.calculateTradingPlan(true);
+        // }
 
         console.log('🆕 Nova sessão iniciada automaticamente');
     }

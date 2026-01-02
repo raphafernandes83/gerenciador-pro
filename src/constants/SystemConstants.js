@@ -43,6 +43,30 @@ const CURRENT_ENV = getEnvironment();
 const IS_PRODUCTION = CURRENT_ENV === 'production';
 const IS_DEVELOPMENT = CURRENT_ENV === 'development';
 
+// [TAREFA 11] Exportar flags de ambiente para uso em outros modulos
+export { IS_DEVELOPMENT, IS_PRODUCTION, CURRENT_ENV };
+
+/**
+ * [TAREFA 11] Log condicional - so loga em desenvolvimento
+ * Usar para logs de debug que nao devem aparecer em producao
+ * @param  {...any} args - Argumentos para console.log
+ */
+export function devLog(...args) {
+    if (IS_DEVELOPMENT) {
+        console.log(...args);
+    }
+}
+
+/**
+ * [TAREFA 11] Debug log condicional
+ * @param  {...any} args - Argumentos para console.debug
+ */
+export function devDebug(...args) {
+    if (IS_DEVELOPMENT) {
+        console.debug(...args);
+    }
+}
+
 export const SUPABASE_CONFIG = {
     /** URL principal do Supabase - Configurado via EnvProvider */
     URL: IS_PRODUCTION ? '' : 'http://localhost:54321',

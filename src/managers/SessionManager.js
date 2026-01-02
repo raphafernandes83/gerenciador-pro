@@ -220,7 +220,7 @@ export const sessionManager = {
             state.planoDeOperacoes = plano;
 
             if (forceRedraw) {
-                requestAnimationFrame(() => ui.renderizarTabela());
+                ui.requestRenderTabela('SessionManager.recalculatePlan(forceRedraw)');
             }
         } catch (error) {
             logger.error('❌ Erro ao calcular plano', { error: String(error) });

@@ -122,24 +122,20 @@ export class LegacyIntegrationAdapter {
     // ================================
     // ADAPTADORES ESPECÍFICOS
     // ================================
-
     /**
-     * Adapta calcularPlano para calculateTradingPlan
+     * [TAREFA 28] Adapta calcularPlano para usar sessionManager.recalculatePlan()
+     * NÃO usa mais TradingOperationsManager para evitar duplicação
      * @private
      */
     async _adaptCalcularPlano(forceRedraw = false) {
         try {
-            const result = await this.tradingManager.calculateTradingPlan(forceRedraw);
+            // Usa sessionManager como fonte única de verdade
+            const { sessionManager } = await import('../managers/SessionManager.js');
+            await sessionManager.recalculatePlan(forceRedraw);
 
-            // Mantém compatibilidade com código legado que espera
-            // que a função atualize a UI diretamente
-            if (forceRedraw && this.tradingManager.ui) {
-                this.tradingManager.ui.renderizarTabela();
-            }
-
-            return result;
+            console.log('✅ _adaptCalcularPlano delegou para sessionManager.recalculatePlan()');
+            return this.state?.planoDeOperacoes || [];
         } catch (error) {
-            // Converte erros novos para formato que código legado espera
             console.error('Erro no cálculo do plano:', error.message);
             throw error;
         }

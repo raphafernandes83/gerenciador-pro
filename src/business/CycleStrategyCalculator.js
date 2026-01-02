@@ -21,7 +21,7 @@ const PROCESSING_CONFIG = {
     /** Tamanho do chunk para processamento */
     CHUNK_SIZE: 5,
     /** Número total de mãos a calcular */
-    TOTAL_HANDS: 20,
+    TOTAL_HANDS: 30, // TAREFA 28: Aumentado de 20 para 30
     /** Delay entre chunks (ms) */
     YIELD_DELAY: TIMING_CONFIG.PERFORMANCE.PROCESSING_YIELD_DELAY,
 };
