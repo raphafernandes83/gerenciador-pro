@@ -1,6 +1,10 @@
 /**
  * Script para adicionar Painel Informativo na Sidebar
  * Substitui o painel verde de parâmetros
+ * 
+ * @typedef {Object} Window
+ * @property {any} [InfoPanel]
+ * @property {any} [infoPanel]
  */
 
 import { generateInfoPanelHTML } from './src/ui/templates/InfoPanelTemplate.js';
@@ -35,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
             targetContainer.insertBefore(panelDiv.firstElementChild, targetContainer.firstChild);
 
             console.log('✅ Painel informativo adicionado à sidebar');
-            
+
             // Inicializa InfoPanel APÓS HTML estar no DOM
             setTimeout(() => {
                 if (window.InfoPanel) {

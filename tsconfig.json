@@ -20,7 +20,15 @@
     "allowUnusedLabels": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"]
   },
-  "include": ["*.js", "src/**/*.js", "utils/**/*.js", "state/**/*.js", "tests/**/*.js"],
+  "include": [
+    "*.js",
+    "*.d.ts",
+    "src/**/*.js",
+    "src/**/*.d.ts",
+    "utils/**/*.js",
+    "state/**/*.js",
+    "tests/**/*.js"
+  ],
   "exclude": [
     "node_modules",
     "test-results",

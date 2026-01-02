@@ -2,9 +2,19 @@
 // GOOGLE ANALYTICS 4 - Tracking
 // ================================================================
 
+/**
+ * @typedef {Object} Window
+ * @property {Array<any>} [dataLayer]
+ * @property {function(...any):void} [trackEvent]
+ */
+
 // Initialize dataLayer
+/** @type {any[]} */
 window.dataLayer = window.dataLayer || [];
 
+/**
+ * @param {...any} args
+ */
 function gtag() {
     dataLayer.push(arguments);
 }
