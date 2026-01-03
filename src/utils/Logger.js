@@ -51,6 +51,9 @@ class Logger {
             error(msg, meta) {
                 base.error(msg, { ...(meta || {}), requestId });
             },
+            log(msg, meta) {
+                base.log(msg, { ...(meta || {}), requestId });
+            },
         };
     }
 
@@ -65,6 +68,10 @@ class Logger {
     }
     error(message, meta = undefined) {
         this._log('error', message, meta);
+    }
+    // Compatibility alias: log() maps to info()
+    log(message, meta = undefined) {
+        this._log('info', message, meta);
     }
 
     _log(level, message, meta) {
