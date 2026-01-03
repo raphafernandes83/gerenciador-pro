@@ -1,9 +1,9 @@
 /**
  * 💰 Progress Card Monetary - Sistema Avançado de Valores Monetários
- * 
+ *
  * FASE 3: Implementa formatação avançada, animações e indicadores visuais
  * para todos os valores monetários do card de progresso.
- * 
+ *
  * @author Sistema de Gerenciamento PRO
  * @version 3.0.0 - FASE 3
  */
@@ -26,18 +26,23 @@ import { logger } from '../../src/utils/Logger.js';
  */
 export function formatCurrencyAdvanced(value, options = {}) {
     const {
-        style = 'standard',           // 'standard', 'compact', 'detailed', 'percentage'
-        showSign = false,             // Mostrar sinal + para valores positivos
-        colorize = false,             // Aplicar cores baseadas no valor
-        animate = false,              // Preparar para animação
-        magnitude = 'auto'            // 'small', 'medium', 'large', 'auto'
+        style = 'standard', // 'standard', 'compact', 'detailed', 'percentage'
+        showSign = false, // Mostrar sinal + para valores positivos
+        colorize = false, // Aplicar cores baseadas no valor
+        animate = false, // Preparar para animação
+        magnitude = 'auto', // 'small', 'medium', 'large', 'auto'
     } = options;
 
     // Validação defensiva
     const numValue = typeof value === 'number' && !isNaN(value) ? value : 0;
-    const absValue = Math.abs(numValue);
-    const isPositive = numValue >= 0;
-    const isZero = numValue === 0;
+
+    // Normalize negative zero to positive zero (fix for -0 display)
+    // Also normalize values smaller than half a cent (< R$ 0.005) to zero
+    const normalizedValue = Object.is(numValue, -0) || (Math.abs(numValue) < 0.005) ? 0 : numValue;
+
+    const absValue = Math.abs(normalizedValue);
+    const isPositive = normalizedValue >= 0;
+    const isZero = normalizedValue === 0;
 
     // Determina magnitude automaticamente se necessário
     let detectedMagnitude = magnitude;
@@ -57,35 +62,35 @@ export function formatCurrencyAdvanced(value, options = {}) {
         case 'compact':
             // Formato compacto: R$ 1,2K, R$ 15,3M
             if (absValue >= 1000000) {
-                displayValue = `R$ ${(numValue / 1000000).toFixed(1)}M`;
+                displayValue = `R$ ${(normalizedValue / 1000000).toFixed(1)}M`;
             } else if (absValue >= 1000) {
-                displayValue = `R$ ${(numValue / 1000).toFixed(1)}K`;
+                displayValue = `R$ ${(normalizedValue / 1000).toFixed(1)}K`;
             } else {
-                displayValue = `R$ ${numValue.toFixed(0)}`;
+                displayValue = `R$ ${normalizedValue.toFixed(0)}`;
             }
             cssClasses.push('format-compact');
             break;
 
         case 'detailed':
             // Formato detalhado com centavos sempre visíveis
-            displayValue = `R$ ${numValue.toLocaleString('pt-BR', {
+            displayValue = `R$ ${normalizedValue.toLocaleString('pt-BR', {
                 minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+                maximumFractionDigits: 2,
             })}`;
             cssClasses.push('format-detailed');
             break;
 
         case 'percentage':
             // Para valores que representam percentuais monetários
-            displayValue = `${numValue.toFixed(1)}%`;
+            displayValue = `${normalizedValue.toFixed(1)}%`;
             cssClasses.push('format-percentage');
             break;
 
         default: // 'standard'
             // CORREÇÃO: Sempre usar vírgula como separador decimal (padrão brasileiro)
-            displayValue = `R$ ${numValue.toLocaleString('pt-BR', {
+            displayValue = `R$ ${normalizedValue.toLocaleString('pt-BR', {
                 minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+                maximumFractionDigits: 2,
             })}`;
             cssClasses.push('format-standard');
     }
@@ -121,7 +126,7 @@ export function formatCurrencyAdvanced(value, options = {}) {
         'data-magnitude': detectedMagnitude,
         'data-positive': isPositive,
         'data-zero': isZero,
-        'data-style': style
+        'data-style': style,
     };
 
     return {
@@ -136,7 +141,7 @@ export function formatCurrencyAdvanced(value, options = {}) {
         // Metadados para animações
         shouldPulse: absValue > 1000,
         shouldGlow: absValue > 10000,
-        animationDuration: detectedMagnitude === 'large' ? 800 : 500
+        animationDuration: detectedMagnitude === 'large' ? 800 : 500,
     };
 }
 
@@ -154,17 +159,19 @@ export function calculateMonetaryPerformance(monetary, previousMonetary = null) 
             riskAmount,
             sessionPL,
             progressPercent,
-            riskUsedPercent
+            riskUsedPercent,
         } = monetary;
 
         // Indicadores básicos
         const indicators = {
             // Status da meta
-            metaStatus: progressPercent >= 100 ? 'achieved' : progressPercent >= 75 ? 'near' : 'progress',
+            metaStatus:
+                progressPercent >= 100 ? 'achieved' : progressPercent >= 75 ? 'near' : 'progress',
             metaProgress: Math.min(100, progressPercent),
 
             // Status do risco
-            riskStatus: riskUsedPercent >= 80 ? 'critical' : riskUsedPercent >= 50 ? 'warning' : 'safe',
+            riskStatus:
+                riskUsedPercent >= 80 ? 'critical' : riskUsedPercent >= 50 ? 'warning' : 'safe',
             riskProgress: Math.min(100, riskUsedPercent),
 
             // Performance geral
@@ -175,8 +182,11 @@ export function calculateMonetaryPerformance(monetary, previousMonetary = null) 
             remainingRisk: Math.max(0, riskAmount - Math.abs(Math.min(0, sessionPL))),
 
             // Percentuais de segurança
-            safetyMargin: riskAmount > 0 ? ((riskAmount - Math.abs(Math.min(0, sessionPL))) / riskAmount) * 100 : 100,
-            metaEfficiency: metaAmount > 0 ? (achievedAmount / metaAmount) * 100 : 0
+            safetyMargin:
+                riskAmount > 0
+                    ? ((riskAmount - Math.abs(Math.min(0, sessionPL))) / riskAmount) * 100
+                    : 100,
+            metaEfficiency: metaAmount > 0 ? (achievedAmount / metaAmount) * 100 : 0,
         };
 
         // Comparação com valores anteriores (se disponível)
@@ -188,7 +198,7 @@ export function calculateMonetaryPerformance(monetary, previousMonetary = null) 
                 direction: plChange > 0 ? 'up' : plChange < 0 ? 'down' : 'stable',
                 change: plChange,
                 changePercent: prevPL !== 0 ? (plChange / Math.abs(prevPL)) * 100 : 0,
-                isSignificant: Math.abs(plChange) > (metaAmount * 0.05) // 5% da meta
+                isSignificant: Math.abs(plChange) > metaAmount * 0.05, // 5% da meta
             };
         }
 
@@ -199,7 +209,7 @@ export function calculateMonetaryPerformance(monetary, previousMonetary = null) 
             indicators.alerts.push({
                 type: 'danger',
                 message: 'Risco crítico: próximo ao limite de perda',
-                priority: 'high'
+                priority: 'high',
             });
         }
 
@@ -207,7 +217,7 @@ export function calculateMonetaryPerformance(monetary, previousMonetary = null) 
             indicators.alerts.push({
                 type: 'success',
                 message: 'Meta atingida! Considere encerrar a sessão',
-                priority: 'medium'
+                priority: 'medium',
             });
         }
 
@@ -215,12 +225,11 @@ export function calculateMonetaryPerformance(monetary, previousMonetary = null) 
             indicators.alerts.push({
                 type: 'warning',
                 message: 'Margem de segurança baixa',
-                priority: 'medium'
+                priority: 'medium',
             });
         }
 
         return indicators;
-
     } catch (error) {
         logger.error('❌ Erro ao calcular performance monetária:', { error: String(error) });
 
@@ -235,7 +244,7 @@ export function calculateMonetaryPerformance(monetary, previousMonetary = null) 
             remainingRisk: 0,
             safetyMargin: 100,
             metaEfficiency: 0,
-            alerts: []
+            alerts: [],
         };
     }
 }
@@ -250,11 +259,7 @@ export function updateMonetaryElementsAdvanced(monetary, performance, options = 
     try {
         // Iniciando atualização de elementos monetários avançados
 
-        const {
-            animate = true,
-            showTrends = true,
-            compactMode = false
-        } = options;
+        const { animate = true, showTrends = true, compactMode = false } = options;
 
         logger.debug('💰 Atualizando elementos monetários avançados...');
 
@@ -283,7 +288,6 @@ export function updateMonetaryElementsAdvanced(monetary, performance, options = 
         updateStatusIndicators(performance);
 
         logger.debug('✅ Elementos monetários atualizados com sucesso');
-
     } catch (error) {
         logger.error('❌ Erro ao atualizar elementos monetários:', { error: String(error) });
     }
@@ -297,16 +301,16 @@ function updateMetaTargetElements(monetary, performance, options) {
     const elements = [
         document.getElementById('meta-target-amount'),
         document.getElementById('win-target-amount'),
-        document.getElementById('meta-target-amount-panel')
+        document.getElementById('meta-target-amount-panel'),
     ].filter(Boolean);
 
     const formatted = formatCurrencyAdvanced(monetary.metaAmount, {
         style: options.compactMode ? 'compact' : 'standard',
         colorize: false,
-        animate: options.animate
+        animate: options.animate,
     });
 
-    elements.forEach(element => {
+    elements.forEach((element) => {
         // Atualiza conteúdo
         element.textContent = formatted.formatted;
 
@@ -330,17 +334,17 @@ function updateMetaTargetElements(monetary, performance, options) {
 function updateAchievedElements(monetary, performance, options) {
     const elements = [
         document.getElementById('meta-achieved-amount'),
-        document.getElementById('meta-achieved-amount-panel')
+        document.getElementById('meta-achieved-amount-panel'),
     ].filter(Boolean);
 
     const formatted = formatCurrencyAdvanced(monetary.achievedAmount, {
         style: 'detailed',
         showSign: true,
         colorize: true,
-        animate: options.animate
+        animate: options.animate,
     });
 
-    elements.forEach(element => {
+    elements.forEach((element) => {
         // Atualiza conteúdo
         element.textContent = formatted.formatted;
 
@@ -371,7 +375,10 @@ function updateAchievedElements(monetary, performance, options) {
 
         // Tooltip com informações detalhadas
         const efficiency = performance.metaEfficiency.toFixed(1);
-        element.setAttribute('title', `Valor atingido: ${formatted.formatted} (${efficiency}% da meta)`);
+        element.setAttribute(
+            'title',
+            `Valor atingido: ${formatted.formatted} (${efficiency}% da meta)`
+        );
 
         // Animação de pulse para valores significativos
         if (options.animate && formatted.shouldPulse) {
@@ -393,16 +400,16 @@ function updateMetaProgressElements(monetary, performance, options) {
     // Reativando atualização pois DashboardUIManager foi desativado
     const elements = [
         document.getElementById('meta-progress-value'),
-        document.getElementById('meta-progress-value-panel')
+        document.getElementById('meta-progress-value-panel'),
     ].filter(Boolean);
 
     const formatted = formatCurrencyAdvanced(performance.metaProgress, {
         style: 'percentage',
         colorize: true,
-        animate: options.animate
+        animate: options.animate,
     });
 
-    elements.forEach(element => {
+    elements.forEach((element) => {
         // Atualiza conteúdo
         element.textContent = formatted.formatted;
 
@@ -424,7 +431,10 @@ function updateMetaProgressElements(monetary, performance, options) {
 
         // Tooltip informativo
         const remaining = formatCurrencyAdvanced(performance.remainingToMeta, { style: 'compact' });
-        element.setAttribute('title', `Progresso: ${formatted.formatted} | Restante: ${remaining.formatted}`);
+        element.setAttribute(
+            'title',
+            `Progresso: ${formatted.formatted} | Restante: ${remaining.formatted}`
+        );
     });
 }
 
@@ -436,7 +446,7 @@ function updateRiskLimitElements(monetary, performance, options) {
     const elements = [
         document.getElementById('loss-limit-amount'),
         document.getElementById('loss-limit-amount-panel'),
-        document.getElementById('status-margin')  // CORREÇÃO: Adiciona elemento "Margem" do rodapé
+        document.getElementById('status-margin'), // CORREÇÃO: Adiciona elemento "Margem" do rodapé
     ].filter(Boolean);
 
     // CORREÇÃO: Formatar como valor NEGATIVO e VERMELHO
@@ -444,14 +454,14 @@ function updateRiskLimitElements(monetary, performance, options) {
         style: options.compactMode ? 'compact' : 'standard',
         showSign: false, // Não mostrar sinal duplo
         colorize: true,
-        animate: options.animate
+        animate: options.animate,
     });
 
-    elements.forEach(element => {
+    elements.forEach((element) => {
         // CORREÇÃO: Força formato negativo com sinal de menos
         const negativeValue = `R$ -${Math.abs(monetary.riskAmount).toLocaleString('pt-BR', {
             minimumFractionDigits: 2,
-            maximumFractionDigits: 2
+            maximumFractionDigits: 2,
         })}`;
 
         element.textContent = negativeValue;
@@ -467,7 +477,10 @@ function updateRiskLimitElements(monetary, performance, options) {
 
         // Tooltip com margem de segurança
         const safetyMargin = performance.safetyMargin.toFixed(1);
-        element.setAttribute('title', `Limite de risco: ${negativeValue} | Margem: ${safetyMargin}%`);
+        element.setAttribute(
+            'title',
+            `Limite de risco: ${negativeValue} | Margem: ${safetyMargin}%`
+        );
 
         console.log(`✅ Limite de risco atualizado: ${negativeValue} - Cor: VERMELHO`);
     });
@@ -480,17 +493,17 @@ function updateRiskLimitElements(monetary, performance, options) {
 function updateSessionPLElements(monetary, performance, options) {
     const elements = [
         document.getElementById('loss-session-result'),
-        document.getElementById('loss-session-result-panel')
+        document.getElementById('loss-session-result-panel'),
     ].filter(Boolean);
 
     const formatted = formatCurrencyAdvanced(monetary.sessionPL, {
         style: 'detailed',
         showSign: true,
         colorize: true,
-        animate: options.animate
+        animate: options.animate,
     });
 
-    elements.forEach(element => {
+    elements.forEach((element) => {
         // Atualiza conteúdo
         element.textContent = formatted.formatted;
 
@@ -515,7 +528,7 @@ function updateSessionPLElements(monetary, performance, options) {
         if (performance.trend && options.showTrends) {
             const trendFormatted = formatCurrencyAdvanced(performance.trend.change, {
                 style: 'compact',
-                showSign: true
+                showSign: true,
             });
             tooltipText += ` | Variação: ${trendFormatted.formatted}`;
         }
@@ -523,7 +536,8 @@ function updateSessionPLElements(monetary, performance, options) {
 
         // Animação especial para mudanças significativas
         if (options.animate && performance.trend && performance.trend.isSignificant) {
-            const animationClass = performance.trend.direction === 'up' ? 'trend-up-flash' : 'trend-down-flash';
+            const animationClass =
+                performance.trend.direction === 'up' ? 'trend-up-flash' : 'trend-down-flash';
             element.classList.add(animationClass);
             setTimeout(() => {
                 element.classList.remove(animationClass);
@@ -540,7 +554,7 @@ function updateRiskUsedElements(monetary, performance, options) {
     const elements = [
         document.getElementById('risk-used-value'),
         document.getElementById('risk-used-display'),
-        document.getElementById('risk-used-value-panel')
+        document.getElementById('risk-used-value-panel'),
     ].filter(Boolean);
 
     const riskPercent = Math.max(0, Math.min(100, Number(performance.riskProgress || 0)));
@@ -548,7 +562,7 @@ function updateRiskUsedElements(monetary, performance, options) {
 
     // Atualizando elementos de risco usado
 
-    elements.forEach(element => {
+    elements.forEach((element) => {
         element.textContent = displayText;
 
         // Classe e cor padronizadas: 0% cinza (igual aos outros zerados), >0% salmão/rosa
@@ -570,8 +584,13 @@ function updateRiskUsedElements(monetary, performance, options) {
         }
 
         // Tooltip informativo
-        const remainingRisk = formatCurrencyAdvanced(performance.remainingRisk, { style: 'compact' });
-        element.setAttribute('title', `Risco usado: ${displayText} | Restante: ${remainingRisk.formatted}`);
+        const remainingRisk = formatCurrencyAdvanced(performance.remainingRisk, {
+            style: 'compact',
+        });
+        element.setAttribute(
+            'title',
+            `Risco usado: ${displayText} | Restante: ${remainingRisk.formatted}`
+        );
     });
 }
 
@@ -707,7 +726,6 @@ function updateAlertIndicators(alerts) {
         }, index * 100);
     });
 }
-
 
 // Exposição global das funções principais
 if (typeof window !== 'undefined') {

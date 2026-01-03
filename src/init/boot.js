@@ -31,6 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // [TAREFA 9B] Aplicar preferências de UI salvas (compact-mode, zen-mode)
         initUISavedPreferences();
+
+        // [TAREFA 67] Inicializar PreferencesManager (toggles persistentes)
+        initPreferencesManager();
     });
 
     // Registrar Service Worker (delay para não bloquear inicialização)
@@ -152,6 +155,32 @@ function initUISavedPreferences() {
         console.log('✅ Boot.js: Preferências de UI aplicadas');
     } catch (error) {
         console.error('❌ Boot.js: Erro ao aplicar preferências de UI:', error);
+    }
+}
+
+/**
+ * [TAREFA 67] Inicializa PreferencesManager (persistência de toggles)
+ * Carrega preferências salvas e configura listeners para auto-save
+ */
+function initPreferencesManager() {
+    try {
+        if (window.PreferencesManager) {
+            window.PreferencesManager.init();
+            window.PreferencesManager.bindToggles();
+            console.log('✅ Boot.js: PreferencesManager inicializado');
+        } else {
+            // Retry após um delay
+            console.warn('⚠️ Boot.js: PreferencesManager não encontrado - aguardando...');
+            setTimeout(() => {
+                if (window.PreferencesManager) {
+                    window.PreferencesManager.init();
+                    window.PreferencesManager.bindToggles();
+                    console.log('✅ Boot.js: PreferencesManager inicializado (retry)');
+                }
+            }, 500);
+        }
+    } catch (error) {
+        console.error('❌ Boot.js: Erro ao inicializar PreferencesManager:', error);
     }
 }
 
